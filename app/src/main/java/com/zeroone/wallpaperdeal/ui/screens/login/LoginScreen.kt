@@ -191,7 +191,7 @@ fun LoginScreen(navController: NavController){
                 ) {
                     Text(text = "Do you have a account?", color = Color.LightGray, fontSize = 16.sp)
                     TextButton(onClick = {
-                        val intent = Intent()
+                        navController.navigate(Screen.RegisterScreen.route)
                     }) {
                         Text(text = "Sign In", color = Color.White, fontSize = 18.sp)
                     }
