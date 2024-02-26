@@ -1,5 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,16 +33,26 @@ import com.zeroone.wallpaperdeal.ui.screens.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Text
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.zeroone.wallpaperdeal.ui.theme.Purple40
+import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val scrollState = rememberLazyListState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
+    var isTop10ListVisible by remember { mutableStateOf(true) }
 
     Scaffold(
-        backgroundColor = Color.LightGray,
+        backgroundColor = Color.Black,
         topBar = {
             if (isTopAppBarVisible) {
                 TopAppBar(
@@ -60,7 +71,7 @@ fun HomeScreen(navController: NavController) {
             }
         },
         bottomBar = {
-            BottomNavigationBar(0)
+            BottomNavigationBar(0, navController)
         }
     ) { innerPadding ->
         Column(
@@ -68,7 +79,7 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TopAppbarText(navController)
+            TopAppbarText(navController = navController)
             Canvas(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 70.dp)) {
@@ -77,19 +88,45 @@ fun HomeScreen(navController: NavController) {
                 drawLine(
                     start = start,
                     end = end,
-                    color = TopAppBarColor,
+                    color = ThemeGray,
                     strokeWidth = 5f,
                     cap = StrokeCap.Round
                 )
             }
+            if (isTop10ListVisible) {
+                Text(text = "Populer Collection Top 10",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp)
+                )
+            }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
+
             val listItem = R.drawable.wallpaper_item
             var photos: List<Int> = arrayListOf(listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem, listItem)
+
+            Top10WallpaperList(photos = photos, modifier = Modifier, isVisible = isTop10ListVisible)
+            if (isTop10ListVisible) {
+                Text( text = "Popular New Wallpapers",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp)
+                )
+            }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
             PhotoGrid(photos = photos, modifier = Modifier, scrollState = scrollState) {
                 isTopAppBarVisible = it
+                isTop10ListVisible = it // Photogrid içerisinde görünürlüğü değiştir
             }
         }
     }
 }
+
+@Composable
+fun Top10WallpaperList(photos: List<Int>, modifier: Modifier = Modifier, isVisible: Boolean = true) {
+    if (isVisible) {
+        LazyRow(modifier = modifier) {
+            items(photos) { photo ->
+                PhotoItem(photoRes = photo, modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .height(120.dp))
+            }
+        }
+    }
+}
+
 
 @Composable
 fun PhotoGrid(photos: List<Int>, modifier: Modifier = Modifier, scrollState: LazyListState, onTopAppBarVisibilityChanged: (Boolean) -> Unit) {
@@ -150,8 +187,8 @@ fun PhotoItem(photoRes: Int, modifier: Modifier = Modifier) {
 /*
 @Composable
 @Preview
-fun previewScreen(){
-    HomeScreen()
+fun previewScreen(@PreviewParameter navController: NavController){
+    HomeScreen(navController)
 }
-*/
 
+*/

@@ -1,5 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.ui
 
+import android.util.Log
 import androidx.annotation.ColorRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.BottomAppbarColor
 import com.zeroone.wallpaperdeal.ui.theme.Purple40
+import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 
 @Composable
@@ -38,13 +40,23 @@ fun TopAppbarText(navController: NavController){
     Row(modifier = Modifier
         .padding(top = 0.dp)
         .fillMaxWidth()
-        .background(Color.White)) {
-        TextButton(onClick = { navController.navigate(Screen.HomeScreen.route)}) {
-            Text(text = "Home", color = Color.Black, fontSize = 16.sp,
+        .background(Color.Black)) {
+        val currentDestination = navController.currentDestination?.route
+        TextButton(onClick = { if(currentDestination != Screen.HomeScreen.route){
+            navController.navigate(Screen.HomeScreen.route)
+        }else{
+            Log.d("HomeScreenControl", "Now HomeScreen")
+        }
+        }) {
+            Text(text = "Home", color = Color.White, fontSize = 16.sp,
                 modifier = Modifier.padding(start = 85.dp))
         }
-        TextButton(onClick = { navController.navigate(Screen.HomeCategoryScreen.route) }) {
-            Text(text = "Categories", color = Color.Black, fontSize = 16.sp, modifier = Modifier.padding(start = 50.dp))
+        TextButton(onClick = {if(currentDestination != Screen.HomeCategoryScreen.route){
+            navController.navigate(Screen.HomeCategoryScreen.route)
+        }else{
+            Log.d("HomeCategoryScreenControl", "Now HomeCategoryScreen")
+        }}) {
+            Text(text = "Categories", color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(start = 50.dp))
         }
     }
 }
@@ -52,10 +64,10 @@ fun TopAppbarText(navController: NavController){
 
 
 @Composable
-fun BottomNavigationBar(selectedItem: Int) {
+fun BottomNavigationBar(selectedItem: Int, navController: NavController) {
     var selectedItem by remember { mutableStateOf(selectedItem) }
 
-    BottomAppBar(backgroundColor = BottomAppbarColor) {
+    BottomAppBar(backgroundColor = Color.Black) {
         BottomNavigation {
             val items = listOf(
                 BottomNavItem("Home", R.drawable.ic_home, 0),
@@ -68,16 +80,16 @@ fun BottomNavigationBar(selectedItem: Int) {
             items.forEach { item ->
                 BottomNavigationItem(
                     selected = selectedItem == item.index,
-                    onClick = { selectedItem = item.index },
+                    onClick = { navController.navigate(Screen.ShareScreen.route)},
                     icon = {
                         Icon(
                             painterResource(id = item.icon),
                             contentDescription = item.label
                         )
                     },
-                    selectedContentColor = Purple40, // Seçili öğenin rengini buradan ayarlayabilirsiniz
-                    unselectedContentColor = Color.LightGray, // Seçilmemiş öğelerin rengi
-                    modifier = Modifier.background(Color.White),
+                    selectedContentColor = ThemeGray, // Seçili öğenin rengini buradan ayarlayabilirsiniz
+                    unselectedContentColor = Color.White, // Seçilmemiş öğelerin rengi
+                    modifier = Modifier.background(Color.Black),
                 )
             }
         }

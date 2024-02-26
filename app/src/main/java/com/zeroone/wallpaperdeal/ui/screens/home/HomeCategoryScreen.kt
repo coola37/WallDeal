@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -41,6 +44,7 @@ import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.Category
 import com.zeroone.wallpaperdeal.ui.screens.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.ui.TopAppbarText
+import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
 
@@ -50,7 +54,7 @@ fun HomeCategoryScreen(navController: NavController){
     var isTopAppBarVisible by remember { mutableStateOf(true) }
 
     Scaffold(
-        backgroundColor = Color.LightGray,
+        backgroundColor = Color.Black,
         topBar = {
             if (isTopAppBarVisible) {
                 TopAppBar(
@@ -69,7 +73,7 @@ fun HomeCategoryScreen(navController: NavController){
             }
         },
         bottomBar = {
-            BottomNavigationBar(0)
+            BottomNavigationBar(0, navController)
         }
     ) { innerPadding ->
         Column(
@@ -86,15 +90,13 @@ fun HomeCategoryScreen(navController: NavController){
                 drawLine(
                     start = start,
                     end = end,
-                    color = TopAppBarColor,
+                    color = ThemeGray,
                     strokeWidth = 5f,
                     cap = StrokeCap.Round
                 )
             }
 
-            CategoryGrid(categoryList = ListCategory.list, modifier = Modifier, scrollState = scrollState) {
-                isTopAppBarVisible = it
-            }
+            StaggeredLazyGrid(categoryList = ListCategory.list)
 
         }
     }
@@ -159,10 +161,33 @@ fun CategoryItem(category: Category, modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = Modifier
                 .aspectRatio(.6f) // Kare görüntüleri göstermek için en-boy oranını 1:1 olarak ayarlar
-                .padding(1.dp) // Fotoğraflar arasında boşluk bırakır
-                .fillMaxSize() // Hücrenin tüm alanını kaplar
+                .padding(1.dp) // Fotoğraflar arasında boşluk bırakır // Hücrenin tüm alanını kaplar
         )
     }
+}
+
+@Composable
+fun StaggeredLazyGrid(categoryList :List<Category>){
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        content = {
+            items(categoryList.size) { index ->
+                //val imageUrl = categoryList[index].imageUrl
+                CategoryItem(category = categoryList.get(index))
+               /* AsyncImage(
+                    model = imageUrl,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                )*/
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 

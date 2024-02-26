@@ -1,6 +1,5 @@
-package com.zeroone.wallpaperdeal.ui.screens
+package com.zeroone.wallpaperdeal.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,14 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
-import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.login.LoginScreen
 import com.zeroone.wallpaperdeal.ui.screens.register.RegisterScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
 
-
-class HomeActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,20 +26,16 @@ class HomeActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = Screen.HomeScreen.route ){
-                        composable(Screen.HomeScreen.route){
-                            HomeScreen(navController = navController)
+                    NavHost(navController = navController, startDestination = Screen.LoginScreen.route ){
+                        composable(Screen.LoginScreen.route){
+                            LoginScreen(navController = navController)
                         }
-                        composable(Screen.HomeCategoryScreen.route){
-                            HomeCategoryScreen(navController = navController)
+                        composable(Screen.RegisterScreen.route){
+                            RegisterScreen(navController = navController)
                         }
                     }
                 }
             }
         }
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
     }
 }

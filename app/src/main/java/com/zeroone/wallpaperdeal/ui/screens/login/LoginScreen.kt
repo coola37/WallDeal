@@ -44,16 +44,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.ui.screens.HomeActivity
+import com.zeroone.wallpaperdeal.ui.HomeActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ButtonColorDefault
+import com.zeroone.wallpaperdeal.ui.theme.Purple40
 
 @Composable
 fun LoginScreen(navController: NavController){
@@ -70,7 +68,7 @@ fun LoginScreen(navController: NavController){
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(painter = painterResource(id = R.drawable.logoandtext), contentDescription = null,
+                Image(painter = painterResource(id = R.drawable.walldeallogo), contentDescription = null,
                     modifier = Modifier.padding(bottom = 48.dp)
                 )
                 var textEmail: String by remember { mutableStateOf("") }
@@ -83,7 +81,6 @@ fun LoginScreen(navController: NavController){
                         .background(color = Color.Unspecified)
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
-                        //.height(70.dp)
                         .focusRequester(FocusRequester())
                         .padding(horizontal = 16.dp),  // Adjust padding as needed
                     leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
@@ -105,7 +102,6 @@ fun LoginScreen(navController: NavController){
                         .background(color = Color.Unspecified)
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
-                        //.height(70.dp)
                         .focusRequester(FocusRequester())
                         .padding(horizontal = 16.dp),  // Adjust padding as needed
                     leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
@@ -117,7 +113,7 @@ fun LoginScreen(navController: NavController){
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation()
                 )
-                val buttonColors = ButtonDefaults.buttonColors(ButtonColorDefault)
+                val buttonColors = ButtonDefaults.buttonColors(Purple40)
                 Button(
                     onClick = { navigateToHome(context) },
                     colors = buttonColors,
@@ -127,14 +123,14 @@ fun LoginScreen(navController: NavController){
                 ) {
                     Text(
                         text = "Sign On",
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = Color.White
                     )
                 }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 82.dp),
-                    //verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(48.dp)
 
                 ) {

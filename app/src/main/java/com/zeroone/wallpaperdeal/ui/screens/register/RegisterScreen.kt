@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 import com.zeroone.wallpaperdeal.R
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ButtonColorDefault
+import com.zeroone.wallpaperdeal.ui.theme.Purple40
 
 @Composable
 public fun RegisterScreen(navController: NavController){
@@ -61,7 +63,7 @@ public fun RegisterScreen(navController: NavController){
             verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom)){
 
             Image(
-                painter = painterResource(id = R.drawable.logoandtext),
+                painter = painterResource(id = R.drawable.walldeallogo),
                 contentDescription = null,
             )
 
@@ -150,9 +152,9 @@ public fun RegisterScreen(navController: NavController){
                 visualTransformation = PasswordVisualTransformation()
             )
 
-            val buttonColors = ButtonDefaults.buttonColors(ButtonColorDefault)
+            val buttonColors = ButtonDefaults.buttonColors(Purple40)
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navController.navigate(Screen.RegisterScreen.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 32.dp, end = 32.dp),
