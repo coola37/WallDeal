@@ -1,4 +1,4 @@
-package com.zeroone.wallpaperdeal.model
+package com.zeroone.wallpaperdeal.data.model
 
 data class Category(
     val categoryName: String,

@@ -1,29 +1,28 @@
 package com.zeroone.wallpaperdeal.ui.screens.register
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,24 +36,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-
+import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.ButtonColorDefault
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.theme.Purple40
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-public fun RegisterScreen(navController: NavController){
-    Box(modifier = Modifier .fillMaxSize().background(Color.Black))
+fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = hiltViewModel(), auth: FirebaseAuth){
+    val context = LocalContext.current
+    var registerButtonEnabled by remember {
+        mutableStateOf<Boolean>(false)
+    }
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.Black))
     Box(modifier = Modifier.fillMaxSize()){
         Column( modifier = Modifier
             .fillMaxSize()
@@ -96,7 +103,6 @@ public fun RegisterScreen(navController: NavController){
                 modifier = Modifier
                     .background(color = Color.Unspecified)
                     .fillMaxWidth()
-                    //.height(70.dp)
                     .focusRequester(FocusRequester())
                     .padding(horizontal = 16.dp),  // Adjust padding as needed
                 leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
@@ -117,7 +123,6 @@ public fun RegisterScreen(navController: NavController){
                 modifier = Modifier
                     .background(color = Color.Unspecified)
                     .fillMaxWidth()
-                    //.height(70.dp)
                     .focusRequester(FocusRequester())
                     .padding(horizontal = 16.dp),
                 leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
@@ -139,7 +144,6 @@ public fun RegisterScreen(navController: NavController){
                 modifier = Modifier
                     .background(color = Color.Unspecified)
                     .fillMaxWidth()
-                    //.height(70.dp)
                     .focusRequester(FocusRequester())
                     .padding(horizontal = 16.dp),  // Adjust padding as needed
                 leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
@@ -153,8 +157,12 @@ public fun RegisterScreen(navController: NavController){
             )
 
             val buttonColors = ButtonDefaults.buttonColors(Purple40)
-            Button(
-                onClick = { navController.navigate(Screen.RegisterScreen.route) },
+            registerButtonEnabled =
+                !(textPassword != textPasswordRepeat || textPassword.isEmpty() || textPasswordRepeat.isEmpty()
+                        || textUsername.isEmpty() || textEmail.isEmpty())
+
+            Button(enabled = registerButtonEnabled,
+                onClick = { register(auth, textEmail, textPassword, textUsername, viewModel, context) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 32.dp, end = 32.dp),
@@ -169,5 +177,44 @@ public fun RegisterScreen(navController: NavController){
             Spacer(modifier = Modifier.height(150.dp))
         }
     }
+}
+fun navigateHomeActivity(context: Context){
+    val intent = Intent(context, MainActivity::class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+    context.startActivity(intent)
+    (context as Activity).finish()
+}
+fun register(auth: FirebaseAuth, textEmail: String, textPassword: String, textUsername: String, viewModel: RegisterViewModel, context: Context){
+    if(textUsername.length <= 3){
+        Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
+    }
+    else if(textPassword.length <= 7){
+        Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
+    }
+    else if(!(textEmail.contains(".com"))){
+        Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
+    }
+    else{
+        authenticationUser(auth = auth, email = textEmail, password = textPassword,username = textUsername,
+            context = context, viewModel = viewModel)
+    }
+}
 
+fun authenticationUser(auth: FirebaseAuth, viewModel: RegisterViewModel, email: String,
+                       password: String, username: String, context: Context){
+    auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+        if(it.isSuccessful){
+            Log.d("UserAuth:", "succes")
+            auth.currentUser.let{
+                var user = User(auth.currentUser?.uid.toString(), email, username, null)
+                CoroutineScope(Dispatchers.IO).launch{
+                    viewModel.saveUserToDb(user)
+                }
+                navigateHomeActivity(context)
+            }
+        }else{
+            Toast.makeText(context,it.exception.toString(),Toast.LENGTH_SHORT).show()
+            Log.d("UserAuth:", "failure: ", it.exception)
+        }
+    }
 }

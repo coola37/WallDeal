@@ -1,6 +1,5 @@
 package com.zeroone.wallpaperdeal.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,13 +10,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
-import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
-import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
+import com.zeroone.wallpaperdeal.ui.screens.login.LoginScreen
+import com.zeroone.wallpaperdeal.ui.screens.register.RegisterScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class HomeActivity : ComponentActivity() {
+@AndroidEntryPoint
+class LoginActivity : ComponentActivity() {
+    @Inject
+    lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,23 +32,16 @@ class HomeActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = Screen.HomeScreen.route ){
-                        composable(Screen.HomeScreen.route){
-                            HomeScreen(navController = navController)
+                    NavHost(navController = navController, startDestination = Screen.LoginScreen.route ){
+                        composable(Screen.LoginScreen.route){
+                            LoginScreen(navController = navController, auth = auth)
                         }
-                        composable(Screen.HomeCategoryScreen.route){
-                            HomeCategoryScreen(navController = navController)
-                        }
-                        composable(Screen.ShareScreen.route){
-                            ShareScreen(navController = navController)
+                        composable(Screen.RegisterScreen.route){
+                            RegisterScreen(navController = navController, auth = auth)
                         }
                     }
                 }
             }
         }
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
     }
 }

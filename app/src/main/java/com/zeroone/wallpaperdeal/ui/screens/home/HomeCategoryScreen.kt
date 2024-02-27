@@ -1,5 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -30,6 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,18 +43,18 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.Category
+import com.zeroone.wallpaperdeal.data.model.Category
 import com.zeroone.wallpaperdeal.ui.screens.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
+import com.zeroone.wallpaperdeal.utils.BlurHashDecoder
 import com.zeroone.wallpaperdeal.utils.ListCategory
 
 @Composable
 fun HomeCategoryScreen(navController: NavController){
     val scrollState = rememberLazyListState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
-
     Scaffold(
         backgroundColor = Color.Black,
         topBar = {
@@ -103,49 +105,8 @@ fun HomeCategoryScreen(navController: NavController){
 }
 
 @Composable
-fun CategoryGrid(categoryList: List<Category>, modifier: Modifier = Modifier, scrollState: LazyListState, onTopAppBarVisibilityChanged: (Boolean) -> Unit) {
-    val columns = 2 // Sütun sayısını ayarlayabilirsiniz
-    val rows = (categoryList.size + columns - 1) / columns
-    LazyColumn(
-        modifier = modifier.padding(all = 4.dp),
-        state = scrollState
-    ) {
-        items(rows) { rowIndex ->
-            Row {
-                for (columnIndex in 0 until columns) {
-                    val photoIndex = rowIndex * columns + columnIndex
-                    if (photoIndex < categoryList.size) {
-                        // Öğelerin yüksekliğini ayarlayın
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                //.height(100.dp) // Yükseklik burada ayarlanıyor
-                                .clickable {
-                                    // Tıklama işlemi burada gerçekleşir
-                                    // Örneğin, tıklanan öğenin indeksini yazdırabiliriz
-                                    println("Clicked item at index: $photoIndex")
-                                }
-                        ) {
-                            CategoryItem(category = categoryList.get(photoIndex))
-                        }
-                    } else {
-                        Box(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-        }
-        scrollState.run {
-            val firstVisibleItemIndex = firstVisibleItemIndex
-            val firstItemScrollOffset = firstVisibleItemScrollOffset
-            onTopAppBarVisibilityChanged(firstVisibleItemIndex == 0 && firstItemScrollOffset == 0)
-        }
-    }
-}
-
-
-
-@Composable
 fun CategoryItem(category: Category, modifier: Modifier = Modifier) {
+
     val painter = rememberImagePainter(
         data = category.imageUrl,
         builder = {
@@ -174,16 +135,7 @@ fun StaggeredLazyGrid(categoryList :List<Category>){
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         content = {
             items(categoryList.size) { index ->
-                //val imageUrl = categoryList[index].imageUrl
                 CategoryItem(category = categoryList.get(index))
-               /* AsyncImage(
-                    model = imageUrl,
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                )*/
             }
         },
         modifier = Modifier.fillMaxSize()

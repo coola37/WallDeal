@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "162030588159",
+    "project_id": "wall-deal",
+    "storage_bucket": "wall-deal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162030588159:android:27ca527f1037378f4efcca",
+        "android_client_info": {
+          "package_name": "com.zeroone.wallpaperdeal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162030588159-ugd1rlvfq9vfdgifb86d2483ekc0fno6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeroone.wallpaperdeal",
+            "certificate_hash": "14a34755e50594f4bdc096e390bd9eb39a30b6cf"
+          }
+        },
+        {
+          "client_id": "162030588159-oktjajp9b2voktgsktanmppcar7u9tn2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi8mP-y-RazOflTEdjnCkd6Q_ZPYYTVC0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162030588159-oktjajp9b2voktgsktanmppcar7u9tn2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

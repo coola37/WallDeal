@@ -4,7 +4,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.pow

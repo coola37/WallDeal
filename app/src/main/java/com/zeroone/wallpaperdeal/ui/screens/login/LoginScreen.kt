@@ -1,7 +1,10 @@
 package com.zeroone.wallpaperdeal.ui.screens.login
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,14 +50,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.ui.HomeActivity
+import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.ButtonColorDefault
 import com.zeroone.wallpaperdeal.ui.theme.Purple40
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController){
+fun LoginScreen(navController: NavController,auth: FirebaseAuth){
     val context = LocalContext.current
     Box (modifier = Modifier
         .fillMaxSize()
@@ -75,7 +84,7 @@ fun LoginScreen(navController: NavController){
                 TextField(
                     value = textEmail,
                     onValueChange = { textEmail = it },
-                    colors = TextFieldDefaults.colors(Color.Black),
+                    colors = TextFieldDefaults.colors(Color.LightGray),
                     shape = TextFieldDefaults.shape,
                     modifier = Modifier
                         .background(color = Color.Unspecified)
@@ -115,7 +124,10 @@ fun LoginScreen(navController: NavController){
                 )
                 val buttonColors = ButtonDefaults.buttonColors(Purple40)
                 Button(
-                    onClick = { navigateToHome(context) },
+                    onClick = {
+                        signOnWithAuth(auth,textEmail, textPassword, context)
+                        CoroutineScope(Dispatchers.Main).launch{ delay(2000) }
+                        },
                     colors = buttonColors,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -135,7 +147,7 @@ fun LoginScreen(navController: NavController){
 
                 ) {
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { signInWithGoogle(auth, context) },
                         modifier = Modifier
                             .size(70.dp)
                     ) {
@@ -197,9 +209,31 @@ fun LoginScreen(navController: NavController){
     }
 }
 
-fun navigateToHome(context: Context){
-    val intent = Intent(context, HomeActivity::class.java)
-    intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-    context.startActivity(intent)
+fun signOnWithAuth(auth: FirebaseAuth ,email: String, password: String, context: Context){
+    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+        if(it.isSuccessful){
+            Log.d("signInWithEmail:", "success")
+            navigateToHome(context)
+        }else{
+            Log.e("signInWithEmail:", it.exception.toString())
+            Toast.makeText(context, "Check your login information", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
+fun navigateToHome(context: Context){
+    val intent = Intent(context, MainActivity::class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+    context.startActivity(intent)
+    (context as Activity).finish()
+}
+private fun signInWithGoogle(auth: FirebaseAuth, context: Context) {
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+
+    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+    val signInIntent = googleSignInClient.signInIntent
+    (context as Activity).startActivityForResult(signInIntent, 9001)
+}
