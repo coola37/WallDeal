@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -56,9 +58,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = hiltViewModel(), auth: FirebaseAuth){
     val context = LocalContext.current
-    var registerButtonEnabled by remember {
-        mutableStateOf<Boolean>(false)
-    }
+    var registerButtonEnabled by remember { mutableStateOf<Boolean>(false)}
+    var loading by remember { mutableStateOf<Boolean>(false) }
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color.Black))
@@ -162,16 +163,57 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                         || textUsername.isEmpty() || textEmail.isEmpty())
 
             Button(enabled = registerButtonEnabled,
-                onClick = { register(auth, textEmail, textPassword, textUsername, viewModel, context) },
+                onClick = {
+                    loading = true
+                    if(textUsername.length <= 3){
+                        Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else if(textPassword.length <= 7){
+                        Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else if(!(textEmail.contains(".com"))){
+                        Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else{
+                        auth.createUserWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
+                            if(it.isSuccessful){
+                                loading = false
+                                Log.d("UserAuth:", "succes")
+                                auth.currentUser.let{
+                                    var user = User(auth.currentUser?.uid.toString(), textEmail, textUsername, null)
+                                    CoroutineScope(Dispatchers.IO).launch{
+                                        viewModel.saveUserToDb(user)
+                                    }
+                                    navigateHomeActivity(context)
+                                }
+                            }else{
+                                loading = false
+                                Toast.makeText(context,it.exception.toString(),Toast.LENGTH_SHORT).show()
+                                Log.d("UserAuth:", "failure: ", it.exception)
+                            }
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 32.dp, end = 32.dp),
                 colors = buttonColors
             ) {
-                Text(
-                    text = "Sign In",
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(30.dp)
+                    )
+                }else{
+                    Text(
+                        text = "Register",
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(150.dp))
@@ -183,38 +225,4 @@ fun navigateHomeActivity(context: Context){
     intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
     context.startActivity(intent)
     (context as Activity).finish()
-}
-fun register(auth: FirebaseAuth, textEmail: String, textPassword: String, textUsername: String, viewModel: RegisterViewModel, context: Context){
-    if(textUsername.length <= 3){
-        Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
-    }
-    else if(textPassword.length <= 7){
-        Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
-    }
-    else if(!(textEmail.contains(".com"))){
-        Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
-    }
-    else{
-        authenticationUser(auth = auth, email = textEmail, password = textPassword,username = textUsername,
-            context = context, viewModel = viewModel)
-    }
-}
-
-fun authenticationUser(auth: FirebaseAuth, viewModel: RegisterViewModel, email: String,
-                       password: String, username: String, context: Context){
-    auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-        if(it.isSuccessful){
-            Log.d("UserAuth:", "succes")
-            auth.currentUser.let{
-                var user = User(auth.currentUser?.uid.toString(), email, username, null)
-                CoroutineScope(Dispatchers.IO).launch{
-                    viewModel.saveUserToDb(user)
-                }
-                navigateHomeActivity(context)
-            }
-        }else{
-            Toast.makeText(context,it.exception.toString(),Toast.LENGTH_SHORT).show()
-            Log.d("UserAuth:", "failure: ", it.exception)
-        }
-    }
 }

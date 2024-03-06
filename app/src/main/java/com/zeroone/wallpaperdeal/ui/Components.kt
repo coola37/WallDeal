@@ -1,20 +1,14 @@
-package com.zeroone.wallpaperdeal.ui.screens.ui
+package com.zeroone.wallpaperdeal.ui
 
 import android.util.Log
-import androidx.annotation.ColorRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -30,10 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.BottomAppbarColor
-import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
-import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 
 @Composable
 fun TopAppbarText(navController: NavController){

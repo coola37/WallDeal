@@ -27,23 +27,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.tooling.preview.Preview
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.ui.screens.ui.BottomNavigationBar
-import com.zeroone.wallpaperdeal.ui.screens.ui.TopAppbarText
+import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
+import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 
 
@@ -95,6 +90,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth) {
                     cap = StrokeCap.Round
                 )
             }
+
             if (isTop10ListVisible) {
                 Text(text = "Populer Collection Top 10",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp))
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
@@ -168,8 +164,6 @@ fun PhotoGrid(photos: List<Int>, modifier: Modifier = Modifier, scrollState: Laz
         }
     }
 }
-
-
 
 @Composable
 fun PhotoItem(photoRes: Int, modifier: Modifier = Modifier) {

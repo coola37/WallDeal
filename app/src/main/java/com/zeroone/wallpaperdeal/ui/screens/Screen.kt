@@ -6,4 +6,5 @@ sealed class Screen (val route: String){
     object HomeScreen: Screen("home_screen")
     object HomeCategoryScreen: Screen("home_category_screen")
     object ShareScreen: Screen ("share_screen")
+    object PushWallpaperScreen: Screen("push_wallpaper_screen")
 }

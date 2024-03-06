@@ -1,20 +1,14 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -30,25 +24,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
+import coil.compose.AsyncImage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.data.model.Category
-import com.zeroone.wallpaperdeal.ui.screens.ui.BottomNavigationBar
-import com.zeroone.wallpaperdeal.ui.screens.ui.TopAppbarText
+import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
+import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
-import com.zeroone.wallpaperdeal.utils.BlurHashDecoder
 import com.zeroone.wallpaperdeal.utils.ListCategory
 
 @Composable
@@ -106,19 +91,9 @@ fun HomeCategoryScreen(navController: NavController){
 
 @Composable
 fun CategoryItem(category: Category, modifier: Modifier = Modifier) {
-
-    val painter = rememberImagePainter(
-        data = category.imageUrl,
-        builder = {
-            placeholder(R.drawable.wallpaper_item) // Hata durumunda varsayılan resim
-            error(R.drawable.logoandtext) // Hata durumunda gösterilecek resim
-            crossfade(true) // Yükleme tamamlandığında geçiş efekti
-        }
-    )
-
     Box(modifier = modifier) {
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = category.imageUrl,
             contentDescription = null,
             modifier = Modifier
                 .aspectRatio(.6f) // Kare görüntüleri göstermek için en-boy oranını 1:1 olarak ayarlar

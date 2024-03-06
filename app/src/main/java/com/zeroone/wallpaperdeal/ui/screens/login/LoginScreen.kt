@@ -18,14 +18,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -65,6 +68,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(navController: NavController,auth: FirebaseAuth){
     val context = LocalContext.current
+    var loading by remember { mutableStateOf(false) }
     Box (modifier = Modifier
         .fillMaxSize()
         .background(Color.Black)){
@@ -125,19 +129,41 @@ fun LoginScreen(navController: NavController,auth: FirebaseAuth){
                 val buttonColors = ButtonDefaults.buttonColors(Purple40)
                 Button(
                     onClick = {
-                        signOnWithAuth(auth,textEmail, textPassword, context)
-                        CoroutineScope(Dispatchers.Main).launch{ delay(2000) }
+                        loading = true
+                        CoroutineScope(Dispatchers.Main).launch{
+                            delay(1000)
+                            auth.signInWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
+                                if(it.isSuccessful){
+                                    loading = false
+                                    Log.d("signInWithEmail:", "success")
+                                    navigateToHome(context)
+                                }else{
+                                    loading = false
+                                    Log.e("signInWithEmail:", it.exception.toString())
+                                    Toast.makeText(context, "Check your login information", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
                         },
+                    enabled = !(textPassword.isEmpty() || textEmail.isEmpty()) ,
                     colors = buttonColors,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 32.dp, end = 32.dp, bottom = 16.dp)
                 ) {
-                    Text(
-                        text = "Sign On",
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = Color.White
-                    )
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                    }else{
+                        Text(
+                            text = "Login",
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = Color.White
+                        )
+                    }
+
                 }
                 Row(
                     modifier = Modifier
@@ -147,7 +173,7 @@ fun LoginScreen(navController: NavController,auth: FirebaseAuth){
 
                 ) {
                     IconButton(
-                        onClick = { signInWithGoogle(auth, context) },
+                        onClick = {},
                         modifier = Modifier
                             .size(70.dp)
                     ) {
@@ -176,6 +202,7 @@ fun LoginScreen(navController: NavController,auth: FirebaseAuth){
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(150.dp))
 
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -204,36 +231,14 @@ fun LoginScreen(navController: NavController,auth: FirebaseAuth){
                         Text(text = "Sign In", color = Color.White, fontSize = 18.sp)
                     }
                 }
+
             }
         }
     }
 }
-
-fun signOnWithAuth(auth: FirebaseAuth ,email: String, password: String, context: Context){
-    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-        if(it.isSuccessful){
-            Log.d("signInWithEmail:", "success")
-            navigateToHome(context)
-        }else{
-            Log.e("signInWithEmail:", it.exception.toString())
-            Toast.makeText(context, "Check your login information", Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
 fun navigateToHome(context: Context){
     val intent = Intent(context, MainActivity::class.java)
     intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
     context.startActivity(intent)
     (context as Activity).finish()
-}
-private fun signInWithGoogle(auth: FirebaseAuth, context: Context) {
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(context.getString(R.string.default_web_client_id))
-        .requestEmail()
-        .build()
-
-    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-    val signInIntent = googleSignInClient.signInIntent
-    (context as Activity).startActivityForResult(signInIntent, 9001)
 }
