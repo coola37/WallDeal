@@ -16,13 +16,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -43,6 +46,7 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var buttonEnabled by remember { mutableStateOf<Boolean>(false) }
+    var loading by remember { mutableStateOf<Boolean>(false) }
     var wallpaperUrl by remember { mutableStateOf<String>("") }
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -104,19 +108,26 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
             }
 
             TextButton(onClick = {
+                loading = true
                 var wallpaperId = UUID.randomUUID().toString()
                 CoroutineScope(Dispatchers.Main).launch {
-                    uploadImageToFirebaseStorage(selectedImageUri!!, storage, wallpaperId).also { downloadUrl ->
-
+                    uploadImageToFirebaseStorage(selectedImageUri!!, storage, wallpaperId).also {
+                        loading = false
                     }
-                    Log.e("url", wallpaperUrl)
                     navController.navigate("${Screen.PushWallpaperScreen.route}/${wallpaperId}")
                 }},
                 enabled = buttonEnabled) {
                 if(!buttonEnabled){
                     Text(text = "Next", color = Color.Gray, fontSize = 20.sp)
                 }else{
-                    Text(text = "Next", color = Color.White, fontSize = 20.sp)
+                    if(!loading){
+                        Text(text = "Next", color = Color.White, fontSize = 20.sp)
+                    }else{
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                    }
                 }
             }
         }

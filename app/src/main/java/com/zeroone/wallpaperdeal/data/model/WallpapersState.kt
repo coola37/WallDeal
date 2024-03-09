@@ -1,8 +1,8 @@
-package com.zeroone.wallpaperdeal.ui.screens.share
+package com.zeroone.wallpaperdeal.data.model
 
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 
-data class WallpaperState(
+data class WallpapersState(
     val isLoading: Boolean =  false,
     val wallpapers: List<Wallpaper> = emptyList(),
     val error: String = ""

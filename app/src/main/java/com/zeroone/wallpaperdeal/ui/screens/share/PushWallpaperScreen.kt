@@ -1,6 +1,7 @@
 package com.zeroone.wallpaperdeal.ui.screens.share
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -46,6 +51,7 @@ import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.utils.ListCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -55,112 +61,135 @@ fun PushWallpaperScreen(
     storage: FirebaseStorage,
     auth: FirebaseAuth,
     viewModel: ShareViewModel = hiltViewModel()) {
-
+    val context = LocalContext.current
     val wallpaperId = navController.currentBackStackEntry?.arguments?.getString("wallpaperId")
-    var categoryText by remember { mutableStateOf<String>("") }
-    var wallpaperUrl by remember { mutableStateOf<String>("") }
-    Log.e("wallpaperInfo", wallpaperId!!)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        var textDexcription: String by remember { mutableStateOf("") }
-        val categories = ListCategory.list
-        val filePath = storage.reference.child("wallpapers/${wallpaperId}")
-        filePath.downloadUrl.addOnSuccessListener {
-            wallpaperUrl = it.toString()
-        }.addOnFailureListener {
-            Log.e("DownloadUrlError", it.toString())
-        }
-        Row(
+    wallpaperId?.let {
+        var categoryText by remember { mutableStateOf<String>("") }
+        var wallpaperUrl by remember { mutableStateOf<String>("") }
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
+                .fillMaxSize()
+                .background(Color.Black)
         ) {
-            TextButton(onClick = { filePath.delete().addOnSuccessListener {
-                Log.e("Image deleted", "succes")
-                navController.navigate(Screen.HomeScreen.route)
+            var textDexcription: String by remember { mutableStateOf("") }
+            val categories = ListCategory.list
+            val filePath = storage.reference.child("wallpapers/${wallpaperId}")
+            filePath.downloadUrl.addOnSuccessListener {
+                wallpaperUrl = it.toString()
             }.addOnFailureListener {
-                Log.e("Image deleted error:", it.message.toString())
-            }}) {
-                Text(text = "Back", color = Color.LightGray, fontSize = 20.sp)
+                Log.e("DownloadUrlError", it.toString())
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                TextButton(onClick = { filePath.delete().addOnSuccessListener {
+                    Log.e("Image deleted", "succes")
+                    navController.navigate(
+                        Screen.HomeScreen.route,
+                        navOptions { popUpTo(Screen.HomeScreen.route) { inclusive = true } }
+                    )
+                }.addOnFailureListener {
+                    Log.e("Image deleted error:", it.message.toString())
+                }}) {
+                    Text(text = "Back", color = Color.LightGray, fontSize = 20.sp)
+                }
 
-            val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
-                null, null, null )
-            TextButton(onClick = {
-                auth.uid?.let { userId ->
-                    CoroutineScope(Dispatchers.Main).launch {
-                        viewModel.shareWallpaper(wallpaper, userId)
-                    }}
+                val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
+                    null, null, null )
+                TextButton(onClick = {
+                    auth.uid?.let { userId ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            viewModel.shareWallpaper(wallpaper, userId)
+                            if(viewModel.successState.value!!){
+                                navController.navigate(
+                                    Screen.HomeScreen.route,
+                                    navOptions { popUpTo(Screen.HomeScreen.route) { inclusive = true } }
+                                )
+                            }else{
+                                Toast.makeText(context, "Wallpaper has not sent", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                    }
+
+
                 }, modifier = Modifier.padding(start = 240.dp)) {
-                Text(text = "Share", color = Color.LightGray, fontSize = 20.sp)
-            }
-        }
-
-        TextField(
-            value = textDexcription,
-            onValueChange = { textDexcription = it },
-            colors = TextFieldDefaults.colors(Color.LightGray),
-            shape = TextFieldDefaults.shape,
-            modifier = Modifier
-                .background(color = Color.Unspecified)
-                .fillMaxWidth()
-                .focusRequester(FocusRequester())
-                .padding(horizontal = 16.dp),  // Adjust padding as needed
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.ImageSearch,
-                    contentDescription = null
-                )
-            },
-            label = { Text(text = "Write a short description") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Done
-            ),
-            singleLine = false
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
-        ) {
-            Text(text = "The category you chose:", color = Color.LightGray, fontSize = 20.sp)
-            Text(text = categoryText, color = Color.LightGray, fontSize = 20.sp)
-        }
-
-        Text(
-            text = "Select a Category",
-            fontSize = 20.sp,
-            color = Color.LightGray,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp, start = 120.dp)
-        )
-        fun clickItem(index: Int) {
-            categoryText = categories.get(index).categoryName
-        }
-        Column {
-            LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(2),
-                verticalItemSpacing = 4.dp,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                content = {
-                    items(categories.size) { index ->
-                        CategoryItem(
-                            category = categories[index],
-                            onClick = { clickItem(index) }
+                    if(!viewModel.loadingState.value){
+                        Text(text = "Share", color = Color.LightGray, fontSize = 20.sp)
+                    }else{
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(30.dp)
                         )
                     }
+                }
+            }
+
+            TextField(
+                value = textDexcription,
+                onValueChange = { textDexcription = it },
+                colors = TextFieldDefaults.colors(Color.LightGray),
+                shape = TextFieldDefaults.shape,
+                modifier = Modifier
+                    .background(color = Color.Unspecified)
+                    .fillMaxWidth()
+                    .focusRequester(FocusRequester())
+                    .padding(horizontal = 16.dp),  // Adjust padding as needed
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ImageSearch,
+                        contentDescription = null
+                    )
                 },
-                modifier = Modifier.fillMaxSize()
+                label = { Text(text = "Write a short description") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done
+                ),
+                singleLine = false
             )
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
+            ) {
+                Text(text = "The category you chose:", color = Color.LightGray, fontSize = 20.sp)
+                Text(text = categoryText, color = Color.LightGray, fontSize = 20.sp)
+            }
+
+            Text(
+                text = "Select a Category",
+                fontSize = 20.sp,
+                color = Color.LightGray,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp, start = 120.dp)
+            )
+            fun clickItem(index: Int) {
+                categoryText = categories[index].categoryName
+            }
+            Column {
+                LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Fixed(2),
+                    verticalItemSpacing = 4.dp,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    content = {
+                        items(categories.size) { index ->
+                            CategoryItem(
+                                category = categories[index],
+                                onClick = { clickItem(index) }
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+
+            }
+
+
         }
-
-
     }
 }
 @Composable

@@ -17,9 +17,11 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
+import com.zeroone.wallpaperdeal.ui.screens.profile.ProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
+import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
@@ -39,7 +41,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupAuthListener()
-
         setContent {
             WallpaperDealTheme {
                 // A surface container using the 'background' color from the theme
@@ -68,6 +69,20 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             PushWallpaperScreen(navController = navController, storage = storage, auth = auth)
+                        }
+                        composable(Screen.ProfileScreen.route){
+                            ProfileScreen(navController = navController, auth = auth)
+                        }
+                        composable("${ Screen.SelectedCategoryScreen.route}/{category}",
+                            arguments = listOf(
+                                navArgument("category"){
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                }
+                            )
+                            ){
+                            SelectedCategoryScreen(navController = navController)
                         }
                     }
                 }

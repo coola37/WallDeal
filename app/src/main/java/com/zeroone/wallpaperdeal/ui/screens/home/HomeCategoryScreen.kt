@@ -2,6 +2,7 @@ package com.zeroone.wallpaperdeal.ui.screens.home
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.data.model.Category
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.TopAppbarText
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
@@ -83,34 +85,38 @@ fun HomeCategoryScreen(navController: NavController){
                 )
             }
 
-            StaggeredLazyGrid(categoryList = ListCategory.list)
+            StaggeredLazyGrid(categoryList = ListCategory.list, navController)
 
         }
     }
 }
 
 @Composable
-fun CategoryItem(category: Category, modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
+fun WallpaperItem(category: Category, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Box(modifier = modifier.clickable(onClick = onClick)
+       ) {
         AsyncImage(
             model = category.imageUrl,
             contentDescription = null,
             modifier = Modifier
-                .aspectRatio(.6f) // Kare görüntüleri göstermek için en-boy oranını 1:1 olarak ayarlar
+                .aspectRatio(1f) // Kare görüntüleri göstermek için en-boy oranını 1:1 olarak ayarlar
                 .padding(1.dp) // Fotoğraflar arasında boşluk bırakır // Hücrenin tüm alanını kaplar
+
         )
     }
 }
 
 @Composable
-fun StaggeredLazyGrid(categoryList :List<Category>){
+fun StaggeredLazyGrid(categoryList :List<Category>, navController: NavController){
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         verticalItemSpacing = 4.dp,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         content = {
             items(categoryList.size) { index ->
-                CategoryItem(category = categoryList.get(index))
+                WallpaperItem(category = categoryList[index], onClick = {
+                    navController.navigate("${Screen.SelectedCategoryScreen.route}/${categoryList[index].categoryName}")
+                })
             }
         },
         modifier = Modifier.fillMaxSize()

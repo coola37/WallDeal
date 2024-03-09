@@ -1,5 +1,5 @@
 package com.zeroone.wallpaperdeal.utils
 
 object Constant {
-    const val BASE_URL = "http://172.20.48.1:8080"
+    const val BASE_URL = "http://192.168.1.3:8080"
 }

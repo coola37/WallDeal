@@ -6,115 +6,94 @@ object ListCategory {
     val list = listOf(
         Category(
             "Gaming",
-            "https://images.unsplash.com/photo-1616440537338-1d04df3987f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHw5N3x8R2FtaW5nfGVufDB8MXx8fDE2MzM0Njg0Mjc&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fgaming.png?alt=media&token=fc67bad5-79e6-482a-8a25-fba3dc44e662"     ),
         Category(
             "Food",
-            "https://images.unsplash.com/photo-1532635215-25385bb7c5d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwzMDAzfHxGb29kfGVufDB8MXx8fDE2MzE4ODE4ODA&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Ffood.png?alt=media&token=0d954e54-4fb9-422e-9fce-b574c9f16c8a"        ),
         Category(
             "Art",
-            "https://images.unsplash.com/photo-1596644573908-7254b2e81456?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwyNTkxfHxBcnR8ZW58MHwxfHx8MTYzMjA2MzA2OA&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fart.png?alt=media&token=f06c203f-56cd-47e8-a802-477a154bdd8b"        ),
         Category(
             "Cars",
-            "https://images.pexels.com/photos/9584373/pexels-photo-9584373.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fcars.png?alt=media&token=92775af3-14b3-47a4-80e3-7655e307bb1b"
         ),
         Category(
             "Black",
-            "https://images.unsplash.com/photo-1602748152445-e24de6ea295d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwyNzgwfHxCbGFja3xlbnwwfDF8fHwxNjMxODgxMjU0&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fblack.png?alt=media&token=22d601f9-146d-4a2f-957a-4953a7c4a4b4"        ),
         Category(
             "City",
-            "https://images.unsplash.com/photo-1595865766314-f402c265cabb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwzODM4fHxDaXR5fGVufDB8MXx8fDE2MzE4ODE0NjQ&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fcity.png?alt=media&token=c3365b96-7215-4972-9bf9-6b6fc34bd7b0"  ),
         Category(
             "Animals",
-            "https://images.unsplash.com/photo-1619065402614-0e5569e78684?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNDEyfHxBbmltYWxzfGVufDB8MXx8fDE2MzE4ODExOTE&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fanimals.png?alt=media&token=f80c1c81-ddc9-4ff3-a639-9099161de126" ),
         Category(
             "Flowers",
-            "https://images.pexels.com/photos/5566973/pexels-photo-5566973.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fflowers.png?alt=media&token=093ee060-4378-431c-87b5-c7679c97fba4"
         ),
         Category(
             "Fantasy",
-            "https://images.unsplash.com/photo-1572883454114-1cf0031ede2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNjE5fHxGYW50YXN5fGVufDB8MXx8fDE2MzE4ODE1MDk&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2FFantasy.png?alt=media&token=f3317593-de9c-4ca6-bf4b-54f46b1fd46e"),
         Category(
             "Love",
-            "https://images.pexels.com/photos/916361/pexels-photo-916361.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Flove.png?alt=media&token=a840f726-693e-4eb0-ab12-1b35c22c87c9"
         ),
         Category(
             "3D",
-            "https://images.unsplash.com/photo-1618151864004-0992c44d411f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHw1MjV8fDNEfGVufDB8MXx8fDE2MzE4ODExNTg&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2F3d.png?alt=media&token=58324806-7bfc-43c2-abab-c70f8997d18c"),
         Category(
             "Abstract",
-            "https://images.pexels.com/photos/921289/pexels-photo-921289.png?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2FAbstract.png?alt=media&token=9cfeabe8-ae19-4eb2-9e6b-46e137ea5a13"
         ),
         Category(
             "Holidays",
-            "https://images.unsplash.com/photo-1541953747-6bead12436c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxMzV8fEhvbGlkYXlzfGVufDB8MXx8fDE2MzE2NDExMjY&ixlib=rb-1.2.1&q=80&w=400"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fholidays.png?alt=media&token=60ae290c-636b-47fd-a9ba-cda33328f27b"
         ),
         Category(
             "Minimalism",
-            "https://images.unsplash.com/photo-1555587441-d6327df2b932?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHw1MzV8fE1pbmltYWxpc218ZW58MHwxfHx8MTYzMTg4MjAyNA&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fminimalism.png?alt=media&token=286c8335-4412-4a40-89db-1e82c21f3f9f"),
         Category(
             "Motorcycles",
-            "https://images.unsplash.com/photo-1619262290574-914dc1158620?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNjV8fE1vdG9yY3ljbGVzfGVufDB8MXx8fDE2MzE2NDEyMjc&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fmotorcycles.png?alt=media&token=2945cb11-5544-47e2-a0f3-758f1ec2b273"),
         Category(
             "Music",
-            "https://images.pexels.com/photos/6804590/pexels-photo-6804590.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fmusic.png?alt=media&token=b971dba3-84c3-4f05-8820-9f3e685795de"
         ),
         Category(
             "Nature",
-            "https://images.unsplash.com/photo-1517079810336-d39e72287591?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxMDQwfHxOYXR1cmV8ZW58MHwxfHx8MTYzMzgwMTYwNA&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2FNature.png?alt=media&token=5e48f4a8-5581-4e04-969b-0765341edcb7"),
         Category(
             "Smiles",
-            "https://images.unsplash.com/photo-1566865850503-e2ee946f808b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNHx8U21pbGVzfGVufDB8MXx8fDE2MzMyNjQzMDE&ixlib=rb-1.2.1&q=80&w=1080"
-        ),
+           "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fsmiles.png?alt=media&token=fced15b1-3a29-4d99-90a4-1cd5823bd18e"),
         Category(
             "Space",
-            "https://images.unsplash.com/photo-1574545190184-d67b04202272?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNTc3fHxTcGFjZXxlbnwwfDF8fHwxNjMxODgyMTgx&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fspace.png?alt=media&token=f4b49239-23fb-4801-85dd-52b3541d1a37"),
         Category(
             "Sports",
-            "https://images.pexels.com/photos/5384586/pexels-photo-5384586.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fsports.png?alt=media&token=44801700-8ab8-40e7-a300-66f6aab60e04"
         ),
         Category(
             "Technology",
-            "https://images.unsplash.com/photo-1570340810586-1340a778670e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHw5NDJ8fFRlY2hub2xvZ3l8ZW58MHwxfHx8MTYzMzMwNTM2MA&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Ftechnology.png?alt=media&token=1e787a8f-1a9c-4db8-8423-6e713dedb82c"),
         Category(
             "Vector",
-            "https://images.unsplash.com/photo-1593519270884-779e9215de01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNTV8fFZlY3RvcnxlbnwwfDF8fHwxNjMxNjQxMzcz&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fvector.png?alt=media&token=743e86e7-8b3b-4ced-9867-fb5c5fd4283c"),
         Category(
             "Words",
-            "https://images.unsplash.com/photo-1569229418947-25d933730929?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHw2OXx8V29yZHN8ZW58MHwxfHx8MTYzMTY0MTM4Nw&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2FWords.png?alt=media&token=3e949053-89a1-4b98-ad6d-d368d0dc3b73"),
         Category(
             "Brands",
-            "https://images.unsplash.com/photo-1594913365731-1d2af6286c12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxODV8fEJyYW5kc3xlbnwwfDF8fHwxNjMxNjQxNDEz&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fbrands.png?alt=media&token=a12ee052-1f59-4dd7-bcaa-a8498e6c193c"),
         Category(
             "Cartoons",
-            "https://images.unsplash.com/photo-1630887961979-f941d415a2cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxMTN8fENhcnRvb25zfGVufDB8MXx8fDE2MzE2NDE0MzE&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fcartoons.png?alt=media&token=349956e8-046c-4faa-b940-1b0d21a08063"),
         Category(
             "Street",
-            "https://images.unsplash.com/photo-1594551313938-12619ad56149?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNTN8fFN0cmVldHxlbnwwfDF8fHwxNjMxNjQxNTgw&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fstreet.png?alt=media&token=202ad998-cf7e-45c4-872e-0384f06ca112"),
         Category(
             "chill",
-            "https://images.unsplash.com/photo-1628082878684-1b66400cdf85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxOTV8fGNoaWxsfGVufDB8MXx8fDE2MzE2NDE3NDQ&ixlib=rb-1.2.1&q=80&w=400"
-        ),
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fchill.png?alt=media&token=0e940f53-fdc9-4244-9d3d-e614ad779874"),
         Category(
             "Baby",
-            "https://images.unsplash.com/photo-1522850968212-ab12050c75cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTUzMjl8MHwxfHNlYXJjaHwxNDd8fEJhYnl8ZW58MHwxfHx8MTYzMTY0MTY5NQ&ixlib=rb-1.2.1&q=80&w=400"
-        )
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fbaby.png?alt=media&token=3a302dfa-2e0d-4924-a97c-76efe6070084")
     )
 }
