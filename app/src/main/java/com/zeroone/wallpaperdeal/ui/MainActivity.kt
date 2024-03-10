@@ -24,10 +24,10 @@ import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
+import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -83,6 +83,17 @@ class MainActivity : ComponentActivity() {
                             )
                             ){
                             SelectedCategoryScreen(navController = navController)
+                        }
+                        composable("${ Screen.WallpaperViewScreen.route }/{wallpaperId}",
+                            arguments = listOf(
+                                navArgument("wallpaperId"){
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                }
+                            )
+                        ){
+                            WallpaperViewScreen(navController = navController)
                         }
                     }
                 }

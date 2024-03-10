@@ -66,6 +66,7 @@ fun PushWallpaperScreen(
     wallpaperId?.let {
         var categoryText by remember { mutableStateOf<String>("") }
         var wallpaperUrl by remember { mutableStateOf<String>("") }
+        var gradientUrl by remember { mutableStateOf<String>("") }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,6 +80,12 @@ fun PushWallpaperScreen(
             }.addOnFailureListener {
                 Log.e("DownloadUrlError", it.toString())
             }
+            val gradientRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
+                gradientRef.downloadUrl.addOnSuccessListener {
+                    gradientUrl = it.toString()
+                }.addOnFailureListener {
+                    Log.e("DownloadUrlError", it.toString())
+                }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,7 +104,7 @@ fun PushWallpaperScreen(
                 }
 
                 val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
-                    null, null, null )
+                    gradientUrl, emptyList(), 0 )
                 TextButton(onClick = {
                     auth.uid?.let { userId ->
                         CoroutineScope(Dispatchers.Main).launch {

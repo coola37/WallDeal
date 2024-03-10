@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 
 
@@ -98,10 +99,18 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                 Text( text = "Popular New Wallpapers",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp)
                 )
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
-            WallpaperListVerticalStaggeredGrid(list = state.wallpapers, scrollState = scrollState){
-                isTopAppBarVisible = it
-                isTopAppBarVisible = it
-            }
+            WallpaperListVerticalStaggeredGrid(
+                list = state.wallpapers,
+                scrollState = scrollState,
+                onItemClick = {
+                    navController.navigate("${Screen.WallpaperViewScreen.route}/${it.wallpaperId}")
+                },
+                onTopAppBarVisibilityChanged = {
+                    isTopAppBarVisible = it
+                    isTopAppBarVisible = it
+                }
+
+            )
         }
     }
 }

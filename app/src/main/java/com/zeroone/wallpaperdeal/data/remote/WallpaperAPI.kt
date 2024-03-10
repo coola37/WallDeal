@@ -15,6 +15,9 @@ interface WallpaperAPI {
     @GET("/api/1.0/wallpapers")
     suspend fun getWallpapers() : ResponseWallpaper
 
+    @GET("/api/1.0/wallpapers/get/{wallpaperId}")
+    suspend fun getWallpaperById(@Path("wallpaperId" ) wallpaperId: String) : Wallpaper
+
     @GET("/api/1.0/wallpapers/category/{categoryName}")
     suspend fun getWallpapersByCategory(@Path("categoryName") categoryName: String) : ResponseWallpaper
 

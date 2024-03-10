@@ -23,6 +23,10 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
         return api.getWallpapers()
     }
 
+    override suspend fun getWallpaperById(wallpaperId: String): Wallpaper {
+        return api.getWallpaperById(wallpaperId = wallpaperId)
+    }
+
     override suspend fun getWallpapersByCategory(categoryName: String): ResponseWallpaper {
         return api.getWallpapersByCategory(categoryName = categoryName)
     }

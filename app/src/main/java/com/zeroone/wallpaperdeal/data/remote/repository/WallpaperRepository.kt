@@ -11,6 +11,8 @@ interface WallpaperRepository {
 
     suspend fun getWallpapers() : ResponseWallpaper
 
+    suspend fun getWallpaperById(@Path("wallpaperId") wallpaperId: String) : Wallpaper
+
     suspend fun getWallpapersByCategory(@Path("categoryName") categoryName: String) : ResponseWallpaper
 
     suspend fun getWallpapersByOwner(@Path("ownerId") ownerId: String) : ResponseWallpaper

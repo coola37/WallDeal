@@ -36,7 +36,7 @@ class ShareViewModel @Inject constructor(
                 user,
                 wallpaper.imageUrl,
                 wallpaper.category,
-                null,
+                wallpaper.gradiantUrl,
                 emptyList(),
                 0
             )

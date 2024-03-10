@@ -31,8 +31,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.WallpaperItemForVerticalStaggeredGrid
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
-import com.zeroone.wallpaperdeal.utils.BlurHashDecoder
 
 
 @Composable
@@ -104,7 +104,11 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     content = {
                         items(state.wallpapers.size){
-                            WallpaperItemForVerticalStaggeredGrid(wallpaper = state.wallpapers[it])
+                            WallpaperItemForVerticalStaggeredGrid(
+                                wallpaper = state.wallpapers[it],
+                                onClick = {
+                                    navController.navigate("${Screen.WallpaperViewScreen.route}/${state.wallpapers[it].wallpaperId}")
+                                })
                         }
                     },
                     modifier = Modifier.fillMaxSize()

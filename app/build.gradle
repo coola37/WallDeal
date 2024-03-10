@@ -22,6 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {
@@ -52,6 +55,7 @@ android {
 
 dependencies {
 
+    implementation 'androidx.palette:palette-ktx:1.0.0'
     ext {
         compose_version = '1.1.0-beta03'
     }
@@ -110,9 +114,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation("com.google.firebase:firebase-auth")
     implementation 'com.google.android.gms:play-services-auth:21.0.0'
-
-    //eventbus
-    implementation"org.greenrobot:eventbus:3.3.1"
-
 
 }

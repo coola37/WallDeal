@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 
 @Composable
@@ -77,6 +78,9 @@ fun SelectedCategoryScreen(
                 WallpaperListVerticalStaggeredGrid(
                     list = wallpaperList ,
                     scrollState = scrollState,
+                    onItemClick = {
+                        navController.navigate("${Screen.WallpaperViewScreen.route}/${it.wallpaperId}")
+                    },
                     onTopAppBarVisibilityChanged = {
                         isTopAppBarVisible = it
                         isTopAppBarVisible = it

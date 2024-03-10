@@ -6,7 +6,7 @@ data class Wallpaper(
     val owner: User?,
     val imageUrl: String,
     val category: String,
-    val blurHash: String?,
+    val gradiantUrl: String?,
     val likedUsers: List<String>?,
     val likeCount: Int?
 )

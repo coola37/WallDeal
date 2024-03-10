@@ -183,7 +183,7 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                                 loading = false
                                 Log.d("UserAuth:", "succes")
                                 auth.currentUser.let{
-                                    var user = User(auth.currentUser?.uid.toString(), textEmail, textUsername, null)
+                                    var user = User(auth.currentUser?.uid.toString(), textEmail, textUsername, "", "")
                                     CoroutineScope(Dispatchers.IO).launch{
                                         viewModel.saveUserToDb(user)
                                     }
