@@ -48,7 +48,7 @@ fun ProfileScreen(
     Scaffold(
         backgroundColor= Color.Black,
         bottomBar = {
-            BottomNavigationBar(4, null)
+            BottomNavigationBar(4, navController)
         }
     ) {innerPadding ->
         Column(modifier = Modifier
@@ -79,7 +79,7 @@ fun ProfileScreen(
                     }
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { auth.signOut() },
                     modifier = Modifier.padding(start = 48.dp)
                 ) {
                     Image(painter = painterResource(id = R.drawable.ic_setting), contentDescription =null )

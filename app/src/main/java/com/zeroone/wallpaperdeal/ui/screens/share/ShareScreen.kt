@@ -129,7 +129,7 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
                 CoroutineScope(Dispatchers.Main).launch {
                     uploadImageToFirebaseStorage(blurImage!!, selectedImageUri!!, storage, wallpaperId)
 
-                    val bitmapRef = storage.reference.child("blurWallpapers/${wallpaperId}")
+                    val bitmapRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
                     val byteArray = bitmapToByteArray(blurImage!!)
                     bitmapRef.putBytes(byteArray)
                         .addOnSuccessListener {

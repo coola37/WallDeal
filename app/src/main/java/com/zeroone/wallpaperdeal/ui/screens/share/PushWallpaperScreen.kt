@@ -80,7 +80,7 @@ fun PushWallpaperScreen(
             }.addOnFailureListener {
                 Log.e("DownloadUrlError", it.toString())
             }
-            val gradientRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
+            var gradientRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
                 gradientRef.downloadUrl.addOnSuccessListener {
                     gradientUrl = it.toString()
                 }.addOnFailureListener {

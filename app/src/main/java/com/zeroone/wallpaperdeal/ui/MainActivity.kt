@@ -1,6 +1,9 @@
 package com.zeroone.wallpaperdeal.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.ui.screens.profile.ProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
@@ -26,18 +32,23 @@ import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
 import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
+import com.zeroone.wallpaperdeal.utils.setWallpaper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), ScreenCallback {
+    companion object {
+        const val REQUEST_SET_WALLPAPER_PERMISSION = 1000
+    }
     @Inject
     lateinit var auth: FirebaseAuth
     private lateinit var authListener: FirebaseAuth.AuthStateListener
     @Inject
     lateinit var storage: FirebaseStorage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupAuthListener()
@@ -93,7 +104,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         ){
-                            WallpaperViewScreen(navController = navController)
+                            WallpaperViewScreen(navController = navController, callback = this@MainActivity)
                         }
                     }
                 }
@@ -126,6 +137,18 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onSetWallpaperClick(bitmap: Bitmap) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SET_WALLPAPER) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.SET_WALLPAPER),
+                REQUEST_SET_WALLPAPER_PERMISSION
+            )
+        } else {
+            setWallpaper(this, bitmap)
         }
     }
 }
