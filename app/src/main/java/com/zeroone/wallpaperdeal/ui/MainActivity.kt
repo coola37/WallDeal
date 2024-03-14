@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                                 }
                             )
                         ){
-                            WallpaperViewScreen(navController = navController, callback = this@MainActivity)
+                            WallpaperViewScreen(navController = navController, callback = this@MainActivity, auth = auth)
                         }
                     }
                 }

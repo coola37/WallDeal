@@ -42,7 +42,7 @@ import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 
 @Composable
-fun TopAppbarText(navController: NavController){
+fun TopAppbarText(navController: NavController, text1: String, text2: String){
     Row(modifier = Modifier
         .padding(top = 0.dp)
         .fillMaxWidth()
@@ -54,7 +54,7 @@ fun TopAppbarText(navController: NavController){
             Log.d("HomeScreenControl", "Now HomeScreen")
         }
         }) {
-            Text(text = "Home", color = Color.White, fontSize = 16.sp,
+            Text(text = text1, color = Color.White, fontSize = 16.sp,
                 modifier = Modifier.padding(start = 85.dp))
         }
         TextButton(onClick = {if(currentDestination != Screen.HomeCategoryScreen.route){
@@ -62,7 +62,7 @@ fun TopAppbarText(navController: NavController){
         }else{
             Log.d("HomeCategoryScreenControl", "Now HomeCategoryScreen")
         }}) {
-            Text(text = "Categories", color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(start = 50.dp))
+            Text(text = text2, color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(start = 50.dp))
         }
     }
 }
@@ -70,7 +70,7 @@ fun TopAppbarText(navController: NavController){
 
 @Composable
 fun BottomNavigationBar(selectedItem: Int, navController: NavController?) {
-    var selectedItem by remember { mutableStateOf(selectedItem) }
+    val selectedItem by remember { mutableStateOf(selectedItem) }
 
     BottomAppBar(backgroundColor = Color.Black) {
         BottomNavigation {

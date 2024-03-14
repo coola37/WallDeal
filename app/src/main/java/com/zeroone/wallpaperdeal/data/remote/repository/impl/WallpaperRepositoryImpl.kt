@@ -1,6 +1,7 @@
 package com.zeroone.wallpaperdeal.data.remote.repository.impl
 
 import android.util.Log
+import com.zeroone.wallpaperdeal.data.model.LikeRequest
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.data.remote.WallpaperAPI
 import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
@@ -33,5 +34,13 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
 
     override suspend fun getWallpapersByOwner(ownerId: String): ResponseWallpaper {
         return api.getWallpapersByOwner(ownerId = ownerId)
+    }
+
+    override suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest) {
+        api.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+    }
+
+    override suspend fun checkLike(wallpaperId: String, currentUserId: String): Boolean {
+        return api.checkLike(wallpaperId = wallpaperId, currentUserId = currentUserId)
     }
 }

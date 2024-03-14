@@ -54,11 +54,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
+import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
+import com.zeroone.wallpaperdeal.data.model.LikeRequest
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.utils.downloadWallpaper
 import com.zeroone.wallpaperdeal.utils.setWallpaper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -68,20 +72,26 @@ import java.io.IOException
 fun WallpaperViewScreen(
     navController: NavController,
     viewModel: WallpaperViewViewModel = hiltViewModel(),
-    callback: ScreenCallback
+    callback: ScreenCallback,
+    auth: FirebaseAuth
 ) {
     val context = LocalContext.current
     val wallpaperId = navController.currentBackStackEntry?.arguments?.getString("wallpaperId")
     var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     wallpaperId?.let {
         var wallpaper by remember { mutableStateOf<Wallpaper?>(null) }
+        var checkLike by remember { mutableStateOf<Boolean>(false) }
+        var userId by remember { mutableStateOf<String>("") }
         LaunchedEffect(key1 = wallpaperId){
             viewModel.fetchWallpaper(wallpaperId = wallpaperId)
-
+            auth.uid?.let{
+                userId = it
+                viewModel.checkLike(wallpaperId = wallpaperId, userId = it)
+            }
         }
-        var checkLike by remember { mutableStateOf<Boolean>(false) }
         var expanded by remember { mutableStateOf<Boolean>(false) }
 
+        checkLike = viewModel.checkLikeState.value
         wallpaper = viewModel.wallpaperState.value
 
         wallpaper?.let {wallpaper->
@@ -172,12 +182,17 @@ fun WallpaperViewScreen(
                     ) {
                         DropdownMenuItem(onClick = {
                             expanded = false
-                            // Handle option 1 click
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val likeRequest = LikeRequest(userId)
+                                viewModel.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+                                //viewModel.checkLike(wallpaperId = wallpaperId, userId = userId )
+                            }
                         }) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
+                                Log.e("checkLike Control", checkLike.toString())
                                 if(!checkLike){
                                     Text("Like", fontSize = 18.sp)
                                 }else{

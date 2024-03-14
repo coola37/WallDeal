@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zeroone.wallpaperdeal.data.model.LikeRequest
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.data.response.ResponseWallpaper
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -23,6 +25,7 @@ class WallpaperViewViewModel @Inject constructor(
 ): ViewModel(){
 
     val wallpaperState : MutableState<Wallpaper?> = mutableStateOf(null)
+    val checkLikeState : MutableState<Boolean> = mutableStateOf(false)
     private var job: Job? = null
 
     fun fetchWallpaper(wallpaperId: String){
@@ -40,4 +43,28 @@ class WallpaperViewViewModel @Inject constructor(
 
         }
    }
+
+    fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest){
+        try {
+            viewModelScope.launch {
+                wallpaperRepository.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+                Log.e("likeOrDislike:", "succes")
+                checkLikeState.value = !checkLikeState.value
+                fetchWallpaper(wallpaperId = wallpaperId)
+            }
+        }catch (ex: IOException){
+            Log.e("likeOrDislike Error:", ex.message.toString())
+        }
+    }
+
+    fun checkLike(wallpaperId: String, userId: String){
+        try {
+            viewModelScope.launch{
+                checkLikeState.value = wallpaperRepository.checkLike(wallpaperId = wallpaperId, currentUserId = userId)
+                Log.e("checkLike ViewModel:", checkLikeState.value.toString())
+            }
+        }catch (ex: IOException){
+            Log.e("CheckLike Error:", ex.message.toString())
+        }
+    }
 }

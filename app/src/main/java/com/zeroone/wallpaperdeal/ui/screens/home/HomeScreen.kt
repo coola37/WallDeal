@@ -73,7 +73,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TopAppbarText(navController = navController)
+            TopAppbarText(navController = navController, text1 = "Home", text2 = "Categories")
             Canvas(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 70.dp)) {

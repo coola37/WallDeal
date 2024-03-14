@@ -70,7 +70,7 @@ fun HomeCategoryScreen(navController: NavController){
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TopAppbarText(navController)
+            TopAppbarText(navController = navController, text1 =  "Home", text2 = "Categories")
             Canvas(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 200.dp)) {

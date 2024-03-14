@@ -1,11 +1,13 @@
 package com.zeroone.wallpaperdeal.data.remote
 
+import com.zeroone.wallpaperdeal.data.model.LikeRequest
 import com.zeroone.wallpaperdeal.data.model.User
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.data.response.ResponseWallpaper
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface WallpaperAPI {
@@ -23,4 +25,10 @@ interface WallpaperAPI {
 
     @GET("/api/1.0/wallpapers/owner/{ownerId}")
     suspend fun getWallpapersByOwner(@Path("ownerId") ownerId: String) : ResponseWallpaper
+
+    @PUT("/api/1.0/wallpapers/like/{wallpaperId}")
+    suspend fun likeOrDislike(@Path("wallpaperId") wallpaperId: String, @Body likeRequest: LikeRequest)
+
+    @GET("/api/1.0/wallpapers/like/control/{wallpaperId}/{currentUserId}")
+    suspend fun checkLike(@Path("wallpaperId") wallpaperId: String, @Path("currentUserId") currentUserId: String) : Boolean
 }
