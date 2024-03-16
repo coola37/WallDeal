@@ -1,6 +1,6 @@
-package com.zeroone.wallpaperdeal.data.model
+package com.zeroone.wallpaperdeal.model
 
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.Wallpaper
 
 data class WallpapersState(
     val isLoading: Boolean =  false,

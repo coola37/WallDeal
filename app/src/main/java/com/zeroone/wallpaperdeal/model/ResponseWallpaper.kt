@@ -1,7 +1,7 @@
-package com.zeroone.wallpaperdeal.data.response
+package com.zeroone.wallpaperdeal.model
 
 import com.google.gson.annotations.SerializedName
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.Wallpaper
 
 data class ResponseWallpaper(
     val response : String,

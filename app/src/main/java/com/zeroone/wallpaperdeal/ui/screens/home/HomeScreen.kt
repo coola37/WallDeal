@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
@@ -44,6 +44,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
     var isTopAppBarVisible by remember { mutableStateOf(true) }
     var isTop10ListVisible by remember { mutableStateOf(true) }
     val state = viewModel.state.value
+    //Log.e("asdasdasdasd", state.wallpapers.isNullOrEmpty().toString())
 
     Scaffold(
         backgroundColor = Color.Black,
@@ -91,8 +92,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
            /* if (isTop10ListVisible) {
                 Text(text = "Populer Collection Top 10",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp))
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}*/
-
-            val listItem = R.drawable.wallpaper_item
 
             //Top10WallpaperList(photos = null, modifier = Modifier, isVisible = isTop10ListVisible)
             if (isTop10ListVisible) {

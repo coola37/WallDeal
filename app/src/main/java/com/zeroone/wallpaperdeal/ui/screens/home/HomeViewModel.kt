@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
-import com.zeroone.wallpaperdeal.data.model.WallpapersState
-import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
+import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.WallpapersState
+import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -35,7 +35,6 @@ class HomeViewModel @Inject constructor(
             when(it){
                 is Resource.Success -> {
                     state.value = WallpapersState(wallpapers = it.data ?: emptyList())
-
                 }
 
                 is Resource.Error -> {

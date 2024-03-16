@@ -45,8 +45,8 @@ import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import com.zeroone.wallpaperdeal.data.model.Category
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.Category
+import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.utils.ListCategory
 import kotlinx.coroutines.CoroutineScope

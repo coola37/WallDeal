@@ -56,8 +56,8 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.data.model.LikeRequest
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.utils.downloadWallpaper
 import com.zeroone.wallpaperdeal.utils.setWallpaper

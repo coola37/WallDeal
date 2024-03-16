@@ -48,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.model.User
 import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import kotlinx.coroutines.CoroutineScope

@@ -1,9 +1,8 @@
-package com.zeroone.wallpaperdeal.data.remote
+package com.zeroone.wallpaperdeal.api
 
-import com.zeroone.wallpaperdeal.data.model.LikeRequest
-import com.zeroone.wallpaperdeal.data.model.User
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
-import com.zeroone.wallpaperdeal.data.response.ResponseWallpaper
+import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.ResponseWallpaper
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

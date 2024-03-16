@@ -1,15 +1,16 @@
-package com.zeroone.wallpaperdeal.data.remote.repository.impl
+package com.zeroone.wallpaperdeal.repository.impl
 
 import android.util.Log
-import com.zeroone.wallpaperdeal.data.model.LikeRequest
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
-import com.zeroone.wallpaperdeal.data.remote.WallpaperAPI
-import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
-import com.zeroone.wallpaperdeal.data.response.ResponseWallpaper
+import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.api.WallpaperAPI
+import com.zeroone.wallpaperdeal.repository.WallpaperRepository
+import com.zeroone.wallpaperdeal.model.ResponseWallpaper
 import java.io.EOFException
 import javax.inject.Inject
 
-class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI) : WallpaperRepository {
+class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI) :
+    WallpaperRepository {
     override suspend fun saveWallpaper(wallpaper: Wallpaper): String {
         try{
             api.saveWallpaper(wallpaper = wallpaper)

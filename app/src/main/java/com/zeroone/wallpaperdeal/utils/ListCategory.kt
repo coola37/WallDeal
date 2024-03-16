@@ -1,6 +1,6 @@
 package com.zeroone.wallpaperdeal.utils
 
-import com.zeroone.wallpaperdeal.data.model.Category
+import com.zeroone.wallpaperdeal.model.Category
 
 object ListCategory {
     val list = listOf(

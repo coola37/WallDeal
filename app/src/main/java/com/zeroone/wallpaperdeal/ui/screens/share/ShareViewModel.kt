@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
-import com.zeroone.wallpaperdeal.data.model.WallpapersState
-import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
-import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
+import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.WallpapersState
+import com.zeroone.wallpaperdeal.repository.UserRepository
+import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import javax.inject.Inject

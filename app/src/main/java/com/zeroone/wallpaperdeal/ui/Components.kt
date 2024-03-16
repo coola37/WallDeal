@@ -37,7 +37,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
 
@@ -76,7 +76,7 @@ fun BottomNavigationBar(selectedItem: Int, navController: NavController?) {
         BottomNavigation {
             val items = listOf(
                 BottomNavItem("Home", R.drawable.ic_home, 0, Screen.HomeScreen.route),
-                BottomNavItem("Search", R.drawable.ic_search, 1, Screen.HomeScreen.route),
+                BottomNavItem("Search", R.drawable.ic_search, 1, Screen.SearchScreen.route),
                 BottomNavItem("Share", R.drawable.ic_share, 2, Screen.ShareScreen.route),
                 BottomNavItem("Group", R.drawable.ic_group, 3, Screen.HomeScreen.route),
                 BottomNavItem("Profile", R.drawable.ic_profile, 4, Screen.ProfileScreen.route)

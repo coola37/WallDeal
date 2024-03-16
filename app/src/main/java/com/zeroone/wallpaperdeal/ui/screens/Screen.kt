@@ -10,4 +10,5 @@ sealed class Screen (val route: String){
     object ProfileScreen: Screen("profile_screen")
     object SelectedCategoryScreen: Screen("selected_category_screen")
     object WallpaperViewScreen: Screen("wallpaper_view_screen")
+    object SearchScreen: Screen("search_screen")
 }

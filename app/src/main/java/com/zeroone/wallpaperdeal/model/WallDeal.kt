@@ -1,4 +1,4 @@
-package com.zeroone.wallpaperdeal.data.model
+package com.zeroone.wallpaperdeal.model
 
 data class WallDeal(
     val groupId: String,

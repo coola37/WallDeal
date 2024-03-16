@@ -1,7 +1,6 @@
-package com.zeroone.wallpaperdeal.data.remote
+package com.zeroone.wallpaperdeal.api
 
-import com.zeroone.wallpaperdeal.data.model.User
-import retrofit2.Call
+import com.zeroone.wallpaperdeal.model.User
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -13,4 +12,7 @@ interface UserAPI {
 
     @GET("/api/1.0/users/{userId}")
     suspend fun getUser(@Path("userId") userId: String) : User
+
+    @GET("/api/1.0/users")
+    suspend fun getUsers() : List<User>
 }

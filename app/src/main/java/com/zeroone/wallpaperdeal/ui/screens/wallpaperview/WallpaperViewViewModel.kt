@@ -5,10 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zeroone.wallpaperdeal.data.model.LikeRequest
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
-import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
-import com.zeroone.wallpaperdeal.data.response.ResponseWallpaper
+import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow

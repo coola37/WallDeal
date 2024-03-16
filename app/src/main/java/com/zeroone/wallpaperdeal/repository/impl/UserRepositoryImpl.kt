@@ -1,13 +1,14 @@
-package com.zeroone.wallpaperdeal.data.remote.repository.impl
+package com.zeroone.wallpaperdeal.repository.impl
 
 import android.util.Log
-import com.zeroone.wallpaperdeal.data.model.User
-import com.zeroone.wallpaperdeal.data.remote.UserAPI
-import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
+import com.zeroone.wallpaperdeal.model.User
+import com.zeroone.wallpaperdeal.api.UserAPI
+import com.zeroone.wallpaperdeal.model.ResponseWallpaper
+import com.zeroone.wallpaperdeal.repository.UserRepository
 import java.io.EOFException
 import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepository{
+class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepository {
     override suspend fun saveUser(user: User): String {
         try{
             api.saveUser(user = user)
@@ -25,5 +26,9 @@ class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepo
             Log.e("getUserError:", e.message.toString())
             return null
         }
+    }
+
+    override suspend fun getUsers(): List<User> {
+        return api.getUsers()
     }
 }
