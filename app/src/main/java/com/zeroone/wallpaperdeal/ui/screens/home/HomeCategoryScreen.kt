@@ -34,7 +34,7 @@ import com.zeroone.wallpaperdeal.model.Category
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
+import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
 
@@ -79,7 +79,7 @@ fun HomeCategoryScreen(navController: NavController){
                 drawLine(
                     start = start,
                     end = end,
-                    color = ThemeGray,
+                    color = YellowWallDeal,
                     strokeWidth = 5f,
                     cap = StrokeCap.Round
                 )

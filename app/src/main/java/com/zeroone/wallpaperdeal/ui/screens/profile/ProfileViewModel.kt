@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.zeroone.wallpaperdeal.model.User
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.model.WallpapersState
+import com.zeroone.wallpaperdeal.repository.UserRepository
 import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,47 +23,33 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val wallpaperRepository: WallpaperRepository
+    private val wallpaperRepository: WallpaperRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
-    var state = mutableStateOf<WallpapersState>(WallpapersState())
+    data class ItemsState(
+        val wallpapers: List<Wallpaper> = emptyList(),
+        val user: User? = null
+    )
 
-    private var job : Job? = null
+    var stateItems = mutableStateOf<ItemsState>(ItemsState())
+    private var job: Job? = null
 
-    init {
-        getWallpapersByUserId(auth.uid!!)
-    }
-    fun getWallpapersByUserId(userId: String){
+    fun fetchItems(userId: String) {
         job?.cancel()
-        job = getWallpaper(userId = userId).onEach {
-            when(it){
-                is Resource.Success -> {
-                    state.value = WallpapersState(wallpapers = it.data ?: emptyList())
-
-                }
-
-                is Resource.Error -> {
-                    state.value = WallpapersState(error = it.message ?: "Error!")
-                }
-
-                is Resource.Loading -> {
-                    state.value = WallpapersState(isLoading = true)
-                }
-            }
+        job = getItems(userId).onEach {
+            stateItems.value = it
         }.launchIn(viewModelScope)
     }
 
-    private fun getWallpaper(userId: String) : Flow<Resource<List<Wallpaper>>> = flow {
+    private fun getItems(userId: String): Flow<ItemsState> = flow {
         try {
-            emit(Resource.Loading())
-            val wallpaperList = wallpaperRepository.getWallpapersByOwner(userId)
-            //Log.e("ProfileViewModel", wallpaperList.payload[1].wallpaperId)
-            if(wallpaperList.response.equals("Succes")){
-                emit(Resource.Success(wallpaperList.payload))
-            }else{
-                emit(Resource.Error(message = "Error"))
-            }
-        }catch (e: IOError){
-            emit(Resource.Error(message = "No internet connection!"))
+            val wallpapers = wallpaperRepository.getWallpapers()
+            val user = userRepository.getUser(userId)
+
+            emit(ItemsState(wallpapers = wallpapers.payload, user = user))
+        } catch (e: IOError) {
+            Log.e("SearchViewModel getItems error:", e.message.toString())
         }
     }
+
 }

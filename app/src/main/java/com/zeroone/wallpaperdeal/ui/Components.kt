@@ -1,8 +1,6 @@
 package com.zeroone.wallpaperdeal.ui
 
-import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +34,7 @@ import coil.compose.AsyncImage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
+import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 
 @Composable
 fun TopAppbarText(navController: NavController, text1: String, text2: String){
@@ -92,8 +87,8 @@ fun BottomNavigationBar(selectedItem: Int, navController: NavController?) {
                             contentDescription = item.label
                         )
                     },
-                    selectedContentColor = ThemeGray, // Seçili öğenin rengini buradan ayarlayabilirsiniz
-                    unselectedContentColor = Color.White, // Seçilmemiş öğelerin rengi
+                    selectedContentColor = Color.White, // Seçili öğenin rengini buradan ayarlayabilirsiniz
+                    unselectedContentColor = Color.Gray, // Seçilmemiş öğelerin rengi
                     modifier = Modifier.background(Color.Black),
                 )
             }

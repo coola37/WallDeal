@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zeroone.wallpaperdeal.model.LikeRequest
 import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.repository.UserRepository
 import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -20,11 +21,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WallpaperViewViewModel @Inject constructor(
-    private val wallpaperRepository: WallpaperRepository
+    private val wallpaperRepository: WallpaperRepository,
+    private val userRepository: UserRepository
 ): ViewModel(){
 
     val wallpaperState : MutableState<Wallpaper?> = mutableStateOf(null)
     val checkLikeState : MutableState<Boolean> = mutableStateOf(false)
+    val checkFavoritesState : MutableState<Boolean> = mutableStateOf(false)
     private var job: Job? = null
 
     fun fetchWallpaper(wallpaperId: String){
@@ -39,7 +42,7 @@ class WallpaperViewViewModel @Inject constructor(
             val wallpaper = wallpaperRepository.getWallpaperById(wallpaperId = wallpaperId)
             emit(wallpaper)
         }catch (e: IOException){
-
+            throw e
         }
    }
 
@@ -64,6 +67,29 @@ class WallpaperViewViewModel @Inject constructor(
             }
         }catch (ex: IOException){
             Log.e("CheckLike Error:", ex.message.toString())
+        }
+    }
+
+    fun addOrRemoveFavorites(wallpaperId: String, userId: String){
+        try {
+            viewModelScope.launch {
+                wallpaperRepository.addFavorite(wallpaperId = wallpaperId, userId = userId)
+                checkFavoritesState.value = !checkFavoritesState.value
+            }
+        }catch (ex: IOException){
+            Log.e("addOrRemoveFavorites error:", ex.message.toString())
+        }
+    }
+
+    fun checkFavorites(userId: String, wallpaperId: String){
+        try {
+            viewModelScope.launch {
+                checkFavoritesState.value = userRepository.checkFavorites(userId = userId, wallpaperId = wallpaperId)
+                Log.e("checkFavorites in viewmodel state", userRepository.checkFavorites(userId = userId, wallpaperId = wallpaperId).toString())
+            }
+        }catch (e: RuntimeException){
+            Log.e("checkFavorites in viewmodel", e.message.toString())
+            throw e
         }
     }
 }

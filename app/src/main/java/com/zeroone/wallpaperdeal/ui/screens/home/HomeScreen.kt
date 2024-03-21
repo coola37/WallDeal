@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.getValue
@@ -28,6 +30,7 @@ import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -35,7 +38,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.ThemeGray
+import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 
 
 @Composable
@@ -43,7 +46,9 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
     val scrollState = LazyStaggeredGridState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
     var isTop10ListVisible by remember { mutableStateOf(true) }
+    var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList()) }
     val state = viewModel.state.value
+    wallpapers = state.wallpapers
     //Log.e("asdasdasdasd", state.wallpapers.isNullOrEmpty().toString())
 
     Scaffold(
@@ -83,7 +88,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                 drawLine(
                     start = start,
                     end = end,
-                    color = ThemeGray,
+                    color = YellowWallDeal,
                     strokeWidth = 5f,
                     cap = StrokeCap.Round
                 )
@@ -98,18 +103,29 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                 Text( text = "Popular New Wallpapers",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp)
                 )
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
-            WallpaperListVerticalStaggeredGrid(
-                list = state.wallpapers,
-                scrollState = scrollState,
-                onItemClick = {
-                    navController.navigate("${Screen.WallpaperViewScreen.route}/${it.wallpaperId}")
-                },
-                onTopAppBarVisibilityChanged = {
-                    isTopAppBarVisible = it
-                    isTopAppBarVisible = it
-                }
+            wallpapers?.let{ wallpapers ->
+                WallpaperListVerticalStaggeredGrid(
+                    list = wallpapers,
+                    scrollState = scrollState,
+                    onItemClick = {
+                        navController.navigate("${Screen.WallpaperViewScreen.route}/${it.wallpaperId}")
+                    },
+                    onTopAppBarVisibilityChanged = {
+                        isTopAppBarVisible = it
+                        isTopAppBarVisible = it
+                    }
 
-            )
+                )
+            } ?: run{
+                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp),
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }

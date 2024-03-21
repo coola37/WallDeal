@@ -1,6 +1,7 @@
 package com.zeroone.wallpaperdeal.repository
 
 import com.zeroone.wallpaperdeal.model.User
+import retrofit2.http.Path
 
 
 interface UserRepository {
@@ -8,4 +9,5 @@ interface UserRepository {
     suspend fun getUser(userId: String): User?
 
     suspend fun getUsers(): List<User>
+    suspend fun checkFavorites(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String) : Boolean
 }

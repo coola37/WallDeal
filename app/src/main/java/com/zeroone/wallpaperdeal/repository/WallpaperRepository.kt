@@ -19,7 +19,6 @@ interface WallpaperRepository {
     suspend fun getWallpapersByOwner(@Path("ownerId") ownerId: String) : ResponseWallpaper
 
     suspend fun likeOrDislike(@Path("wallpaperId") wallpaperId: String, @Body likeRequest: LikeRequest)
-
-
+    suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
     suspend fun checkLike(@Path("wallpaperId") wallpaperId: String, @Path("currentUserId") currentUserId: String) : Boolean
 }

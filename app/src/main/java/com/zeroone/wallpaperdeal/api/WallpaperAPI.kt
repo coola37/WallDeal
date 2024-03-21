@@ -30,4 +30,7 @@ interface WallpaperAPI {
 
     @GET("/api/1.0/wallpapers/like/control/{wallpaperId}/{currentUserId}")
     suspend fun checkLike(@Path("wallpaperId") wallpaperId: String, @Path("currentUserId") currentUserId: String) : Boolean
+
+    @PUT("/api/1.0/wallpapers/favorite/{userId}/{wallpaperId}")
+    suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
 }

@@ -15,4 +15,7 @@ interface UserAPI {
 
     @GET("/api/1.0/users")
     suspend fun getUsers() : List<User>
+
+    @GET("/api/1.0/users/check/favorites/{userId}/{wallpaperId}")
+    suspend fun checkFavorites(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String) : Boolean
 }

@@ -24,11 +24,20 @@ class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepo
             return api.getUser(userId = userId)
         }catch (e: RuntimeException) {
             Log.e("getUserError:", e.message.toString())
-            return null
+            throw e
         }
     }
 
     override suspend fun getUsers(): List<User> {
         return api.getUsers()
+    }
+
+    override suspend fun checkFavorites(userId: String, wallpaperId: String): Boolean {
+        try {
+            return api.checkFavorites(userId = userId, wallpaperId = wallpaperId)
+        }catch (e: RuntimeException){
+            Log.e("checkFavorites", e.message.toString())
+            throw e
+        }
     }
 }

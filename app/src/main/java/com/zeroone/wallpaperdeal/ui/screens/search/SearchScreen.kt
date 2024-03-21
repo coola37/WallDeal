@@ -1,6 +1,5 @@
 package com.zeroone.wallpaperdeal.ui.screens.search
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,15 +62,6 @@ fun SearchScreen(
     }
     wallpapers = viewModel.stateItems.value.wallpapers
     users = viewModel.stateItems.value.users
-    /*fun filterList(input: String, list: List<Any>): List<Any> {
-        return list.filter { item ->
-            when (searchMethod) {
-                "wallpapers" -> (item as Wallpaper).description!!.contains(input, ignoreCase = true)
-                "accounts" -> (item as User).username.contains(input, ignoreCase = true)
-                else -> true
-            }
-        }
-    }*/
 
     Scaffold(
         backgroundColor = Color.Black,
@@ -135,23 +125,6 @@ fun SearchScreen(
                     }
                 }
             }
-
-           /* when (searchMethod) {
-                "wallpapers" -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(wallpapers.size) {
-                            WallpaperItemForSearch(wallpaper = wallpapers[it])
-                        }
-                    }
-                }
-                "accounts" -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(users.size) {
-                            UserItemForSearch(user = users[it])
-                        }
-                    }
-                }
-            }*/
         }
     }
 }

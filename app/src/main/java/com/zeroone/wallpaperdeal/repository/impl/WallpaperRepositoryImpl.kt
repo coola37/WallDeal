@@ -8,16 +8,17 @@ import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.model.ResponseWallpaper
 import java.io.EOFException
 import javax.inject.Inject
+import kotlin.RuntimeException
 
 class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI) :
     WallpaperRepository {
     override suspend fun saveWallpaper(wallpaper: Wallpaper): String {
-        try{
+        return try{
             api.saveWallpaper(wallpaper = wallpaper)
-            return "Wallpaper has been saved"
+            "Wallpaper has been saved"
         }catch (e: EOFException){
             Log.e("SaveWallpaperError:", e.message.toString())
-            return "Failed"
+            "Failed"
         }
     }
 
@@ -41,7 +42,13 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
         api.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
     }
 
+    override suspend fun addFavorite(userId: String, wallpaperId: String) {
+        api.addFavorite(userId = userId, wallpaperId = wallpaperId)
+    }
+
+
     override suspend fun checkLike(wallpaperId: String, currentUserId: String): Boolean {
         return api.checkLike(wallpaperId = wallpaperId, currentUserId = currentUserId)
     }
+
 }
