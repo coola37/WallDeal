@@ -132,7 +132,7 @@ fun ProfileScreen(
                             Row {
                                 currentUser.userDetail?.followers?.let {
                                     Text(
-                                        text = "${it.size.plus(1)}",
+                                        text = "${it.size}",
                                         fontSize = 24.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier
@@ -149,7 +149,7 @@ fun ProfileScreen(
                                 }
                                 currentUser.userDetail?.followed?.let {
                                     Text(
-                                        text = "${it.size.plus(1)}",
+                                        text = "${it.size}",
                                         fontSize = 24.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier

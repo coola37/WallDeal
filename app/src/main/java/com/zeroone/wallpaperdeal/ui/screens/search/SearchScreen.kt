@@ -121,7 +121,7 @@ fun SearchScreen(
                 items(if (searchMethod == "wallpapers") wallpapers else users) { item ->
                     when (searchMethod) {
                         "wallpapers" -> WallpaperItemForSearch(wallpaper = item as Wallpaper, navController = navController)
-                        "accounts" -> UserItemForSearch(user = item as User)
+                        "accounts" -> UserItemForSearch(user = item as User, navController)
                     }
                 }
             }
@@ -155,21 +155,17 @@ private fun WallpaperItemForSearch(wallpaper: Wallpaper, navController: NavContr
 }
 
 @Composable
-private fun UserItemForSearch(user: User){
+private fun UserItemForSearch(user: User, navController: NavController){
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(bottom = 8.dp, top = 8.dp)) {
-         /*AsyncImage(model = user.profilePhoto, contentDescription = null, modifier = Modifier
+        .padding(bottom = 8.dp, top = 8.dp)
+        .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${user.userId}") }){
+         AsyncImage(model = user.userDetail?.profilePhoto, contentDescription = null, modifier = Modifier
              .width(80.dp)
              .height(60.dp)
              .padding(start = 8.dp)
              .clip(CircleShape)
-         )*/
-        Image(painter = painterResource(id = R.drawable.ic_profile), contentDescription = null, Modifier
-            .width(80.dp)
-            .height(60.dp)
-            .padding(start = 16.dp)
-            .clip(CircleShape))
+         )
         Text(text = user.username, color = Color.White, fontSize = 16.sp,modifier = Modifier
             .padding(top = 16.dp, start = 16.dp)
         )

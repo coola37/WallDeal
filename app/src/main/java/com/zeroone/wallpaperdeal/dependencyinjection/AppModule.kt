@@ -3,10 +3,13 @@ package com.zeroone.wallpaperdeal.dependencyinjection
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.api.UserAPI
+import com.zeroone.wallpaperdeal.api.WallDealAPI
 import com.zeroone.wallpaperdeal.api.WallpaperAPI
 import com.zeroone.wallpaperdeal.repository.UserRepository
+import com.zeroone.wallpaperdeal.repository.WallDealRepository
 import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.repository.impl.UserRepositoryImpl
+import com.zeroone.wallpaperdeal.repository.impl.WallDealRepositoryImpl
 import com.zeroone.wallpaperdeal.repository.impl.WallpaperRepositoryImpl
 import com.zeroone.wallpaperdeal.utils.Constant.BASE_URL
 import dagger.Module
@@ -15,6 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -61,5 +65,21 @@ object AppModule {
     @Singleton
     fun provideWallpaperRepository(api: WallpaperAPI) : WallpaperRepository {
         return WallpaperRepositoryImpl(api = api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWallDealAPI() : WallDealAPI {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WallDealAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWallDealRepository(api: WallDealAPI) : WallDealRepository{
+        return WallDealRepositoryImpl(api = api)
     }
 }

@@ -28,6 +28,7 @@ import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
+import com.zeroone.wallpaperdeal.ui.screens.profile.OtherProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.search.SearchScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
@@ -109,6 +110,17 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                         }
                         composable(Screen.SearchScreen.route){
                             SearchScreen(navController = navController, auth = auth)
+                        }
+                        composable("${Screen.OtherProfileScreen.route}/{userId}",
+                            arguments = listOf(
+                                navArgument("userId"){
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                }
+                            )
+                        ){
+                            OtherProfileScreen(auth = auth, navController = navController )
                         }
                     }
                 }

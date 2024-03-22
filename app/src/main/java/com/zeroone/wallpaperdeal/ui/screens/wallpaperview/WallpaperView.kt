@@ -116,7 +116,7 @@ fun WallpaperViewScreen(
             val keyboardController = LocalSoftwareKeyboardController.current
             val coroutineScope = rememberCoroutineScope()
             Scaffold(backgroundColor = WallpaperViewBackground) {
-                IconButton(onClick = { /*TODO*/ },
+                IconButton(onClick = { navController.navigateUp()},
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                 ) {
                     Image(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
