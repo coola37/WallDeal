@@ -1,6 +1,9 @@
 package com.zeroone.wallpaperdeal.api
 
+import com.zeroone.wallpaperdeal.model.WallDeal
+import com.zeroone.wallpaperdeal.model.WallDealRequest
 import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.WallpaperRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -20,10 +23,18 @@ interface WallDealAPI {
 
     @GET("/api/1.0/walldeal/check-walldeal/{targetUserId}")
     suspend fun checkWalldeal(@Path("targetUserId") targetUserId: String) : Boolean
-
     @GET("/api/1.0/walldeal/check-walldeal-for-between-user-to-user/{currentUserId}/{targetUserId}")
-    suspend fun checkWalldealForBetweenUserToUser(@Path("currentUserId") currentUserId: String, @Path("targetUserId") targetUserId: String) : Boolean
-
+    suspend fun checkWalldealForBetweenUserToUser(@Path("currentUserId") currentUserId: String,
+                                                  @Path("targetUserId") targetUserId: String) : Boolean
     @PUT("/api/1.0/walldeal/send-post/{currentUserId}")
-    suspend fun sendPost(@Path("currentUserId") currentUserId: String, @Body post: Wallpaper)
+    suspend fun sendPost(@Path("currentUserId") currentUserId: String, @Body request: WallpaperRequest)
+    @PUT("/api/1.0/walldeal/cancel-post/{currentUserId}")
+    suspend fun cancelPost(@Path("currentUserId") currentUserId: String, @Body request: WallpaperRequest)
+    @GET("/api/1.0/walldeal/request-notification-check/{userId}}")
+    suspend fun checkWallDealRequests(@Path("userId") userId: String) : Boolean
+    @GET("/api/1.0/walldeal/get-request/{userId}")
+    suspend fun getRequestsByUserId(@Path("userId") userId: String) : List<WallDealRequest>
+
+    @GET("/api/1.0/walldeal/get-walldeal/{userId}")
+    suspend fun getWallDeal(@Path("userId") userId: String) : WallDeal
 }

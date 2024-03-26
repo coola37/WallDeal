@@ -187,66 +187,64 @@ fun ProfileScreen(
                         IconButton(modifier = Modifier
                             .padding(start = 72.dp),
                             onClick = { selected = "grid" }) {
-                            Icon(
-                                imageVector = Icons.Default.GridOn,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier
-                                    .width(60.dp)
-                                    .height(35.dp)
-                            )
+                            when(selected){
+                                "grid" -> {
+                                    Icon(
+                                        imageVector = Icons.Default.GridOn,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(60.dp)
+                                            .height(35.dp)
+                                    )
+                                }
+                                "favorite" -> {
+                                    Icon(
+                                        imageVector = Icons.Default.GridOn,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier
+                                            .width(60.dp)
+                                            .height(35.dp)
+                                    )
+                                }
+                            }
                         }
                         IconButton(modifier = Modifier
                             .padding(start = 124.dp),
                             onClick = { selected = "favorite" }) {
-                            Icon(
-                                imageVector = Icons.Default.FavoriteBorder,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier
-                                    .width(60.dp)
-                                    .height(35.dp)
-                            )
+                                when(selected){
+                                    "grid" -> {
+                                        Icon(
+                                            imageVector = Icons.Default.FavoriteBorder,
+                                            contentDescription = null,
+                                            tint = Color.Gray,
+                                            modifier = Modifier
+                                                .width(60.dp)
+                                                .height(35.dp)
+                                        )
+                                    }
+                                    "favorite" -> {
+                                        Icon(
+                                            imageVector = Icons.Default.FavoriteBorder,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier
+                                                .width(60.dp)
+                                                .height(35.dp)
+                                        )
+                                    }
+                                }
                         }
                     }
                     when (selected) {
                         "grid" -> {
                             wallpapers = viewModel.stateItems.value.wallpapers
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 0.dp, top = 4.dp)
-                            ) {
-                                val start = Offset(0f, size.height / 2)
-                                val end = Offset(540f, size.height / 2)
-                                drawLine(
-                                    start = start,
-                                    end = end,
-                                    color = Color.LightGray,
-                                    strokeWidth = 5f,
-                                    cap = StrokeCap.Round
-                                )
-                            }
                         }
 
                         "favorite" -> {
                             wallpapers =
                                 viewModel.stateItems.value.user!!.userDetail!!.favoriteWallpapers
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 200.dp, top = 4.dp)
-                            ) {
-                                val start = Offset(0f, size.height / 2)
-                                val end = Offset(540f, size.height / 2)
-                                drawLine(
-                                    start = start,
-                                    end = end,
-                                    color = Color.LightGray,
-                                    strokeWidth = 5f,
-                                    cap = StrokeCap.Round
-                                )
-                            }
                         }
                     }
                     Column {

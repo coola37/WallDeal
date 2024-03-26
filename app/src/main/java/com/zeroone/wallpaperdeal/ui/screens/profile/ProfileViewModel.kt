@@ -62,6 +62,7 @@ class ProfileViewModel @Inject constructor(
         try {
             viewModelScope.launch {
                 wallDealRepository.sendWallDealRequest(senderUser = senderUserId, receiverUser = receiverUserId)
+                wallDealRequestState.value = true
             }
         }catch (e: RuntimeException){
             throw e

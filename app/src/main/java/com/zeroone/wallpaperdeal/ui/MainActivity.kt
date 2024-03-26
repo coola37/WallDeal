@@ -32,6 +32,7 @@ import com.zeroone.wallpaperdeal.ui.screens.profile.OtherProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.search.SearchScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
+import com.zeroone.wallpaperdeal.ui.screens.walldeal.WallDealScreen
 import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
 import com.zeroone.wallpaperdeal.utils.setWallpaper
@@ -121,6 +122,9 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                             )
                         ){
                             OtherProfileScreen(auth = auth, navController = navController )
+                        }
+                        composable(Screen.WallDealScreen.route){
+                            WallDealScreen(auth = auth, navController = navController, storage = storage)
                         }
                     }
                 }

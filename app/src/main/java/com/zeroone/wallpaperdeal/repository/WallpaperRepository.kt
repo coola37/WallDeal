@@ -9,16 +9,11 @@ import retrofit2.http.Path
 
 interface WallpaperRepository {
     suspend fun saveWallpaper(wallpaper: Wallpaper) : String
-
     suspend fun getWallpapers() : ResponseWallpaper
-
-    suspend fun getWallpaperById(@Path("wallpaperId") wallpaperId: String) : Wallpaper
-
-    suspend fun getWallpapersByCategory(@Path("categoryName") categoryName: String) : ResponseWallpaper
-
-    suspend fun getWallpapersByOwner(@Path("ownerId") ownerId: String) : ResponseWallpaper
-
-    suspend fun likeOrDislike(@Path("wallpaperId") wallpaperId: String, @Body likeRequest: LikeRequest)
-    suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
-    suspend fun checkLike(@Path("wallpaperId") wallpaperId: String, @Path("currentUserId") currentUserId: String) : Boolean
+    suspend fun getWallpaperById(wallpaperId: String) : Wallpaper
+    suspend fun getWallpapersByCategory(categoryName: String) : ResponseWallpaper
+    suspend fun getWallpapersByOwner(ownerId: String) : ResponseWallpaper
+    suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest)
+    suspend fun addFavorite(userId: String, wallpaperId: String)
+    suspend fun checkLike(wallpaperId: String, currentUserId: String) : Boolean
 }

@@ -38,28 +38,7 @@ import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 
 @Composable
 fun TopAppbarText(navController: NavController, text1: String, text2: String){
-    Row(modifier = Modifier
-        .padding(top = 0.dp)
-        .fillMaxWidth()
-        .background(Color.Black)) {
-        val currentDestination = navController.currentDestination?.route
-        TextButton(onClick = { if(currentDestination != Screen.HomeScreen.route){
-            navController.navigate(Screen.HomeScreen.route)
-        }else{
-            Log.d("HomeScreenControl", "Now HomeScreen")
-        }
-        }) {
-            Text(text = text1, color = Color.White, fontSize = 16.sp,
-                modifier = Modifier.padding(start = 85.dp))
-        }
-        TextButton(onClick = {if(currentDestination != Screen.HomeCategoryScreen.route){
-            navController.navigate(Screen.HomeCategoryScreen.route)
-        }else{
-            Log.d("HomeCategoryScreenControl", "Now HomeCategoryScreen")
-        }}) {
-            Text(text = text2, color = Color.White, fontSize = 16.sp, modifier = Modifier.padding(start = 50.dp))
-        }
-    }
+
 }
 
 
@@ -73,7 +52,7 @@ fun BottomNavigationBar(selectedItem: Int, navController: NavController?) {
                 BottomNavItem("Home", R.drawable.ic_home, 0, Screen.HomeScreen.route),
                 BottomNavItem("Search", R.drawable.ic_search, 1, Screen.SearchScreen.route),
                 BottomNavItem("Share", R.drawable.ic_share, 2, Screen.ShareScreen.route),
-                BottomNavItem("Group", R.drawable.ic_group, 3, Screen.HomeScreen.route),
+                BottomNavItem("Group", R.drawable.ic_group, 3, Screen.WallDealScreen.route),
                 BottomNavItem("Profile", R.drawable.ic_profile, 4, Screen.ProfileScreen.route)
             )
 

@@ -1,11 +1,16 @@
 package com.zeroone.wallpaperdeal.repository.impl
 
+import android.util.Log
 import com.zeroone.wallpaperdeal.api.WallDealAPI
+import com.zeroone.wallpaperdeal.model.WallDeal
+import com.zeroone.wallpaperdeal.model.WallDealRequest
 import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.repository.WallDealRepository
 import javax.inject.Inject
 
-class WallDealRepositoryImpl @Inject constructor( private val api: WallDealAPI) : WallDealRepository {
+@Suppress("UNREACHABLE_CODE")
+class WallDealRepositoryImpl @Inject constructor(private val api: WallDealAPI) : WallDealRepository {
     override suspend fun sendWallDealRequest(senderUser: String, receiverUser: String) {
         try{ api.sendWallDealRequest(senderUser = senderUser, receiverUser = receiverUser) }
         catch (ex: RuntimeException){ throw ex }
@@ -49,9 +54,41 @@ class WallDealRepositoryImpl @Inject constructor( private val api: WallDealAPI) 
         }
     }
 
-    override suspend fun sendPost(currentUserId: String, post: Wallpaper) {
+    override suspend fun sendWallpaperRequest(currentUserId: String, request: WallpaperRequest) {
         try {
-            api.sendPost(currentUserId = currentUserId, post = post)
+            api.sendPost(currentUserId = currentUserId, request = request)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun checkWallDealRequests(currentUserId: String) : Boolean{
+        try {
+            return api.checkWallDealRequests(userId = currentUserId)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun getRequestsByUserId(userId: String) : List<WallDealRequest>{
+        try {
+            return api.getRequestsByUserId(userId = userId)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun getWallDeal(userId: String): WallDeal {
+        try {
+            return api.getWallDeal(userId = userId)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun cancelWallpaperRequest(currentUserId: String, request: WallpaperRequest) {
+        try {
+            api.cancelPost(currentUserId = currentUserId, request = request)
         }catch (e: RuntimeException){
             throw e
         }

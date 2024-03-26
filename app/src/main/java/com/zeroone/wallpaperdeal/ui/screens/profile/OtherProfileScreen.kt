@@ -72,6 +72,7 @@ fun OtherProfileScreen(
         }
         wallpapers = viewModel.stateItems.value.wallpapers
         user = viewModel.stateItems.value.user
+        Log.e("current - target", auth.uid!! + "-" + userId)
         user?.let { user ->
 
             LaunchedEffect(Dispatchers.IO){
@@ -215,7 +216,7 @@ fun OtherProfileScreen(
                                                         onClick = {
                                                             viewModel.sendWallDealRequest(
                                                                 senderUserId = auth.uid!!,
-                                                                receiverUserId = user.userId
+                                                                receiverUserId = userId
                                                             ) },
                                                         colors = buttonColor, modifier = Modifier
                                                             .padding(top = 8.dp, start = 16.dp)
