@@ -147,7 +147,7 @@ fun WallpaperViewScreen(
                             text = wallpaper.owner!!.username,
                             style = MaterialTheme.typography.h6,
                             color = Color.White,
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                         )
                     }
                     Spacer(modifier = Modifier.height(32.dp))
@@ -162,17 +162,17 @@ fun WallpaperViewScreen(
                         Text(
                             text = it,
                             color = Color.White,
-                            fontSize = 20.sp,
+                            fontSize = 14.sp,
                             modifier = Modifier.padding(top = 0.dp, bottom = 8.dp)
                         )
                     }
                     Text(
                         text = "${wallpaper.likeCount} users liked it",
                         color = Color.LightGray,
-                        fontSize = 18.sp,
+                        fontSize = 14.sp,
                         modifier = Modifier.padding(top = 8.dp, bottom = 0.dp)
                     )
-                    Spacer(modifier = Modifier.height(36.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                     IconButton(onClick = {expanded = true}, modifier = Modifier.size(50.dp)) {
                         if(expanded){
                             Icon(
@@ -215,8 +215,8 @@ fun WallpaperViewScreen(
                             ) {
                                 //Log.e("checkLike Control", checkLike.toString())
                                 when(checkLike){
-                                    true -> {Text("Unlike", color = ActiveButton, fontSize = 20.sp)}
-                                    false -> {Text("Like", fontSize = 18.sp)}
+                                    true -> {Text("Unlike", color = ActiveButton, fontSize = 14.sp)}
+                                    false -> {Text("Like", fontSize = 14.sp)}
                                 }
                             }
                         }
@@ -234,7 +234,7 @@ fun WallpaperViewScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("Set as wallpaper", fontSize = 18.sp)
+                                Text("Set as wallpaper", fontSize = 14.sp)
                             }
                         }
                         DropdownMenuItem(onClick = {
@@ -247,7 +247,7 @@ fun WallpaperViewScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("Download wallpaper", fontSize = 18.sp)
+                                Text("Download wallpaper", fontSize = 14.sp)
                             }
                         }
                         DropdownMenuItem(onClick = {
@@ -262,8 +262,8 @@ fun WallpaperViewScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 when(checkFavorite){
-                                    true -> {Text(text = "Remove favorites", color = Color.Red, fontSize = 18.sp )}
-                                    false -> {Text(text = "Add favorites", fontSize = 18.sp )}
+                                    true -> {Text(text = "Remove favorites", color = Color.Red, fontSize = 14.sp )}
+                                    false -> {Text(text = "Add favorites", fontSize = 14.sp )}
                                 }
                             }
                         }

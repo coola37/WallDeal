@@ -1,5 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.share
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ImageSearch
@@ -48,6 +50,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.model.Category
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun PushWallpaperScreen(
     navController: NavController,
@@ -100,7 +104,7 @@ fun PushWallpaperScreen(
                 }.addOnFailureListener {
                     Log.e("Image deleted error:", it.message.toString())
                 }}) {
-                    Text(text = "Back", color = Color.LightGray, fontSize = 20.sp)
+                    Text(text = "Back", color = Color.LightGray, fontSize = 14.sp)
                 }
 
                 val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
@@ -124,7 +128,7 @@ fun PushWallpaperScreen(
 
                 }, modifier = Modifier.padding(start = 240.dp)) {
                     if(!viewModel.loadingState.value){
-                        Text(text = "Share", color = Color.LightGray, fontSize = 20.sp)
+                        Text(text = "Share", color = Color.LightGray, fontSize = 14.sp)
                     }else{
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -137,8 +141,16 @@ fun PushWallpaperScreen(
             TextField(
                 value = textDexcription,
                 onValueChange = { textDexcription = it },
-                colors = TextFieldDefaults.colors(Color.LightGray),
-                shape = TextFieldDefaults.shape,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = Color.LightGray,
+                    unfocusedContainerColor = TextFieldBaseColor,
+                    focusedContainerColor = TextFieldBaseColor,
+                    focusedTextColor = Color.LightGray,
+                    unfocusedLabelColor = Color.LightGray,
+                    unfocusedTextColor = Color.LightGray
+
+                ),
+                shape = CircleShape,
                 modifier = Modifier
                     .background(color = Color.Unspecified)
                     .fillMaxWidth()
@@ -150,12 +162,13 @@ fun PushWallpaperScreen(
                         contentDescription = null
                     )
                 },
-                label = { Text(text = "Write a short description") },
+                label = { Text(text = "Write a short description", fontSize = 14.sp) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Done
                 ),
-                singleLine = false
+                maxLines = 2,
+
             )
 
             Row(
@@ -163,13 +176,13 @@ fun PushWallpaperScreen(
                     .fillMaxWidth()
                     .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
             ) {
-                Text(text = "The category you chose:", color = Color.LightGray, fontSize = 20.sp)
-                Text(text = categoryText, color = Color.LightGray, fontSize = 20.sp)
+                Text(text = "The category you chose:", color = Color.LightGray, fontSize = 14.sp)
+                Text(text = categoryText, color = Color.LightGray, fontSize = 14.sp)
             }
 
             Text(
                 text = "Select a Category",
-                fontSize = 20.sp,
+                fontSize = 14.sp,
                 color = Color.LightGray,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp, start = 120.dp)

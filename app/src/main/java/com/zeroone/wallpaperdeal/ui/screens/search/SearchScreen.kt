@@ -97,7 +97,7 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(start = 4.dp, end = 4.dp, top = 4.dp),
                 maxLines = 1,
-                label = { Text(text = "Search", color = Color.Gray, fontSize = 18.sp) }
+                label = { Text(text = "Search", color = Color.Gray, fontSize = 14.sp) }
             )
             Row(modifier = Modifier
                 .padding(top = 8.dp)
@@ -105,14 +105,14 @@ fun SearchScreen(
                 .background(Color.Black)) {
                 TextButton(onClick = { searchMethod = "wallpapers" }, modifier = Modifier.padding(start = 65.dp)) {
                     when(searchMethod){
-                        "wallpapers" ->{Text(text = "Wallpapers", color = Color.White, fontSize = 16.sp)}
-                        "accounts" -> {Text(text = "Wallpapers", color = Color.Gray, fontSize = 16.sp)}
+                        "wallpapers" ->{Text(text = "Wallpapers", color = Color.White, fontSize = 14.sp)}
+                        "accounts" -> {Text(text = "Wallpapers", color = Color.Gray, fontSize = 14.sp)}
                     }
                 }
                 TextButton(onClick = {searchMethod = "accounts"}, modifier = Modifier.padding(start = 50.dp)) {
                     when(searchMethod){
-                        "wallpapers" ->{Text(text = "Accounts", color = Color.Gray, fontSize = 16.sp)}
-                        "accounts" -> {Text(text = "Accounts", color = Color.White, fontSize = 16.sp)}
+                        "wallpapers" ->{Text(text = "Accounts", color = Color.Gray, fontSize = 14.sp)}
+                        "accounts" -> {Text(text = "Accounts", color = Color.White, fontSize = 14.sp)}
                     }
                 }
             }
@@ -145,10 +145,10 @@ private fun WallpaperItemForSearch(wallpaper: Wallpaper, navController: NavContr
                 wallpaper.description?.let {
                     Text(text = it, color = Color.White, fontSize = 18.sp,modifier = Modifier.padding(bottom = 16.dp, top = 6.dp) )
                 } ?: run {
-                    Text(text = "No explanation", color = Color.White, fontSize = 18.sp,modifier = Modifier.padding(bottom = 16.dp, top = 6.dp) )
+                    Text(text = "No explanation", color = Color.White, fontSize = 14.sp,modifier = Modifier.padding(bottom = 16.dp, top = 6.dp) )
                 }
-                Text(text = wallpaper.owner?.username!!, color = Color.LightGray, fontSize = 18.sp,modifier = Modifier.padding(bottom = 16.dp))
-                Text(text = wallpaper.category, color = Color.Gray, fontSize = 18.sp )
+                Text(text = wallpaper.owner?.username!!, color = Color.LightGray, fontSize = 14.sp,modifier = Modifier.padding(bottom = 16.dp))
+                Text(text = wallpaper.category, color = Color.Gray, fontSize = 14.sp )
             }
         }
     }
@@ -166,7 +166,7 @@ private fun UserItemForSearch(user: User, navController: NavController){
              .padding(start = 8.dp)
              .clip(CircleShape)
          )
-        Text(text = user.username, color = Color.White, fontSize = 16.sp,modifier = Modifier
+        Text(text = user.username, color = Color.White, fontSize = 14.sp,modifier = Modifier
             .padding(top = 16.dp, start = 16.dp)
         )
     }

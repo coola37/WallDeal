@@ -68,9 +68,9 @@ class HomeViewModel @Inject constructor(
             emit(Resource.Error(message = "No internet connection!"))
         }
     }
-    suspend fun checkRequestForUser(userId: String) : Boolean{
+    suspend fun checkRequestForUser(userId: String) {
         try {
-            return wallDealRepository.checkWallDealRequests(currentUserId = userId)
+            requestsState.value = wallDealRepository.checkWallDealRequests(currentUserId = userId)
         }catch (e: RuntimeException){
             throw e
             Log.e("checkRequestForUser", e.message.toString())

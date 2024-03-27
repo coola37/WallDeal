@@ -126,7 +126,7 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
                 loading = true
                 var wallpaperId = UUID.randomUUID().toString()
 
-                CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.Main).launch {
                     uploadImageToFirebaseStorage(blurImage!!, selectedImageUri!!, storage, wallpaperId)
 
                     val bitmapRef = storage.reference.child("wallpaperGradients/${wallpaperId}")

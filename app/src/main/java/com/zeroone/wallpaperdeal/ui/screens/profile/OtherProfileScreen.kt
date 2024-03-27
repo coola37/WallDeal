@@ -1,10 +1,11 @@
 package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,18 +110,18 @@ fun OtherProfileScreen(
                             }
                             Text(
                                 text = user.username,
-                                fontSize = 22.sp,
+                                fontSize = 18.sp,
                                 color = Color.LightGray,
                                 modifier = Modifier
-                                    .padding(top = 8.dp, start = 32.dp)
+                                    .padding(top = 8.dp)
                             )
+                            Spacer(modifier = Modifier.fillMaxWidth(0.85f))
                             IconButton(onClick = {}) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.options_profile),
                                     contentDescription = null,
                                     tint = Color.LightGray,
                                     modifier = Modifier
-                                        .padding(start = 175.dp)
                                 )
                             }
                         }
@@ -141,14 +142,14 @@ fun OtherProfileScreen(
                                 Row {
                                     Text(
                                         text = "Followers",
-                                        fontSize = 16.sp,
+                                        fontSize = 14.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier
                                             .padding(top = 24.dp, start = 52.dp)
                                     )
                                     Text(
                                         text = "Followed",
-                                        fontSize = 16.sp,
+                                        fontSize = 14.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier
                                             .padding(top = 24.dp, start = 48.dp)
@@ -157,14 +158,14 @@ fun OtherProfileScreen(
                                 Row {
                                     Text(
                                         text = user.userDetail?.followers?.size.toString(),
-                                        fontSize = 24.sp,
+                                        fontSize = 16.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier
                                             .padding(top = 4.dp, start = 80.dp)
                                     )
                                     Text(
                                         text = user.userDetail?.followed?.size.toString(),
-                                        fontSize = 24.sp,
+                                        fontSize = 16.sp,
                                         color = Color.LightGray,
                                         modifier = Modifier
                                             .padding(top = 4.dp, start = 96.dp)
@@ -178,7 +179,7 @@ fun OtherProfileScreen(
                                             Button(
                                                 onClick = { /*TODO*/ },
                                                 colors = activeButtonColor, modifier = Modifier
-                                                    .padding(top = 8.dp, start = 16.dp)
+                                                    .padding(top = 8.dp)
                                                     .width(128.dp)
                                             ) {
 
@@ -190,7 +191,7 @@ fun OtherProfileScreen(
                                             Button(
                                                 onClick = { /*TODO*/ },
                                                 colors = buttonColor, modifier = Modifier
-                                                    .padding(top = 8.dp, start = 16.dp)
+                                                    .padding(top = 8.dp)
                                                     .width(128.dp)
                                             ) {
 
@@ -200,10 +201,11 @@ fun OtherProfileScreen(
                                     }
                                     when (wallDealRequestState) {
                                         true -> {
+                                            Spacer(modifier = Modifier.width(16.dp))
                                             Button(
                                                 onClick = { /*TODO*/ },
                                                 colors = activeButtonColor, modifier = Modifier
-                                                    .padding(top = 8.dp, start = 16.dp)
+                                                    .padding(top = 8.dp)
                                                     .width(128.dp)
                                             ) {
                                                 Text(text = "Request sent", color = Color.LightGray)
@@ -212,6 +214,7 @@ fun OtherProfileScreen(
                                         else -> {
                                             when(wallDealState){
                                                 false -> {
+                                                    Spacer(modifier = Modifier.width(16.dp))
                                                     Button(
                                                         onClick = {
                                                             viewModel.sendWallDealRequest(
@@ -219,8 +222,7 @@ fun OtherProfileScreen(
                                                                 receiverUserId = userId
                                                             ) },
                                                         colors = buttonColor, modifier = Modifier
-                                                            .padding(top = 8.dp, start = 16.dp)
-                                                            .width(128.dp)
+                                                            .padding(top = 8.dp)
                                                     ) {
                                                         Text(text = "WallDeal", color = Color.LightGray)
                                                     }
@@ -228,16 +230,17 @@ fun OtherProfileScreen(
                                                 true -> {
                                                     when(wallDealForBetweenCurrentUserToTargetUserState){
                                                         true -> {
+                                                            Spacer(modifier = Modifier.width(16.dp))
                                                             Button(
                                                                 onClick = { /*TODO*/ },
                                                                 colors = buttonColor, modifier = Modifier
                                                                     .padding(
                                                                         top = 8.dp,
-                                                                        start = 16.dp
                                                                     )
-                                                                    .width(128.dp)
+
                                                             ) {
-                                                                Text(text = "Cancel WallDeal", color = Color.LightGray)
+                                                                Text(text = "Cancel WallDeal", color = Color.LightGray, fontSize = 9.sp,
+                                                                    maxLines = 1)
                                                             }
                                                         }
                                                         false -> {

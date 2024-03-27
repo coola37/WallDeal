@@ -12,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -93,9 +95,9 @@ fun WallDealScreen(
                 val height = bitmap?.height ?: 0
                 if (width >= 1000 && height >= 1800) {
                     buttonEnabled = true
-                    Log.d("Selected photo resolution:", "${width.toString()} x ${height.toString()}")
+                    Log.d("Selected photo resolution:", "${width} x ${height}")
                 } else {
-                    Log.e("Selected photo resolution:", "${width.toString()} x ${height.toString()}")
+                    Log.e("Selected photo resolution:", "$width x $height")
                     buttonEnabled = false
                     Toast.makeText(
                         context,
@@ -117,23 +119,30 @@ fun WallDealScreen(
     val walldeal = wallDealState.value
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(selectedItem = 3, navController = null) },
+        bottomBar = { BottomNavigationBar(selectedItem = 3, navController = navController) },
         backgroundColor = Color.Black,
     ) {
         walldeal?.let { wallDealInLet ->
-            WallDealContent(
-                context = context,
-                wallDealInLet = wallDealInLet,
-                singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-                selectedImageUri = selectedImageUri,
-                buttonEnabled = buttonEnabled,
-                isLoading = isLoading,
-                storage = storage,
-                userId = userId,
-                imageUrl = imageUrl,
-                viewModel = viewModel,
-                paddingValues = it
-            )
+            val groupId = wallDealInLet.groupId
+            if(!groupId.isNullOrEmpty()){
+                WallDealContent(
+                    context = context,
+                    wallDealInLet = wallDealInLet,
+                    singlePhotoPickerLauncher = singlePhotoPickerLauncher,
+                    selectedImageUri = selectedImageUri,
+                    buttonEnabled = buttonEnabled,
+                    isLoading = isLoading,
+                    storage = storage,
+                    userId = userId,
+                    imageUrl = imageUrl,
+                    viewModel = viewModel,
+                    paddingValues = it
+                )
+            }else{
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "You do not have a WallDeal", color = Color.LightGray)
+                }
+            }
         } ?: run {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -240,119 +249,133 @@ fun SendWallpaperRequestContent(
 ) {
     var isLoading by remember { mutableStateOf(false) }
     var imageUrl by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        val textFieldColor = TextFieldDefaults.textFieldColors(
-            backgroundColor = TextFieldBaseColor,
-            textColor = Color.LightGray,
-            disabledTextColor = Color.White,
-            unfocusedLabelColor = Color.Gray,
-            focusedLabelColor = Color.LightGray,
-            focusedIndicatorColor = Color.LightGray
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+    BoxWithConstraints {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+                 // adjust the position of the elements
+        ) {
+            if (selectedImageUri != null) {
+                AsyncImage(
+                    model = selectedImageUri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .fillMaxHeight(0.70f)
+                        .padding(top = 0.dp, bottom = 64.dp)
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(0.70f)
+                        .fillMaxWidth()
+                        .padding(top = 0.dp, bottom = 32.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Select Wallpaper",
+                        color = Color.LightGray,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                    )
 
-        if (selectedImageUri != null) {
-            AsyncImage(
-                model = selectedImageUri,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxHeight(0.90f)
-                    .fillMaxWidth(0.66f)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        } else {
-            Text(
-                text = "Select Wallpaper",
-                color = Color.LightGray,
-                fontSize = 20.sp
-            )
-            Row {
-                IconButton(
-                    onClick = {
-                        singlePhotoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    IconButton(
+                        onClick = {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(top = 8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_image),
+                            contentDescription = null,
+                            tint = Color.LightGray, modifier = Modifier.size(60.dp)
                         )
                     }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_image),
-                        contentDescription = null,
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(100.dp)
-                    )
                 }
             }
-        }
 
-        var text by remember { mutableStateOf("") }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                colors = textFieldColor,
-                label = { Text(text = "Message", fontSize = 18.sp) },
-                modifier = Modifier.weight(1f),
-                maxLines = 5
-            )
+            var text by remember { mutableStateOf("") }
+            Row(modifier = Modifier.padding(bottom = 32.dp)) {
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = TextFieldBaseColor,
+                        textColor = Color.LightGray,
+                        disabledTextColor = Color.White,
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLabelColor = Color.LightGray,
+                        focusedIndicatorColor = Color.LightGray
+                    ),
+                    maxLines = 2,
+                    label = { Text(text = "Message", fontSize = 14.sp) },
+                    modifier = Modifier.fillMaxWidth(0.9f),
+                    shape = CircleShape
 
-            IconButton(
-                onClick = {
-                    isLoading = true
-                    val storageRef = storage.reference.child("walldeal_request${wallDealInLet.groupId}/${UUID.randomUUID()}")
-                    val uri = selectedImageUri!!
-                    storageRef.putFile(uri)
-                        .addOnSuccessListener {
-                            Log.e("Request image upload", "success")
-                            storageRef.downloadUrl.addOnSuccessListener { uri ->
-                                imageUrl = uri.toString()
-                                val senderUser = wallDealInLet.groupMembers.find { it.userId == userId }
-                                val listReceiver = wallDealInLet.groupMembers.filterNot { it == senderUser }
-                                senderUser?.let {
-                                    val request = WallpaperRequest(
-                                        message = text,
-                                        senderUser = it,
-                                        receiverUsers = listReceiver,
-                                        imageUrl = imageUrl
-                                    )
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        viewModel.sendWallpaperRequest(userId = userId, request = request)
-                                        delay(2000)
-                                        isLoading = false
-                                        menuChange()
+                )
+
+                IconButton(
+                    onClick = {
+                        isLoading = true
+                        val storageRef = storage.reference.child("walldeal_request${wallDealInLet.groupId}/${UUID.randomUUID()}")
+                        val uri = selectedImageUri!!
+                        storageRef.putFile(uri)
+                            .addOnSuccessListener {
+                                Log.e("Request image upload", "success")
+                                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                    imageUrl =uri.toString()
+                                    val senderUser = wallDealInLet.groupMembers.find { it.userId == userId }
+                                    val listReceiver = wallDealInLet.groupMembers.filterNot { it == senderUser }
+                                    senderUser?.let {
+                                        val request = WallpaperRequest(
+                                            message = text,
+                                            senderUser = it,
+                                            receiverUsers = listReceiver,
+                                            imageUrl = imageUrl
+                                        )
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.sendWallpaperRequest(userId = userId, request = request)
+                                            delay(2000)
+                                            isLoading = false
+                                            menuChange()
+                                        }
                                     }
                                 }
                             }
+                            .addOnFailureListener { e ->
+                                Log.e("BlurImage", e.message.toString())
+                            }
+                    },
+                    enabled = buttonEnabled,
+                ) {
+                    when (isLoading) {
+                        true -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(30.dp)
+                            )
                         }
-                        .addOnFailureListener { e ->
-                            Log.e("BlurImage", e.message.toString())
+                        false -> {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_send),
+                                contentDescription = null,
+                                tint = BlueTwitter
+                            )
                         }
-                },
-                enabled = buttonEnabled
-            ) {
-                when (isLoading) {
-                    true -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(30.dp)
-                        )
                     }
-                    false -> {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_send),
-                            contentDescription = null,
-                            tint = BlueTwitter
-                        )
-                    }
-                }
+            }
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
+
+
 @Composable
 fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: WallDealViewModel, userId: String) {
     Column(

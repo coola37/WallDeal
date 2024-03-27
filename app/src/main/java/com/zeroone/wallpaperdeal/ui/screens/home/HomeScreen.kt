@@ -57,6 +57,11 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
     var requestsState by remember { mutableStateOf(false) }
     val state = viewModel.state.value
     wallpapers = state.wallpapers
+    LaunchedEffect(key1 = auth.uid){
+        viewModel.checkRequestForUser(auth.uid!!)
+    }
+    val requestState = viewModel.requestsState.value
+    Log.e("Request", requestState.toString())
 
     Log.e("uid", auth.uid.toString())
     Scaffold(
