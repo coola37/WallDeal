@@ -16,9 +16,9 @@ class WallDealRepositoryImpl @Inject constructor(private val api: WallDealAPI) :
         catch (ex: RuntimeException){ throw ex }
     }
 
-    override suspend fun deleteRequest(requestId: String): String {
+    override suspend fun deleteRequest(requestId: String){
         try {
-            return api.deleteRequest(requestId = requestId)
+            api.deleteRequest(requestId = requestId)
         }catch (ex: RuntimeException){
             throw ex
         }
@@ -90,6 +90,22 @@ class WallDealRepositoryImpl @Inject constructor(private val api: WallDealAPI) :
         try {
             api.cancelPost(currentUserId = currentUserId, request = request)
         }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun createWallDeal(wallDeal: WallDeal) {
+        try {
+            api.createWallDeal(wallDeal = wallDeal)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun cancelWallDeal(userId: String) {
+        try {
+            api.cancelWallDeal(userId = userId)
+        } catch (e: RuntimeException) {
             throw e
         }
     }

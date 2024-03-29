@@ -16,4 +16,7 @@ interface WallpaperRepository {
     suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest)
     suspend fun addFavorite(userId: String, wallpaperId: String)
     suspend fun checkLike(wallpaperId: String, currentUserId: String) : Boolean
+
+    suspend fun getWallpaperByFollowed(currentUserId: String)
+
 }

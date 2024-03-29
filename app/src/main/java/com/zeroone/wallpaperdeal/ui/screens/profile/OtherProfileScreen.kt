@@ -2,6 +2,7 @@ package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,6 +64,7 @@ fun OtherProfileScreen(
     var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList())}
     var user by remember { mutableStateOf<User?>(null) }
     var wallDealRequestState by remember { mutableStateOf<Boolean>(false) }
+    var cancelDialog by remember { mutableStateOf<Boolean>(false) }
     var wallDealState by remember { mutableStateOf<Boolean>(false) }
     var wallDealForBetweenCurrentUserToTargetUserState by remember { mutableStateOf<Boolean>(false) }
 
@@ -95,157 +97,173 @@ fun OtherProfileScreen(
                     }
                 ) { innerPadding ->
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
-                        Row {
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_back),
-                                    contentDescription = null,
-                                    tint = Color.LightGray
-                                )
-                            }
-                            Text(
-                                text = user.username,
-                                fontSize = 18.sp,
-                                color = Color.LightGray,
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                            )
-                            Spacer(modifier = Modifier.fillMaxWidth(0.85f))
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.options_profile),
-                                    contentDescription = null,
-                                    tint = Color.LightGray,
+                    Box( modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Row {
+                                IconButton(onClick = {navController.navigateUp()}) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_back),
+                                        contentDescription = null,
+                                        tint = Color.LightGray
+                                    )
+                                }
+                                Text(
+                                    text = user.username,
+                                    fontSize = 18.sp,
+                                    color = Color.LightGray,
                                     modifier = Modifier
+                                        .padding(top = 8.dp)
                                 )
+                                Spacer(modifier = Modifier.fillMaxWidth(0.85f))
+                                IconButton(onClick = {}) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.options_profile),
+                                        contentDescription = null,
+                                        tint = Color.LightGray,
+                                        modifier = Modifier
+                                    )
+                                }
                             }
-                        }
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                AsyncImage(
+                                    model = user.userDetail?.profilePhoto,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(top = 16.dp, start = 16.dp)
+                                        .height(60.dp)
+                                        .width(60.dp)
+                                        .clip(CircleShape)
+                                )
 
-
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            AsyncImage(
-                                model = user.userDetail?.profilePhoto,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(top = 16.dp, start = 16.dp)
-                                    .height(60.dp)
-                                    .width(60.dp)
-                                    .clip(CircleShape)
-                            )
-
-                            Column {
-                                Row {
-                                    Text(
-                                        text = "Followers",
-                                        fontSize = 14.sp,
-                                        color = Color.LightGray,
-                                        modifier = Modifier
-                                            .padding(top = 24.dp, start = 52.dp)
-                                    )
-                                    Text(
-                                        text = "Followed",
-                                        fontSize = 14.sp,
-                                        color = Color.LightGray,
-                                        modifier = Modifier
-                                            .padding(top = 24.dp, start = 48.dp)
-                                    )
-                                }
-                                Row {
-                                    Text(
-                                        text = user.userDetail?.followers?.size.toString(),
-                                        fontSize = 16.sp,
-                                        color = Color.LightGray,
-                                        modifier = Modifier
-                                            .padding(top = 4.dp, start = 80.dp)
-                                    )
-                                    Text(
-                                        text = user.userDetail?.followed?.size.toString(),
-                                        fontSize = 16.sp,
-                                        color = Color.LightGray,
-                                        modifier = Modifier
-                                            .padding(top = 4.dp, start = 96.dp)
-                                    )
-                                }
-                                val buttonColor = ButtonDefaults.buttonColors(ProfileButtonColor)
-                                val activeButtonColor = ButtonDefaults.buttonColors(ActiveButton)
-                                Row {
-                                    when (checkFollow) {
-                                        true -> {
-                                            Button(
-                                                onClick = { /*TODO*/ },
-                                                colors = activeButtonColor, modifier = Modifier
-                                                    .padding(top = 8.dp)
-                                                    .width(128.dp)
-                                            ) {
-
-                                                Text(text = "Unfollow", color = Color.LightGray)
-                                            }
-                                        }
-
-                                        else -> {
-                                            Button(
-                                                onClick = { /*TODO*/ },
-                                                colors = buttonColor, modifier = Modifier
-                                                    .padding(top = 8.dp)
-                                                    .width(128.dp)
-                                            ) {
-
-                                                Text(text = "Follow", color = Color.LightGray)
-                                            }
-                                        }
+                                Column {
+                                    Row {
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.25f))
+                                        Text(
+                                            text = "Followers",
+                                            fontSize = 14.sp,
+                                            color = Color.LightGray,
+                                            modifier = Modifier
+                                                .padding(top = 24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.2f))
+                                        Text(
+                                            text = "Followed",
+                                            fontSize = 14.sp,
+                                            color = Color.LightGray,
+                                            modifier = Modifier
+                                                .padding(top = 24.dp)
+                                        )
                                     }
-                                    when (wallDealRequestState) {
-                                        true -> {
-                                            Spacer(modifier = Modifier.width(16.dp))
-                                            Button(
-                                                onClick = { /*TODO*/ },
-                                                colors = activeButtonColor, modifier = Modifier
-                                                    .padding(top = 8.dp)
-                                                    .width(128.dp)
-                                            ) {
-                                                Text(text = "Request sent", color = Color.LightGray)
+                                    Row {
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.33f))
+                                        Text(
+                                            text = user.userDetail?.followers?.size.toString(),
+                                            fontSize = 16.sp,
+                                            color = Color.LightGray,
+                                            modifier = Modifier
+                                                .padding(top = 4.dp)
+                                        )
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.4f))
+                                        Text(
+                                            text = user.userDetail?.followed?.size.toString(),
+                                            fontSize = 16.sp,
+                                            color = Color.LightGray,
+                                            modifier = Modifier
+                                                .padding(top = 4.dp)
+                                        )
+                                    }
+                                    val buttonColor = ButtonDefaults.buttonColors(ProfileButtonColor)
+                                    val activeButtonColor = ButtonDefaults.buttonColors(ActiveButton)
+                                    Row {
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.15f))
+                                        when (checkFollow) {
+                                            true -> {
+                                                Button(
+                                                    onClick = { /*TODO*/ },
+                                                    colors = activeButtonColor, modifier = Modifier
+                                                        .padding(top = 8.dp)
+                                                ) {
+
+                                                    Text(text = "Unfollow", color = Color.LightGray)
+                                                }
+                                            }
+
+                                            else -> {
+                                                Button(
+                                                    onClick = { /*TODO*/ },
+                                                    colors = buttonColor, modifier = Modifier
+                                                        .padding(top = 8.dp)
+                                                ) {
+
+                                                    Text(text = "Follow", color = Color.LightGray)
+                                                }
                                             }
                                         }
-                                        else -> {
-                                            when(wallDealState){
-                                                false -> {
-                                                    Spacer(modifier = Modifier.width(16.dp))
-                                                    Button(
-                                                        onClick = {
-                                                            viewModel.sendWallDealRequest(
-                                                                senderUserId = auth.uid!!,
-                                                                receiverUserId = userId
-                                                            ) },
-                                                        colors = buttonColor, modifier = Modifier
-                                                            .padding(top = 8.dp)
-                                                    ) {
-                                                        Text(text = "WallDeal", color = Color.LightGray)
-                                                    }
+                                        Spacer(modifier = Modifier.fillMaxWidth(0.025f))
+                                        when (wallDealRequestState) {
+                                            true -> {
+                                                Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                Button(
+                                                    onClick = { viewModel.deleteRequest(auth.uid!! + userId)},
+                                                    colors = activeButtonColor, modifier = Modifier
+                                                        .padding(top = 8.dp)
+                                                ) {
+                                                    Text(text = "Request sent", color = Color.LightGray)
                                                 }
-                                                true -> {
-                                                    when(wallDealForBetweenCurrentUserToTargetUserState){
-                                                        true -> {
-                                                            Spacer(modifier = Modifier.width(16.dp))
-                                                            Button(
-                                                                onClick = { /*TODO*/ },
-                                                                colors = buttonColor, modifier = Modifier
-                                                                    .padding(
-                                                                        top = 8.dp,
-                                                                    )
+                                            }
+                                            else -> {
+                                                when(wallDealState){
+                                                    false -> {
+                                                        Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                        Button(
+                                                            onClick = {
+                                                                viewModel.sendWallDealRequest(
+                                                                    senderUserId = auth.uid!!,
+                                                                    receiverUserId = userId
+                                                                ) },
+                                                            colors = buttonColor, modifier = Modifier
+                                                                .padding(top = 8.dp)
+                                                        ) {
+                                                            Text(text = "WallDeal", color = Color.LightGray)
+                                                        }
+                                                    }
+                                                    true -> {
+                                                        when(wallDealForBetweenCurrentUserToTargetUserState){
+                                                            true -> {
+                                                                Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                Button(
+                                                                    onClick = {cancelDialog = true},
+                                                                    colors = buttonColor, modifier = Modifier
+                                                                        .padding(
+                                                                            top = 8.dp,
+                                                                        )
 
-                                                            ) {
-                                                                Text(text = "Cancel WallDeal", color = Color.LightGray, fontSize = 9.sp,
-                                                                    maxLines = 1)
+                                                                ) {
+                                                                    Text(text = "Cancel WallDeal", color = Color.LightGray, fontSize = 12.sp,
+                                                                        maxLines = 1)
+                                                                }
+                                                            }
+                                                            false -> {
+                                                                Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                Button(
+                                                                    onClick = {
+                                                                        viewModel.sendWallDealRequest(
+                                                                            senderUserId = auth.uid!!,
+                                                                            receiverUserId = userId
+                                                                        ) },
+                                                                    colors = buttonColor, modifier = Modifier
+                                                                        .padding(top = 8.dp)
+                                                                ) {
+                                                                    Text(text = "WallDeal", color = Color.LightGray)
+                                                                }
+                                                                Log.d("User has a WallDeal with other users", "Yes")
                                                             }
                                                         }
-                                                        false -> {
-                                                            Log.d("User has a WallDeal with other users", "Yes")
-                                                        }
                                                     }
                                                 }
                                             }
@@ -253,23 +271,31 @@ fun OtherProfileScreen(
                                     }
                                 }
                             }
+                            Column {
+                                LazyVerticalStaggeredGrid(
+                                    columns = StaggeredGridCells.Fixed(2),
+                                    verticalItemSpacing = 4.dp,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    content = {
+                                        items(wallpapers.size){
+                                            WallpaperItemForVerticalStaggeredGrid(
+                                                wallpaper = wallpapers[it],
+                                                onClick = {
+                                                    navController.navigate("${Screen.WallpaperViewScreen.route}/${wallpapers[it].wallpaperId}")
+                                                })
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
                         }
-                        Column {
-                            LazyVerticalStaggeredGrid(
-                                columns = StaggeredGridCells.Fixed(2),
-                                verticalItemSpacing = 4.dp,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                content = {
-                                    items(wallpapers.size){
-                                        WallpaperItemForVerticalStaggeredGrid(
-                                            wallpaper = wallpapers[it],
-                                            onClick = {
-                                                navController.navigate("${Screen.WallpaperViewScreen.route}/${wallpapers[it].wallpaperId}")
-                                            })
-                                    }
-                                },
-                                modifier = Modifier.fillMaxSize()
-                            )
+                    }
+                    Box(modifier = Modifier.fillMaxSize()){
+                        if(cancelDialog){
+                            CancelWallDealDialog(onDismissRequest = { cancelDialog = false}) {
+                                viewModel.cancelWallDeal(auth.uid!!)
+                                cancelDialog = false
+                            }
                         }
                     }
                 }

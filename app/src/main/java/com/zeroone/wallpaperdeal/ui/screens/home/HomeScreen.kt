@@ -34,6 +34,7 @@ import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,13 +58,14 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
     var requestsState by remember { mutableStateOf(false) }
     val state = viewModel.state.value
     wallpapers = state.wallpapers
-    LaunchedEffect(key1 = auth.uid){
-        viewModel.checkRequestForUser(auth.uid!!)
+    auth.uid?.let{
+        LaunchedEffect(key1 = it) {
+            viewModel.checkRequestForUser(it)
+        }
     }
-    val requestState = viewModel.requestsState.value
-    Log.e("Request", requestState.toString())
+    requestsState = viewModel.requestsState.value
+    //Log.e("Request HomeScreen Control", requestsState.toString())
 
-    Log.e("uid", auth.uid.toString())
     Scaffold(
         backgroundColor = Color.Black,
         topBar = {
@@ -73,7 +75,8 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Spacer(modifier = Modifier.fillMaxWidth(0.35f))
                         Image(
                             painter = painterResource(id = R.drawable.walldeallogo),
                             contentDescription = null,
@@ -81,6 +84,26 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                                 .fillMaxWidth(0.50f)
                                 .fillMaxHeight(0.75f)
                         )
+                        Spacer(modifier = Modifier.fillMaxWidth(0.6f))
+                        IconButton(onClick = { navController.navigate(Screen.RequestsScreen.route)},
+                            modifier = Modifier
+                                .fillMaxSize(0.5f)
+                                .fillMaxWidth(0.1f),
+                            enabled = requestsState
+                            ) {
+                            when(requestsState){
+                                true -> {
+                                    Image(painter = painterResource(id = R.drawable.notification_active), contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+                                false -> {
+                                    Image(painter = painterResource(id = R.drawable.notification_passive), contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

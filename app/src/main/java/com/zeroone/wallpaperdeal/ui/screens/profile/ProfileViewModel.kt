@@ -101,4 +101,26 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun cancelWallDeal(userId: String){
+        try {
+            viewModelScope.launch{
+                wallDealRepository.cancelWallDeal(userId = userId)
+                wallDealForBetweenUserToUserState.value = false
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    fun deleteRequest(requestId: String){
+        try {
+            viewModelScope.launch{
+                wallDealRepository.deleteRequest(requestId = requestId)
+                wallDealRequestState.value = false
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
 }

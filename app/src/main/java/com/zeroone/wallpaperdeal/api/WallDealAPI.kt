@@ -16,7 +16,7 @@ interface WallDealAPI {
     suspend fun sendWallDealRequest(@Path("senderUser") senderUser: String, @Path("receiverUser") receiverUser: String)
 
     @DELETE("/api/1.0/walldeal/delete-request/{requestId}")
-    suspend fun deleteRequest(@Path("requestId") requestId: String) : String
+    suspend fun deleteRequest(@Path("requestId") requestId: String)
 
     @GET("/api/1.0/walldeal/check-walldeal-request/{currentUserId}/{targetUserId}")
     suspend fun checkWallDealRequest(@Path("currentUserId") currentUserId: String, @Path("targetUserId") targetUserId: String) : Boolean
@@ -30,11 +30,14 @@ interface WallDealAPI {
     suspend fun sendPost(@Path("currentUserId") currentUserId: String, @Body request: WallpaperRequest)
     @PUT("/api/1.0/walldeal/cancel-post/{currentUserId}")
     suspend fun cancelPost(@Path("currentUserId") currentUserId: String, @Body request: WallpaperRequest)
-    @GET("/api/1.0/walldeal/request-notification-check/{userId}}")
+    @GET("/api/1.0/walldeal/request-notification-check/{userId}")
     suspend fun checkWallDealRequests(@Path("userId") userId: String) : Boolean
     @GET("/api/1.0/walldeal/get-request/{userId}")
     suspend fun getRequestsByUserId(@Path("userId") userId: String) : List<WallDealRequest>
-
     @GET("/api/1.0/walldeal/get-walldeal/{userId}")
     suspend fun getWallDeal(@Path("userId") userId: String) : WallDeal
+    @POST("/api/1.0/walldeal/create-walldeal")
+    suspend fun createWallDeal(@Body wallDeal: WallDeal)
+    @DELETE("/api/1.0/walldeal/cancel-walldeal/{userId}")
+    suspend fun cancelWallDeal(@Path("userId") userId: String)
 }

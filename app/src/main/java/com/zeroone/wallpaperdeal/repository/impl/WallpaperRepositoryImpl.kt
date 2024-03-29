@@ -51,4 +51,8 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
         return api.checkLike(wallpaperId = wallpaperId, currentUserId = currentUserId)
     }
 
+    override suspend fun getWallpaperByFollowed(currentUserId: String) {
+        return api.getWallpaperByFollowed(currentUserId = currentUserId)
+    }
+
 }

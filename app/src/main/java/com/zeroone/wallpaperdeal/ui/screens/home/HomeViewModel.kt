@@ -68,9 +68,13 @@ class HomeViewModel @Inject constructor(
             emit(Resource.Error(message = "No internet connection!"))
         }
     }
-    suspend fun checkRequestForUser(userId: String) {
+    fun checkRequestForUser(userId: String) {
         try {
-            requestsState.value = wallDealRepository.checkWallDealRequests(currentUserId = userId)
+            viewModelScope.launch {
+                requestsState.value = wallDealRepository.checkWallDealRequests(currentUserId = userId)
+                val request = wallDealRepository.checkWallDealRequests(currentUserId = userId)
+                //Log.e("Request viewmodel Control", request.toString())
+            }
         }catch (e: RuntimeException){
             throw e
             Log.e("checkRequestForUser", e.message.toString())

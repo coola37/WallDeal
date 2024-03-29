@@ -33,4 +33,7 @@ interface WallpaperAPI {
 
     @PUT("/api/1.0/wallpapers/favorite/{userId}/{wallpaperId}")
     suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
+
+    @GET("/api/1.0/wallpapers/get-wallpapers-by-followed/{currentUserId}")
+    suspend fun getWallpaperByFollowed(@Path("currentUserId") currentUserId: String)
 }
