@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -35,6 +37,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,6 +50,7 @@ import androidx.navigation.navOptions
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.Category
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
@@ -95,7 +99,8 @@ fun PushWallpaperScreen(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                TextButton(onClick = { filePath.delete().addOnSuccessListener {
+                Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+                IconButton(onClick = { filePath.delete().addOnSuccessListener {
                     Log.e("Image deleted", "succes")
                     navController.navigate(
                         Screen.HomeScreen.route,
@@ -103,10 +108,10 @@ fun PushWallpaperScreen(
                     )
                 }.addOnFailureListener {
                     Log.e("Image deleted error:", it.message.toString())
-                }}) {
-                    Text(text = "Back", color = Color.LightGray, fontSize = 14.sp)
+                }}, modifier = Modifier.fillMaxWidth(0.1f)) {
+                    Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
                 }
-
+                Spacer(modifier = Modifier.fillMaxWidth(0.75f))
                 val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
                     gradientUrl, emptyList(), 0 )
                 TextButton(onClick = {
@@ -126,7 +131,7 @@ fun PushWallpaperScreen(
                     }
 
 
-                }, modifier = Modifier.padding(start = 240.dp)) {
+                }, modifier = Modifier.fillMaxWidth(1f)) {
                     if(!viewModel.loadingState.value){
                         Text(text = "Share", color = Color.LightGray, fontSize = 14.sp)
                     }else{
@@ -180,17 +185,18 @@ fun PushWallpaperScreen(
                 Text(text = categoryText, color = Color.LightGray, fontSize = 14.sp)
             }
 
-            Text(
-                text = "Select a Category",
-                fontSize = 14.sp,
-                color = Color.LightGray,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp, start = 120.dp)
-            )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+                Text(
+                    text = "Select a Category",
+                    fontSize = 14.sp,
+                    color = Color.LightGray,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
             fun clickItem(index: Int) {
                 categoryText = categories[index].categoryName
             }
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(2),
                     verticalItemSpacing = 4.dp,
@@ -219,7 +225,7 @@ fun CategoryItem(category: Category, onClick: () -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
     ) {
         AsyncImage(model = category.imageUrl, contentDescription = null)
     }

@@ -1,9 +1,10 @@
 package com.zeroone.wallpaperdeal.model
 
 data class User(
-    val userId: String,
-    val email: String,
-    val username: String,
-    val wallDealId: String?,
-    val userDetail: UserDetail?
+    var userId: String,
+    var email: String,
+    var username: String,
+    var wallDealId: String?,
+    var userDetail: UserDetail?,
+    var fcmToken: String?
 )

@@ -70,7 +70,7 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
 
                 val width = bitmap?.width
                 val height = bitmap?.height
-                if(width!! >= 1000 && height!! >= 1800){
+                if(width!! >= 1920 && height!! >= 1080){
 
                     buttonEnabled = true
                     Log.d("Selected photo resolution:", "${width.toString()} x ${height.toString()}" )

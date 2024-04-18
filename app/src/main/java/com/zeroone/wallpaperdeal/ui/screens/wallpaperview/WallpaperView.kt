@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -54,7 +56,9 @@ import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Report
 import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperViewBackground
@@ -63,7 +67,7 @@ import com.zeroone.wallpaperdeal.utils.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import java.util.UUID
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -77,11 +81,13 @@ fun WallpaperViewScreen(
     val context = LocalContext.current
     val wallpaperId = navController.currentBackStackEntry?.arguments?.getString("wallpaperId")
     var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
     wallpaperId?.let { wallpaperId ->
         var wallpaper by remember { mutableStateOf<Wallpaper?>(null) }
         var checkLike by remember { mutableStateOf<Boolean>(false) }
         var userId by remember { mutableStateOf<String>("") }
         var checkFavorite by remember { mutableStateOf<Boolean>(false) }
+        var openReportDialog by remember { mutableStateOf<Boolean>(false) }
         LaunchedEffect(key1 = wallpaperId){
             viewModel.fetchWallpaper(wallpaperId = wallpaperId)
             auth.uid?.let{
@@ -99,7 +105,7 @@ fun WallpaperViewScreen(
         wallpaper = viewModel.wallpaperState.value
 
         wallpaper?.let { wallpaper->
-
+            val currentUserEqualSenderUser = auth.uid.equals(wallpaper.owner?.userId)
             LaunchedEffect(key1 = wallpaper.imageUrl){
                 val request = ImageRequest.Builder(context)
                     .data(wallpaper.imageUrl)
@@ -115,158 +121,204 @@ fun WallpaperViewScreen(
 
             val keyboardController = LocalSoftwareKeyboardController.current
             val coroutineScope = rememberCoroutineScope()
-            Scaffold(backgroundColor = WallpaperViewBackground) {
+            Scaffold(
+                backgroundColor = WallpaperViewBackground) {
                 IconButton(onClick = { navController.navigateUp()},
                     modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                 ) {
                     Image(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
                 }
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)){
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        AsyncImage(
-                            model = wallpaper.owner?.userDetail?.profilePhoto,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = wallpaper.owner!!.username,
-                            style = MaterialTheme.typography.h6,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(32.dp))
-                    AsyncImage(model = wallpaper.imageUrl, contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth(0.66f)
-                            .fillMaxSize(0.66f),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.height(48.dp))
-                    wallpaper.description?.let{
-                        Text(
-                            text = it,
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(top = 0.dp, bottom = 8.dp)
-                        )
-                    }
-                    Text(
-                        text = "${wallpaper.likeCount} users liked it",
-                        color = Color.LightGray,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 0.dp)
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    IconButton(onClick = {expanded = true}, modifier = Modifier.size(50.dp)) {
-                        if(expanded){
-                            Icon(
-                                tint = Color.Unspecified,
-                                painter = painterResource(id = R.drawable.ic_cancel),
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .fillMaxSize(),
-                                contentDescription = null
-                            )
 
-                        }else{
-                            Icon(
-                                tint = Color.Unspecified,
-                                painter = painterResource(id = R.drawable.options_icon),
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .fillMaxSize(),
-                                contentDescription = null
-                            )
-                        }
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier
+                        Row(modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    ) {
-                        DropdownMenuItem(onClick = {
-                            expanded = false
-                            CoroutineScope(Dispatchers.Main).launch {
-                                val likeRequest = LikeRequest(userId)
-                                viewModel.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+                            .padding(top = 16.dp)
+                            .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${wallpaper.owner?.userId}") },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            AsyncImage(
+                                model = wallpaper.owner?.profilePhoto,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = wallpaper.owner!!.username,
+                                style = MaterialTheme.typography.h6,
+                                color = Color.White,
+                                fontSize = 16.sp,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(32.dp))
+                        AsyncImage(model = wallpaper.imageUrl, contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth(0.66f)
+                                .fillMaxSize(0.66f),
+                            contentScale = ContentScale.Crop
+                        )
+                        Spacer(modifier = Modifier.height(48.dp))
+                        wallpaper.description?.let{
+                            Text(
+                                text = it,
+                                textAlign = TextAlign.Center,
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(top = 0.dp, bottom = 8.dp)
+                            )
+                        }
+                        Text(
+                            text = "${wallpaper.likeCount} users liked it",
+                            color = Color.LightGray,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 0.dp)
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        IconButton(onClick = {expanded = true}, modifier = Modifier.size(50.dp)) {
+                            if(expanded){
+                                Icon(
+                                    tint = Color.Unspecified,
+                                    painter = painterResource(id = R.drawable.ic_cancel),
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .fillMaxSize(),
+                                    contentDescription = null
+                                )
+
+                            }else{
+                                Icon(
+                                    tint = Color.Unspecified,
+                                    painter = painterResource(id = R.drawable.options_icon),
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .fillMaxSize(),
+                                    contentDescription = null
+                                )
                             }
-                        }) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                //Log.e("checkLike Control", checkLike.toString())
-                                when(checkLike){
-                                    true -> {Text("Unlike", color = ActiveButton, fontSize = 14.sp)}
-                                    false -> {Text("Like", fontSize = 14.sp)}
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val likeRequest = LikeRequest(userId)
+                                    viewModel.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+                                }
+                            }) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    //Log.e("checkLike Control", checkLike.toString())
+                                    when(checkLike){
+                                        true -> {Text("Unlike", color = ActiveButton, fontSize = 14.sp)}
+                                        false -> {Text("Like", fontSize = 14.sp)}
+                                    }
+                                }
+                            }
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.SET_WALLPAPER) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    callback.onSetWallpaperClick(imageBitmap!!)
+                                } else {
+                                    // Permission is already granted, set the wallpaper here
+                                    setWallpaper(context = context, bitmap = imageBitmap!!)
+                                }
+                            }) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Set as wallpaper", fontSize = 14.sp)
+                                }
+                            }
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                //Log.e("ImageUrl", wallpaper.imageUrl)
+                                downloadWallpaper(context, wallpaper.imageUrl)
+
+                            }) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Download wallpaper", fontSize = 14.sp)
+                                }
+                            }
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    viewModel.addOrRemoveFavorites(wallpaperId = wallpaper.wallpaperId, userId = userId)
+                                }
+
+                            }) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    when(checkFavorite){
+                                        true -> {Text(text = "Remove favorites", color = Color.Red, fontSize = 14.sp )}
+                                        false -> {Text(text = "Add favorites", fontSize = 14.sp )}
+                                    }
+                                }
+                            }
+                            if(currentUserEqualSenderUser){
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        viewModel.removeWallpaper(wallpaperId = wallpaperId)
+                                    }
+                                    navController.navigateUp()
+                                }) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = "Remove Wallpaper", color = Color.Red, fontSize = 14.sp )
+                                    }
+                                }
+                            }
+                            DropdownMenuItem(onClick = {
+                                expanded = false
+                                openReportDialog = true
+                            }) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "Report", color = Color.Red, fontSize = 14.sp )
                                 }
                             }
                         }
-                        DropdownMenuItem(onClick = {
-                            expanded = false
-                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.SET_WALLPAPER) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                callback.onSetWallpaperClick(imageBitmap!!)
-                            } else {
-                                // Permission is already granted, set the wallpaper here
-                                setWallpaper(context = context, bitmap = imageBitmap!!)
-                            }
-                        }) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Set as wallpaper", fontSize = 14.sp)
-                            }
-                        }
-                        DropdownMenuItem(onClick = {
-                            expanded = false
-                            Log.e("ImageUrl", wallpaper.imageUrl)
-                            downloadWallpaper(context, wallpaper.imageUrl)
-
-                        }) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Download wallpaper", fontSize = 14.sp)
-                            }
-                        }
-                        DropdownMenuItem(onClick = {
-                            expanded = false
-                            CoroutineScope(Dispatchers.Main).launch {
-                                viewModel.addOrRemoveFavorites(wallpaperId = wallpaper.wallpaperId, userId = userId)
-                            }
-
-                        }) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                when(checkFavorite){
-                                    true -> {Text(text = "Remove favorites", color = Color.Red, fontSize = 14.sp )}
-                                    false -> {Text(text = "Add favorites", fontSize = 14.sp )}
-                                }
-                            }
-                        }
+                    }
+                }
+                Box(modifier = Modifier.fillMaxSize()){
+                    if(openReportDialog){
+                        ReportDialogScreen(
+                            onDismissRequest = { openReportDialog = false },
+                            wallpaperReport = Report<Wallpaper>(
+                            reportId = UUID.randomUUID().toString(),
+                            message = "",
+                            payload = wallpaper),
+                            cancelDialog = {openReportDialog = false},
+                            reportObject = "post" ,
+                            userReport = null
+                        )
                     }
                 }
             }

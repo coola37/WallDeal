@@ -4,6 +4,7 @@ import android.util.Log
 import com.zeroone.wallpaperdeal.model.LikeRequest
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.api.WallpaperAPI
+import com.zeroone.wallpaperdeal.model.Report
 import com.zeroone.wallpaperdeal.repository.WallpaperRepository
 import com.zeroone.wallpaperdeal.model.ResponseWallpaper
 import java.io.EOFException
@@ -51,8 +52,21 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
         return api.checkLike(wallpaperId = wallpaperId, currentUserId = currentUserId)
     }
 
-    override suspend fun getWallpaperByFollowed(currentUserId: String) {
+    override suspend fun getWallpaperByFollowed(currentUserId: String) : ResponseWallpaper{
         return api.getWallpaperByFollowed(currentUserId = currentUserId)
+    }
+
+    override suspend fun removeWallpaper(wallpaperId: String) {
+        try{ api.removeWallpaper(wallpaperId = wallpaperId) }
+        catch (ex: RuntimeException){ throw ex}
+    }
+
+    override suspend fun createWallpaperReport(report: Report<Wallpaper>) {
+        try {
+            api.createWallpaperReport(report = report)
+        }catch (e: RuntimeException){
+            throw e
+        }
     }
 
 }

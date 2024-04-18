@@ -29,11 +29,12 @@ class ShareViewModel @Inject constructor(
         successState.value = false
 
         val user = userRepository.getUser(userId)
+        val userDTO = userRepository.userConverToUserDTO(user = user!!)
         try{
             val post = Wallpaper(
                 wallpaper.wallpaperId,
                 wallpaper.description,
-                user,
+                userDTO,
                 wallpaper.imageUrl,
                 wallpaper.category,
                 wallpaper.gradiantUrl,

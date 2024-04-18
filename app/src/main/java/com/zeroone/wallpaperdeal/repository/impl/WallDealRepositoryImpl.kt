@@ -109,4 +109,22 @@ class WallDealRepositoryImpl @Inject constructor(private val api: WallDealAPI) :
             throw e
         }
     }
+
+    override suspend fun addUserToWallDeal(userId: String, otherUserId: String) {
+        try {
+            api.addUserToWallDeal(userId = userId, otherUserId = otherUserId)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    override suspend fun getWallpaperRequest(
+        requestId: String
+    ): WallpaperRequest {
+        try {
+            return api.getWallpaperRequest(requestId = requestId)
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
 }

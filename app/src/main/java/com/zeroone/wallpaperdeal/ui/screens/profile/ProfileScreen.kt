@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -86,16 +88,18 @@ fun ProfileScreen(
                         .padding(innerPadding)
                 ) {
                     Row {
+                        Spacer(modifier = Modifier.fillMaxWidth(0.05f))
                         Text(
                             text = currentUser.username,
                             fontSize = 22.sp,
                             color = Color.White,
                             modifier = Modifier
-                                .padding(top = 8.dp, start = 24.dp)
+                                .padding(top = 8.dp)
+                                .fillMaxWidth(0.85f)
                         )
                         IconButton(
-                            onClick = { auth.signOut() },
-                            modifier = Modifier.padding(start = 240.dp)
+                            onClick = { navController.navigate(Screen.SettingsScreen.route) },
+                            modifier = Modifier.fillMaxWidth(1f)
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_setting),
@@ -170,7 +174,7 @@ fun ProfileScreen(
                     val color = ButtonDefaults.buttonColors(ProfileButtonColor)
                     Row {
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = { navController.navigate("${Screen.EditProfileScreen.route}/${currentUserId}")},
                             colors = color, modifier = Modifier
                                 .padding(start = 140.dp, top = 4.dp)
                                 .width(170.dp)

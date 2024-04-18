@@ -1,6 +1,8 @@
 package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,14 +45,18 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
+import com.zeroone.wallpaperdeal.model.Report
 import com.zeroone.wallpaperdeal.model.User
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.WallpaperItemForVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.ReportDialogScreen
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
+import com.zeroone.wallpaperdeal.ui.theme.DeleteColor
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import kotlinx.coroutines.Dispatchers
+import java.util.UUID
 
 @Composable
 fun OtherProfileScreen(
@@ -57,25 +64,31 @@ fun OtherProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel()
 ){
-    //Log.e("ProfileScreenWallpaperState", state)
+    val context = LocalContext.current
     val userId: String? =  navController.currentBackStackEntry?.arguments?.getString("userId")
     var checkFollow by remember { mutableStateOf<Boolean>(false) }
     var checkWallDeal by remember { mutableStateOf<Boolean>(false) }
     var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList())}
     var user by remember { mutableStateOf<User?>(null) }
+    var currentUser by remember { mutableStateOf<User?>(null) }
     var wallDealRequestState by remember { mutableStateOf<Boolean>(false) }
     var cancelDialog by remember { mutableStateOf<Boolean>(false) }
     var wallDealState by remember { mutableStateOf<Boolean>(false) }
     var wallDealForBetweenCurrentUserToTargetUserState by remember { mutableStateOf<Boolean>(false) }
+    var openDialog by remember { mutableStateOf<Boolean>(false) }
 
 
-    userId?.let{
-        LaunchedEffect(key1 = userId) {
-            viewModel.fetchItems(userId = it)
+
+    userId?.let{ userId ->
+        LaunchedEffect(Dispatchers.IO) {
+            viewModel.fetchItems(userId = userId)
+            viewModel.checkFollow(currentUserId = auth.uid!!, targetUserId = userId)
+            viewModel.getCurrentUser(auth.uid!!)
         }
+        checkFollow = viewModel.checkFollowState.value
         wallpapers = viewModel.stateItems.value.wallpapers
         user = viewModel.stateItems.value.user
-        Log.e("current - target", auth.uid!! + "-" + userId)
+        currentUser = viewModel.currentUserState.value
         user?.let { user ->
 
             LaunchedEffect(Dispatchers.IO){
@@ -119,12 +132,12 @@ fun OtherProfileScreen(
                                     modifier = Modifier
                                         .padding(top = 8.dp)
                                 )
-                                Spacer(modifier = Modifier.fillMaxWidth(0.85f))
-                                IconButton(onClick = {}) {
+                                Spacer(modifier = Modifier.fillMaxWidth(0.80f))
+                                IconButton(onClick = { openDialog = true}) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.options_profile),
+                                        painter = painterResource(id = R.drawable.ic_report),
                                         contentDescription = null,
-                                        tint = Color.LightGray,
+                                        tint = Color.Gray,
                                         modifier = Modifier
                                     )
                                 }
@@ -184,7 +197,9 @@ fun OtherProfileScreen(
                                         when (checkFollow) {
                                             true -> {
                                                 Button(
-                                                    onClick = { /*TODO*/ },
+                                                    onClick = { viewModel.followOrUnFollow(
+                                                        currentUserId = auth.uid!!, targetUserId = user.userId
+                                                    ) },
                                                     colors = activeButtonColor, modifier = Modifier
                                                         .padding(top = 8.dp)
                                                 ) {
@@ -195,7 +210,9 @@ fun OtherProfileScreen(
 
                                             else -> {
                                                 Button(
-                                                    onClick = { /*TODO*/ },
+                                                    onClick = { viewModel.followOrUnFollow(
+                                                        currentUserId = auth.uid!!, targetUserId = user.userId
+                                                    )},
                                                     colors = buttonColor, modifier = Modifier
                                                         .padding(top = 8.dp)
                                                 ) {
@@ -210,7 +227,7 @@ fun OtherProfileScreen(
                                                 Spacer(modifier = Modifier.fillMaxWidth(0.075f))
                                                 Button(
                                                     onClick = { viewModel.deleteRequest(auth.uid!! + userId)},
-                                                    colors = activeButtonColor, modifier = Modifier
+                                                    colors = ButtonDefaults.buttonColors(DeleteColor), modifier = Modifier
                                                         .padding(top = 8.dp)
                                                 ) {
                                                     Text(text = "Request sent", color = Color.LightGray)
@@ -219,17 +236,36 @@ fun OtherProfileScreen(
                                             else -> {
                                                 when(wallDealState){
                                                     false -> {
-                                                        Spacer(modifier = Modifier.fillMaxWidth(0.075f))
-                                                        Button(
-                                                            onClick = {
-                                                                viewModel.sendWallDealRequest(
-                                                                    senderUserId = auth.uid!!,
-                                                                    receiverUserId = userId
-                                                                ) },
-                                                            colors = buttonColor, modifier = Modifier
-                                                                .padding(top = 8.dp)
-                                                        ) {
-                                                            Text(text = "WallDeal", color = Color.LightGray)
+                                                        currentUser?.let {
+                                                            val coupleCheck = it.wallDealId.isNullOrEmpty()
+                                                            when(coupleCheck){
+                                                                true -> {
+                                                                    Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                    Button(
+                                                                        onClick = {
+                                                                            viewModel.sendWallDealRequest(
+                                                                                senderUserId = it.userId,
+                                                                                receiverUserId = userId
+                                                                            )},
+                                                                        colors = buttonColor,
+                                                                        modifier = Modifier.padding(top = 8.dp),
+                                                                    ) {
+                                                                        Text(text = "Be Couple", color = Color.LightGray)
+                                                                    }
+                                                                }
+                                                                false -> {
+                                                                    Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                    Button(
+                                                                        onClick = {
+                                                                            Toast.makeText(context,
+                                                                            "You already own a couple.",Toast.LENGTH_LONG).show()},
+                                                                        colors = buttonColor,
+                                                                        modifier = Modifier.padding(top = 8.dp),
+                                                                    ) {
+                                                                        Text(text = "You have a Couple", color = Color.LightGray)
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                     true -> {
@@ -238,13 +274,14 @@ fun OtherProfileScreen(
                                                                 Spacer(modifier = Modifier.fillMaxWidth(0.075f))
                                                                 Button(
                                                                     onClick = {cancelDialog = true},
-                                                                    colors = buttonColor, modifier = Modifier
+                                                                    colors = ButtonDefaults.buttonColors(
+                                                                        ActiveButton), modifier = Modifier
                                                                         .padding(
                                                                             top = 8.dp,
                                                                         )
 
                                                                 ) {
-                                                                    Text(text = "Cancel WallDeal", color = Color.LightGray, fontSize = 12.sp,
+                                                                    Text(text = "Break the Couple", color = Color.LightGray, fontSize = 12.sp,
                                                                         maxLines = 1)
                                                                 }
                                                             }
@@ -252,16 +289,14 @@ fun OtherProfileScreen(
                                                                 Spacer(modifier = Modifier.fillMaxWidth(0.075f))
                                                                 Button(
                                                                     onClick = {
-                                                                        viewModel.sendWallDealRequest(
-                                                                            senderUserId = auth.uid!!,
-                                                                            receiverUserId = userId
-                                                                        ) },
-                                                                    colors = buttonColor, modifier = Modifier
-                                                                        .padding(top = 8.dp)
+                                                                        Toast.makeText(context,
+                                                                            "The user has a couple.",
+                                                                            Toast.LENGTH_LONG).show() },
+                                                                    colors = buttonColor,
+                                                                    modifier = Modifier.padding(top = 8.dp),
                                                                 ) {
-                                                                    Text(text = "WallDeal", color = Color.LightGray)
+                                                                    Text(text = "Be Couple", color = Color.LightGray)
                                                                 }
-                                                                Log.d("User has a WallDeal with other users", "Yes")
                                                             }
                                                         }
                                                     }
@@ -296,6 +331,20 @@ fun OtherProfileScreen(
                                 viewModel.cancelWallDeal(auth.uid!!)
                                 cancelDialog = false
                             }
+                        }
+                    }
+                    Box(modifier = Modifier.fillMaxSize()){
+                        if(openDialog){
+                            ReportDialogScreen(
+                                onDismissRequest = { openDialog = false},cancelDialog = { openDialog = false },
+                                wallpaperReport = null,
+                                userReport = Report<User>(
+                                    reportId = UUID.randomUUID().toString(),
+                                    message = "",
+                                    payload = user
+                                ),
+                                reportObject = "user"
+                            )
                         }
                     }
                 }

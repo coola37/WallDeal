@@ -11,20 +11,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -44,13 +48,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.User
+import com.zeroone.wallpaperdeal.model.UserDetail
 import com.zeroone.wallpaperdeal.ui.MainActivity
+import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.theme.LoginRegisterButtonColor
 import com.zeroone.wallpaperdeal.ui.theme.Purple40
+import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -60,108 +70,93 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
     val context = LocalContext.current
     var registerButtonEnabled by remember { mutableStateOf<Boolean>(false)}
     var loading by remember { mutableStateOf<Boolean>(false) }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Black))
-    Box(modifier = Modifier.fillMaxSize()){
-        Column( modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom)){
-
+    Scaffold(
+        containerColor = Color.Black
+    ) {
+        Column(
+            modifier = Modifier.padding(it).fillMaxSize(),
+            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.walldeallogo),
-                contentDescription = null,
+                contentDescription = null, modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(0.1f)
             )
-
-            var textUsername: String by remember { mutableStateOf("") }
-            TextField(
-                value = textUsername,
-                onValueChange = { textUsername = it },
-                colors = TextFieldDefaults.colors(Color.LightGray),
-                shape = TextFieldDefaults.shape,
+            val textFieldColor = TextFieldDefaults.colors(
+                focusedContainerColor = TextFieldBaseColor,
+                unfocusedContainerColor = TextFieldBaseColor,
+                disabledTextColor = Color.LightGray,
+                focusedTextColor = Color.LightGray,
+                unfocusedLabelColor = Color.LightGray
+            )
+            var textEmail by remember { mutableStateOf("") }
+            TextField(value = textEmail, colors = textFieldColor,
+                shape = RoundedCornerShape(20.dp),
+                onValueChange ={ textEmail = it },
+                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null, tint = Color.LightGray ) },
                 modifier = Modifier
-                    .background(color = Color.Unspecified)
-                    .fillMaxWidth()
-                    .focusRequester(FocusRequester())
-                    .padding(horizontal = 16.dp),  // Adjust padding as needed
-                leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null) },
-                label = { Text(text = "Username") },
+                    .fillMaxWidth(0.8f)
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+                maxLines = 1,
+                label = { Text(text = "Email", color = Color.Gray, fontSize = 14.sp) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done
+                )
+            )
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
+            var textUsername by remember { mutableStateOf("") }
+            TextField(value = textUsername, colors = textFieldColor,
+                shape = RoundedCornerShape(20.dp),
+                onValueChange ={ textUsername = it },
+                leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = Color.LightGray ) },
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+                maxLines = 1,
+                label = { Text(text = "Username", color = Color.Gray, fontSize = 14.sp) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
-                ),
-                singleLine = true
+                )
             )
-
-            var textEmail: String by remember { mutableStateOf("") }
-            TextField(
-                value = textEmail,
-                onValueChange = { textEmail = it },
-                colors = TextFieldDefaults.colors(Color.LightGray),
-                shape = TextFieldDefaults.shape,
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
+            var textPassword by remember { mutableStateOf("") }
+            TextField(value = textPassword, colors = textFieldColor,
+                shape = RoundedCornerShape(20.dp),
+                onValueChange ={ textPassword = it },
+                leadingIcon = { Icon(imageVector = Icons.Default.Password, contentDescription = null, tint = Color.LightGray ) },
                 modifier = Modifier
-                    .background(color = Color.Unspecified)
-                    .fillMaxWidth()
-                    .focusRequester(FocusRequester())
-                    .padding(horizontal = 16.dp),  // Adjust padding as needed
-                leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
-                label = { Text(text = "E-Mail") },
+                    .fillMaxWidth(0.8f)
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+                maxLines = 1,
+                label = { Text(text = "Password", color = Color.Gray, fontSize = 14.sp) },
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
-                ),
-                singleLine = true
+                )
             )
-
-            var textPassword: String by remember { mutableStateOf("") }
-            TextField(
-                value = textPassword,
-                onValueChange = { textPassword = it },
-                colors = TextFieldDefaults.colors(Color.LightGray),
-                shape = TextFieldDefaults.shape,
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
+            var textPasswordRepeat by remember { mutableStateOf("") }
+            TextField(value = textPasswordRepeat, colors = textFieldColor,
+                shape = RoundedCornerShape(20.dp),
+                onValueChange ={ textPasswordRepeat = it },
+                leadingIcon = { Icon(imageVector = Icons.Default.Password, contentDescription = null, tint = Color.LightGray ) },
                 modifier = Modifier
-                    .background(color = Color.Unspecified)
-                    .fillMaxWidth()
-                    .focusRequester(FocusRequester())
-                    .padding(horizontal = 16.dp),
-                leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
-                label = { Text(text = "Password") },
+                    .fillMaxWidth(0.8f)
+                    .padding(start = 4.dp, end = 4.dp, top = 4.dp),
+                maxLines = 1,
+                label = { Text(text = "Re-Password", color = Color.Gray, fontSize = 14.sp) },
+                visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
+                    keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation()
+                )
             )
-
-            var textPasswordRepeat: String by remember { mutableStateOf("") }
-            TextField(
-                value = textPasswordRepeat,
-                onValueChange = { textPasswordRepeat = it },
-                colors = TextFieldDefaults.colors(Color.LightGray),
-                shape = TextFieldDefaults.shape,
-                modifier = Modifier
-                    .background(color = Color.Unspecified)
-                    .fillMaxWidth()
-                    .focusRequester(FocusRequester())
-                    .padding(horizontal = 16.dp),  // Adjust padding as needed
-                leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
-                label = { Text(text = "Confirm-Password") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            val buttonColors = ButtonDefaults.buttonColors(Purple40)
+            Spacer(modifier = Modifier.fillMaxHeight(0.01f))
             registerButtonEnabled =
                 !(textPassword != textPasswordRepeat || textPassword.isEmpty() || textPasswordRepeat.isEmpty()
                         || textUsername.isEmpty() || textEmail.isEmpty())
-
             Button(enabled = registerButtonEnabled,
                 onClick = {
                     loading = true
@@ -173,36 +168,42 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                         Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
                         loading = false
                     }
-                    else if(!(textEmail.contains(".com"))){
+                    else if(!(textEmail.contains("@"))){
                         Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
                         loading = false
                     }
                     else{
                         auth.createUserWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
                             if(it.isSuccessful){
-                                loading = false
-                                Log.d("UserAuth:", "succes")
-                                auth.currentUser.let{
-                                    var user = User(auth.currentUser?.uid.toString(), textEmail, textUsername,
-                                        "", null
+                                auth.currentUser?.let {
+                                    val userDetail = UserDetail(null, emptyList(), emptyList(), emptyList())
+                                    val user = User(
+                                        userId = it.uid, textEmail,
+                                        username = textUsername,
+                                        wallDealId = "",
+                                        userDetail = userDetail,
+                                        fcmToken = ""
                                     )
-                                    CoroutineScope(Dispatchers.IO).launch{
+                                    CoroutineScope(Dispatchers.Main).launch{
                                         viewModel.saveUserToDb(user)
                                     }
-                                    navigateHomeActivity(context)
+                                    sendVerificationEmail(user = it)
+                                    //navigateHomeActivity(context)
+                                    navController.navigate(Screen.LoginScreen.route)
                                 }
+                                loading = false
+                                Log.d("UserAuth:", "succes")
+
                             }else{
                                 loading = false
-                                Toast.makeText(context,it.exception.toString(),Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
                                 Log.d("UserAuth:", "failure: ", it.exception)
                             }
                         }
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 32.dp, end = 32.dp),
-                colors = buttonColors
+                modifier = Modifier,
+                colors = ButtonDefaults.buttonColors(LoginRegisterButtonColor)
             ) {
                 if (loading) {
                     CircularProgressIndicator(
@@ -218,7 +219,6 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                 }
             }
 
-            Spacer(modifier = Modifier.height(150.dp))
         }
     }
 }
@@ -227,4 +227,12 @@ fun navigateHomeActivity(context: Context){
     intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
     context.startActivity(intent)
     (context as Activity).finish()
+}
+
+fun sendVerificationEmail(user: FirebaseUser){
+    user.sendEmailVerification().addOnCompleteListener {
+        Log.d("VerifyEmail", "sent")
+    }.addOnFailureListener {
+        Log.e("VerifyEmail", "did not send")
+    }
 }

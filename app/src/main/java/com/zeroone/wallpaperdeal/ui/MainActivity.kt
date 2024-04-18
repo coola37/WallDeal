@@ -28,7 +28,9 @@ import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
+import com.zeroone.wallpaperdeal.ui.screens.profile.EditProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.profile.OtherProfileScreen
+import com.zeroone.wallpaperdeal.ui.screens.profile.SettingsScreen
 import com.zeroone.wallpaperdeal.ui.screens.requests.RequestsScreen
 import com.zeroone.wallpaperdeal.ui.screens.search.SearchScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
@@ -52,10 +54,10 @@ class MainActivity : ComponentActivity(), ScreenCallback {
     private lateinit var authListener: FirebaseAuth.AuthStateListener
     @Inject
     lateinit var storage: FirebaseStorage
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupAuthListener()
+        //auth.signOut()
         setContent {
             WallpaperDealTheme {
                 // A surface container using the 'background' color from the theme
@@ -97,7 +99,7 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                                 }
                             )
                             ){
-                            SelectedCategoryScreen(navController = navController)
+                            SelectedCategoryScreen(navController = navController, auth = auth)
                         }
                         composable("${ Screen.WallpaperViewScreen.route }/{wallpaperId}",
                             arguments = listOf(
@@ -129,6 +131,20 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                         }
                         composable(Screen.RequestsScreen.route){
                             RequestsScreen(auth = auth, navController = navController)
+                        }
+                        composable("${Screen.EditProfileScreen.route}/{userId}",
+                            arguments = listOf(
+                                navArgument("userId"){
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                    nullable = true
+                                }
+                            )
+                        ){
+                            EditProfileScreen(navController = navController, storage = storage )
+                        }
+                        composable(Screen.SettingsScreen.route){
+                            SettingsScreen(auth = auth, navController = navController)
                         }
                     }
                 }

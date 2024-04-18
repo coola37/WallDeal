@@ -51,4 +51,14 @@ class RequestsViewModel @Inject constructor(
             throw e
         }
     }
+
+    fun addUserToWallDeal(userId: String, otherUserId: String){
+        try {
+            viewModelScope.launch {
+                wallDealRepository.addUserToWallDeal(userId = userId, otherUserId = otherUserId)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
 }

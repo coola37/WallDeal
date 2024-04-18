@@ -2,6 +2,7 @@ package com.zeroone.wallpaperdeal.model
 
 data class WallDeal(
     val groupId: String,
-    val groupMembers: List<User>,
-    val request: WallpaperRequest
+    var user1: UserDTO,
+    var user2: UserDTO,
+    var requestId: String
 )

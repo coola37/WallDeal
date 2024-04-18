@@ -60,6 +60,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
     wallpapers = state.wallpapers
     auth.uid?.let{
         LaunchedEffect(key1 = it) {
+            viewModel.getAllWallpapers(currentUserId = it)
             viewModel.checkRequestForUser(it)
         }
     }
@@ -135,10 +136,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}*/
 
             //Top10WallpaperList(photos = null, modifier = Modifier, isVisible = isTop10ListVisible)
-            if (isTop10ListVisible) {
-                Text( text = "Popular New Wallpapers",fontSize = 16.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp)
-                )
-            }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}
             wallpapers?.let{ wallpapers ->
                 WallpaperListVerticalStaggeredGrid(
                     list = wallpapers,
@@ -152,15 +149,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                     }
 
                 )
-            } ?: run{
-                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(50.dp),
-                        color = Color.White
-                    )
-                }
             }
         }
     }

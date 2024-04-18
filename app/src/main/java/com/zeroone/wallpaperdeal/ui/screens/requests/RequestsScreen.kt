@@ -70,8 +70,14 @@ fun RequestsScreen(
                     RequestItem(request = requests[it],
                         createWalldeal = {
                             CoroutineScope(Dispatchers.Main).launch{
-                                viewModel.createWallDeal(requests[it].possibleWallDeal)
-                                delay(1000)
+                                val request = requests[it]
+                                if(request.senderUser.wallDealId.isNullOrEmpty()){
+                                    viewModel.createWallDeal(request.possibleWallDeal)
+                                }else{
+                                    viewModel.addUserToWallDeal(userId = request.senderUser.userId,
+                                        otherUserId = request.receiverUser.userId )
+                                }
+                                delay(1500)
                                 navController.navigate(Screen.WallDealScreen.route)
                             }
                         },
@@ -90,7 +96,7 @@ fun RequestItem(request: WallDealRequest, createWalldeal: () -> Unit, deleteRequ
     Row(modifier = Modifier
         .fillMaxWidth()
         .background(Color.Black)) {
-        AsyncImage(model = request.senderUser.userDetail?.profilePhoto, contentDescription = null,
+        AsyncImage(model = request.senderUser.profilePhoto, contentDescription = null,
             Modifier
                 .clip(CircleShape)
                 .fillMaxWidth(0.1f)

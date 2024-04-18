@@ -20,6 +20,7 @@ class WallDealViewModel @Inject constructor(
 ) : ViewModel(){
 
     var wallDealState: MutableState<WallDeal?> = mutableStateOf(null)
+    var requestState: MutableState<WallpaperRequest?> = mutableStateOf(null)
 
     fun getWallDeal(userId: String){
         try {
@@ -44,6 +45,16 @@ class WallDealViewModel @Inject constructor(
             viewModelScope.launch {
                 wallDealRepository.sendWallpaperRequest(currentUserId = userId, request = request)
                 getWallDeal(userId = userId)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    fun getWallpaperRequest(requestId: String){
+        try {
+            viewModelScope.launch {
+                requestState.value = wallDealRepository.getWallpaperRequest(requestId = requestId)
             }
         }catch (e: RuntimeException){
             throw e

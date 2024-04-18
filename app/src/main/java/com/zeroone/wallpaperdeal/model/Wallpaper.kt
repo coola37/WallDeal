@@ -3,7 +3,7 @@ package com.zeroone.wallpaperdeal.model
 data class Wallpaper(
     val wallpaperId: String,
     val description: String?,
-    val owner: User?,
+    val owner: UserDTO?,
     val imageUrl: String,
     val category: String,
     val gradiantUrl: String?,

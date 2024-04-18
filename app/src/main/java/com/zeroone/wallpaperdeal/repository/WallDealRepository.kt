@@ -5,6 +5,7 @@ import com.zeroone.wallpaperdeal.model.WallDealRequest
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.model.WallpaperRequest
 import retrofit2.http.Body
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface WallDealRepository {
@@ -20,4 +21,7 @@ interface WallDealRepository {
     suspend fun cancelWallpaperRequest(currentUserId: String, request: WallpaperRequest)
     suspend fun createWallDeal(wallDeal: WallDeal)
     suspend fun cancelWallDeal(userId: String)
+    suspend fun addUserToWallDeal(userId: String,otherUserId: String)
+    suspend fun getWallpaperRequest(requestId: String) : WallpaperRequest
+
 }

@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Wallpaper Deal</string>
+    <string name="app_name">WallDeal</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="default_web_client_id">162030588159-ugd1rlvfq9vfdgifb86d2483ekc0fno6.apps.googleusercontent.com</string>
+    <string name="default_notification_channel_id" translatable="false">your_default_channel_id</string>
+    <string name="your_channel_description">your_channel_description</string>
 </resources>

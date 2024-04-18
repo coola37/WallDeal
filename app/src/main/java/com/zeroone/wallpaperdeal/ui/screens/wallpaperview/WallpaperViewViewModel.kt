@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Report
+import com.zeroone.wallpaperdeal.model.User
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.repository.UserRepository
 import com.zeroone.wallpaperdeal.repository.WallpaperRepository
@@ -92,4 +94,35 @@ class WallpaperViewViewModel @Inject constructor(
             throw e
         }
     }
+
+    fun removeWallpaper(wallpaperId: String){
+        try{
+            viewModelScope.launch {
+                wallpaperRepository.removeWallpaper(wallpaperId = wallpaperId)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    fun reportWallpaper(report: Report<Wallpaper>){
+        try {
+            viewModelScope.launch {
+                wallpaperRepository.createWallpaperReport(report = report)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    fun reportUser(report: Report<User>){
+        try {
+            viewModelScope.launch{
+                userRepository.createUserReport(report =  report)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
 }

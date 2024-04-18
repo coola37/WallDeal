@@ -31,7 +31,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.zeroone.wallpaperdeal.R
 
 
-@Composable fun CancelWallDealDialog(
+@Composable
+fun CancelWallDealDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ) {

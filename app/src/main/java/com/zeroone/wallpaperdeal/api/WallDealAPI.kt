@@ -32,7 +32,7 @@ interface WallDealAPI {
     suspend fun cancelPost(@Path("currentUserId") currentUserId: String, @Body request: WallpaperRequest)
     @GET("/api/1.0/walldeal/request-notification-check/{userId}")
     suspend fun checkWallDealRequests(@Path("userId") userId: String) : Boolean
-    @GET("/api/1.0/walldeal/get-request/{userId}")
+    @GET("/api/1.0/walldeal/get-walldeal-request/{userId}")
     suspend fun getRequestsByUserId(@Path("userId") userId: String) : List<WallDealRequest>
     @GET("/api/1.0/walldeal/get-walldeal/{userId}")
     suspend fun getWallDeal(@Path("userId") userId: String) : WallDeal
@@ -40,4 +40,9 @@ interface WallDealAPI {
     suspend fun createWallDeal(@Body wallDeal: WallDeal)
     @DELETE("/api/1.0/walldeal/cancel-walldeal/{userId}")
     suspend fun cancelWallDeal(@Path("userId") userId: String)
+    @PUT("/api/1.0/walldeal/add-user-to-walldeal/{userId}/{otherUserId}")
+    suspend fun addUserToWallDeal(@Path("userId") userId: String, @Path("otherUserId") otherUserId: String)
+    @GET("/api/1.0/walldeal/get-wallpaper-request/{requestId}")
+    suspend fun getWallpaperRequest(@Path("requestId") requestId:String) : WallpaperRequest
+
 }

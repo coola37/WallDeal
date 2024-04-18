@@ -36,9 +36,11 @@ class ProfileViewModel @Inject constructor(
     var stateItems = mutableStateOf<ItemsState>(ItemsState())
     private var job: Job? = null
 
+    val checkFollowState: MutableState<Boolean> = mutableStateOf(false)
     val wallDealRequestState: MutableState<Boolean> = mutableStateOf(false)
     val wallDealForTargetUserState: MutableState<Boolean> = mutableStateOf(false)
     val wallDealForBetweenUserToUserState: MutableState<Boolean> = mutableStateOf(false)
+    val currentUserState: MutableState<User?> = mutableStateOf(null)
 
     fun fetchItems(userId: String) {
         job?.cancel()
@@ -47,6 +49,14 @@ class ProfileViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    fun getCurrentUser(userId: String){
+        try {
+            viewModelScope.launch(){
+                currentUserState.value =userRepository.getUser(userId = userId) }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
     private fun getItems(userId: String): Flow<ItemsState> = flow {
         try {
             val wallpapers = wallpaperRepository.getWallpapersByOwner(userId)
@@ -123,4 +133,45 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun followOrUnFollow(currentUserId: String, targetUserId: String){
+        try {
+            viewModelScope.launch {
+                userRepository.followOrUnfollow(currentUserId = currentUserId, targetUserId = targetUserId)
+                checkFollowState.value = !checkFollowState.value
+                fetchItems(userId = targetUserId)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    suspend fun checkFollow(currentUserId: String, targetUserId: String){
+        try {
+            viewModelScope.launch(){
+                checkFollowState.value = userRepository.checkFollow(
+                    currentUserId = currentUserId,
+                    targetUserId = targetUserId
+                )
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+
+    fun editProfile(user: User){
+        try {
+            viewModelScope.launch {
+                userRepository.editProfile(user = user)
+            }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
+    fun deleteAccount(userId: String){
+        try {
+            viewModelScope.launch{ userRepository.deleteAccount(userId = userId) }
+        }catch (e: RuntimeException){
+            throw e
+        }
+    }
 }

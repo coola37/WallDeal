@@ -1,11 +1,9 @@
 package com.zeroone.wallpaperdeal.repository
 
 import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Report
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.model.ResponseWallpaper
-import retrofit2.http.Body
-
-import retrofit2.http.Path
 
 interface WallpaperRepository {
     suspend fun saveWallpaper(wallpaper: Wallpaper) : String
@@ -16,7 +14,8 @@ interface WallpaperRepository {
     suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest)
     suspend fun addFavorite(userId: String, wallpaperId: String)
     suspend fun checkLike(wallpaperId: String, currentUserId: String) : Boolean
-
-    suspend fun getWallpaperByFollowed(currentUserId: String)
+    suspend fun getWallpaperByFollowed(currentUserId: String) : ResponseWallpaper
+    suspend fun removeWallpaper(wallpaperId: String)
+    suspend fun createWallpaperReport(report: Report<Wallpaper>)
 
 }

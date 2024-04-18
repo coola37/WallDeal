@@ -33,12 +33,9 @@ class HomeViewModel @Inject constructor(
     var requestsState: MutableState<Boolean> = mutableStateOf(false);
     private var job: Job? = null
 
-    init {
-        getAllWallpapers()
-    }
-    fun getAllWallpapers(){
+    fun getAllWallpapers(currentUserId: String){
         job?.cancel()
-        job = getWallpaper().onEach {
+        job = getWallpaper(currentUserId = currentUserId).onEach {
             when(it){
                 is Resource.Success -> {
                     state.value = WallpapersState(wallpapers = it.data ?: emptyList())
@@ -55,10 +52,10 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun getWallpaper() : Flow<Resource<List<Wallpaper>>> = flow {
+    private fun getWallpaper(currentUserId: String) : Flow<Resource<List<Wallpaper>>> = flow {
         try {
             emit(Resource.Loading())
-            val wallpaperList = wallpaperRepository.getWallpapers()
+            val wallpaperList = wallpaperRepository.getWallpaperByFollowed(currentUserId = currentUserId)
             if(wallpaperList.response == "Succes"){
                 emit(Resource.Success(wallpaperList.payload))
             }else{
@@ -80,4 +77,5 @@ class HomeViewModel @Inject constructor(
             Log.e("checkRequestForUser", e.message.toString())
         }
     }
+
 }

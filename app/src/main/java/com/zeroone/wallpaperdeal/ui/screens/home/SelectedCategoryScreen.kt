@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,24 +28,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun SelectedCategoryScreen(
     navController: NavController,
+    auth: FirebaseAuth,
     viewModel: HomeViewModel = hiltViewModel()
 ){
     val categoryName = navController.currentBackStackEntry?.arguments?.getString("category")
     val scrollState = LazyStaggeredGridState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
-    val state = viewModel.state.value
+
     //var isTop10ListVisible by remember { mutableStateOf(true) }
     categoryName?.let {
 
+        LaunchedEffect(Dispatchers.IO){
+            viewModel.getAllWallpapers(auth.uid!!)
+        }
+        val state = viewModel.state.value
         Scaffold(
             topBar = {
                 if (isTopAppBarVisible) {
@@ -52,17 +61,20 @@ fun SelectedCategoryScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.walldeallogo),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(start = 110.dp)
-                                .align(Alignment.CenterVertically)
-                        )
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.walldeallogo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .fillMaxHeight(0.75f)
+                                    .fillMaxWidth(0.5f)
+
+                            )
+                        }
                     }
                 }
             },
-            bottomBar = { BottomNavigationBar(0, null) }
+            bottomBar = { BottomNavigationBar(0, navController) }
         ) {
             Column(
                 modifier = Modifier
@@ -72,7 +84,7 @@ fun SelectedCategoryScreen(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()){
-                    Text(categoryName!!, fontSize = 24.sp, color = Color.LightGray)
+                    Text(categoryName!!, fontSize = 18.sp, color = Color.LightGray)
                 }
                 val wallpaperList = state.wallpapers.filter { it.category == categoryName }
                 WallpaperListVerticalStaggeredGrid(

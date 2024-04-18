@@ -1,9 +1,12 @@
 package com.zeroone.wallpaperdeal.api
 
 import com.zeroone.wallpaperdeal.model.LikeRequest
+import com.zeroone.wallpaperdeal.model.Report
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.model.ResponseWallpaper
+import com.zeroone.wallpaperdeal.model.User
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -35,5 +38,11 @@ interface WallpaperAPI {
     suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
 
     @GET("/api/1.0/wallpapers/get-wallpapers-by-followed/{currentUserId}")
-    suspend fun getWallpaperByFollowed(@Path("currentUserId") currentUserId: String)
+    suspend fun getWallpaperByFollowed(@Path("currentUserId") currentUserId: String) : ResponseWallpaper
+
+    @DELETE("/api/1.0/wallpapers/delete/{wallpaperId}")
+    suspend fun removeWallpaper(@Path("wallpaperId") wallpaperId: String)
+
+    @POST("/api/1.0/reports")
+    suspend fun createWallpaperReport(@Body report: Report<Wallpaper>)
 }

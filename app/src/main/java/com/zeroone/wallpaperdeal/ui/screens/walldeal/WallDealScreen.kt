@@ -22,16 +22,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,35 +34,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.WallDeal
 import com.zeroone.wallpaperdeal.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
-import com.zeroone.wallpaperdeal.ui.screens.share.bitmapToByteArray
-import com.zeroone.wallpaperdeal.ui.screens.share.createGradiant
 import com.zeroone.wallpaperdeal.ui.screens.share.getBitmapFromUri
-import com.zeroone.wallpaperdeal.ui.theme.BlueTwitter
-import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.UUID
 
 @Composable
 fun WallDealScreen(
@@ -93,7 +69,7 @@ fun WallDealScreen(
                 val bitmap = getBitmapFromUri(context, uri)
                 val width = bitmap?.width ?: 0
                 val height = bitmap?.height ?: 0
-                if (width >= 1000 && height >= 1800) {
+                if (width >= 1920 && height >= 1080) {
                     buttonEnabled = true
                     Log.d("Selected photo resolution:", "${width} x ${height}")
                 } else {
@@ -122,6 +98,7 @@ fun WallDealScreen(
         bottomBar = { BottomNavigationBar(selectedItem = 3, navController = navController) },
         backgroundColor = Color.Black,
     ) {
+        fun uriChange(){}
         walldeal?.let { wallDealInLet ->
             val groupId = wallDealInLet.groupId
             if(!groupId.isNullOrEmpty()){
@@ -136,7 +113,8 @@ fun WallDealScreen(
                     userId = userId,
                     imageUrl = imageUrl,
                     viewModel = viewModel,
-                    paddingValues = it
+                    paddingValues = it,
+                    selectedImageUriChange = { selectedImageUri = null }
                 )
             }else{
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -166,18 +144,23 @@ fun WallDealContent(
     userId: String,
     imageUrl: String,
     viewModel: WallDealViewModel,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    selectedImageUriChange: () -> Unit
 ) {
     var menu by remember { mutableStateOf("request") }
+    var request by remember { mutableStateOf<WallpaperRequest?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(1f)
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             modifier = Modifier
-                .padding(paddingValues)
+                .padding()
                 .fillMaxWidth()
+                .fillMaxHeight(0.1f)
                 .background(Color.Black)
         ) {
             TextButton(
@@ -187,16 +170,16 @@ fun WallDealContent(
                 Text(
                     text = "Requests",
                     color = if (menu == "request") Color.White else Color.Gray,
-                    fontSize = 16.sp
+                    fontSize = 14.sp
                 )
             }
             TextButton(
                 onClick = {
-                    if (wallDealInLet.request == null) {
+                    if (wallDealInLet.requestId.isNullOrEmpty()) {
                         menu = "send"
                     } else {
                         Toast.makeText(
-                            context, "Before you can send a wallpaper request, you must end the current request.",
+                            context, "Finalize your current wallpaper request",
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -206,7 +189,7 @@ fun WallDealContent(
                 Text(
                     text = "Send Wallpaper Request",
                     color = if (menu == "send") Color.White else Color.Gray,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     textAlign = TextAlign.Center
                 )
             }
@@ -214,248 +197,41 @@ fun WallDealContent(
 
         when (menu) {
             "request" -> {
-                wallDealInLet.request?.let {
-                    WallDealRequestOfWallpaper(request = wallDealInLet.request, viewModel = viewModel, userId = userId)
+                if(!wallDealInLet.requestId.isNullOrEmpty()){
+                    LaunchedEffect(key1 = wallDealInLet.requestId){
+                        viewModel.getWallpaperRequest(requestId = wallDealInLet.requestId)
+                    }
+                    request = viewModel.requestState.value
+                    request?.let {
+                        Column(modifier = Modifier
+                            .fillMaxHeight(1f)
+                            .fillMaxWidth()){
+                            WallDealRequestOfWallpaper(
+                                request = it,
+                                viewModel = viewModel,
+                                userId = userId
+                            )
+                        }
+                    }
                 }
             }
             "send" -> {
-                SendWallpaperRequestContent(
-                    singlePhotoPickerLauncher = singlePhotoPickerLauncher,
-                    selectedImageUri = selectedImageUri,
-                    buttonEnabled = buttonEnabled,
-                    storage = storage,
-                    userId = userId,
-                    viewModel = viewModel,
-                    wallDealInLet = wallDealInLet,
-                    context = context
-                ){ menu = "request"}
+                Column(modifier = Modifier.fillMaxHeight(1f).fillMaxWidth()){
+                    SendWallpaperRequestContent(
+                        singlePhotoPickerLauncher = singlePhotoPickerLauncher,
+                        selectedImageUri = selectedImageUri,
+                        buttonEnabled = buttonEnabled,
+                        storage = storage,
+                        userId = userId,
+                        viewModel = viewModel,
+                        wallDealInLet = wallDealInLet,
+                        context = context,
+                        selectedImageUriChange = { selectedImageUriChange() },
+                        menuChange = { menu = "request" }
+                    )
+                }
             }
             else -> {}
         }
     }
 }
-
-@Composable
-fun SendWallpaperRequestContent(
-    singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
-    selectedImageUri: Uri?,
-    buttonEnabled: Boolean,
-    storage: FirebaseStorage,
-    userId: String,
-    viewModel: WallDealViewModel,
-    wallDealInLet: WallDeal,
-    context: Context,
-    menuChange: () -> Unit
-) {
-    var isLoading by remember { mutableStateOf(false) }
-    var imageUrl by remember { mutableStateOf("") }
-
-    BoxWithConstraints {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
-                 // adjust the position of the elements
-        ) {
-            if (selectedImageUri != null) {
-                AsyncImage(
-                    model = selectedImageUri,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .fillMaxHeight(0.70f)
-                        .padding(top = 0.dp, bottom = 64.dp)
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight(0.70f)
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 32.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Select Wallpaper",
-                        color = Color.LightGray,
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                    )
-
-                    IconButton(
-                        onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(top = 8.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_image),
-                            contentDescription = null,
-                            tint = Color.LightGray, modifier = Modifier.size(60.dp)
-                        )
-                    }
-                }
-            }
-
-            var text by remember { mutableStateOf("") }
-            Row(modifier = Modifier.padding(bottom = 32.dp)) {
-                TextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = TextFieldBaseColor,
-                        textColor = Color.LightGray,
-                        disabledTextColor = Color.White,
-                        unfocusedLabelColor = Color.Gray,
-                        focusedLabelColor = Color.LightGray,
-                        focusedIndicatorColor = Color.LightGray
-                    ),
-                    maxLines = 2,
-                    label = { Text(text = "Message", fontSize = 14.sp) },
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    shape = CircleShape
-
-                )
-
-                IconButton(
-                    onClick = {
-                        isLoading = true
-                        val storageRef = storage.reference.child("walldeal_request${wallDealInLet.groupId}/${UUID.randomUUID()}")
-                        val uri = selectedImageUri!!
-                        storageRef.putFile(uri)
-                            .addOnSuccessListener {
-                                Log.e("Request image upload", "success")
-                                storageRef.downloadUrl.addOnSuccessListener { uri ->
-                                    imageUrl =uri.toString()
-                                    val senderUser = wallDealInLet.groupMembers.find { it.userId == userId }
-                                    val listReceiver = wallDealInLet.groupMembers.filterNot { it == senderUser }
-                                    senderUser?.let {
-                                        val request = WallpaperRequest(
-                                            message = text,
-                                            senderUser = it,
-                                            receiverUsers = listReceiver,
-                                            imageUrl = imageUrl
-                                        )
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            viewModel.sendWallpaperRequest(userId = userId, request = request)
-                                            delay(2000)
-                                            isLoading = false
-                                            menuChange()
-                                        }
-                                    }
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("BlurImage", e.message.toString())
-                            }
-                    },
-                    enabled = buttonEnabled,
-                ) {
-                    when (isLoading) {
-                        true -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                        false -> {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_send),
-                                contentDescription = null,
-                                tint = BlueTwitter
-                            )
-                        }
-                    }
-            }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: WallDealViewModel, userId: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row {
-            AsyncImage(
-                model = request.senderUser.userDetail?.profilePhoto,
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(60.dp)
-            )
-            Text(
-                text = request.senderUser.username,
-                color = Color.LightGray,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(top = 16.dp, start = 8.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier.height(600.dp)
-        ) {
-            AsyncImage(
-                model = request.imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth(0.66f)
-                    .fillMaxSize(0.75f),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            request.message?.let {
-                Text(
-                    text = it,
-                    fontSize = 20.sp,
-                    color = Color.LightGray,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            Row {
-                if (userId != request.senderUser.userId) {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.walldeal_ok),
-                            contentDescription = null,
-                            tint = Color.Unspecified
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(64.dp))
-                }
-                IconButton(
-                    onClick = {
-                        viewModel.cancelPost(userId = userId, request = request)
-                        Log.e("click", "true")
-                    },
-                    modifier = Modifier
-                        .size(50.dp)
-                        .padding(top = 8.dp)
-                        .clip(CircleShape)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.cancel),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
-                }
-            }
-        }
-    }
-}
-
