@@ -1,7 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
 import android.util.Log
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -26,11 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.StrokeCap
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
-import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
@@ -46,8 +42,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
-import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: HomeViewModel = hiltViewModel()) {
@@ -136,7 +130,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
             }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}*/
 
             //Top10WallpaperList(photos = null, modifier = Modifier, isVisible = isTop10ListVisible)
-            wallpapers?.let{ wallpapers ->
+            if(wallpapers.isNotEmpty()){
                 WallpaperListVerticalStaggeredGrid(
                     list = wallpapers,
                     scrollState = scrollState,
@@ -149,6 +143,15 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                     }
 
                 )
+            }else{
+                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp),
+                        color = Color.White
+                    )
+                }
             }
         }
     }

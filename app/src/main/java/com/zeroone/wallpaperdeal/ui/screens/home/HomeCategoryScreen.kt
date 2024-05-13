@@ -24,16 +24,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,9 +39,7 @@ import coil.compose.AsyncImage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.Category
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
-import com.zeroone.wallpaperdeal.ui.TopAppbarText
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
 

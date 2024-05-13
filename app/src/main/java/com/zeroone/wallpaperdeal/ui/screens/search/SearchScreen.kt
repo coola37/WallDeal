@@ -3,12 +3,16 @@ package com.zeroone.wallpaperdeal.ui.screens.search
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -28,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -97,7 +103,8 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(start = 4.dp, end = 4.dp, top = 4.dp),
                 maxLines = 1,
-                label = { Text(text = "Search", color = Color.Gray, fontSize = 14.sp) }
+                label = { Text(text = if (searchMethod == "wallpapers")  "Search by Description" else "Search by Username",
+                    color = Color.Gray, fontSize = 14.sp) }
             )
             Row(modifier = Modifier
                 .padding(top = 8.dp)
@@ -117,14 +124,26 @@ fun SearchScreen(
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(if (searchMethod == "wallpapers") wallpapers else users) { item ->
-                    when (searchMethod) {
-                        "wallpapers" -> WallpaperItemForSearch(wallpaper = item as Wallpaper, navController = navController)
-                        "accounts" -> UserItemForSearch(user = item as User, navController)
+            if(wallpapers.isNotEmpty() || users.isNotEmpty()){
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(if (searchMethod == "wallpapers") wallpapers else users) { item ->
+                        when (searchMethod) {
+                            "wallpapers" -> WallpaperItemForSearch(wallpaper = item as Wallpaper, navController = navController)
+                            "accounts" -> UserItemForSearch(user = item as User, navController)
+                        }
                     }
                 }
+            }else{
+                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp),
+                        color = Color.White
+                    )
+                }
             }
+
         }
     }
 }
@@ -133,21 +152,17 @@ fun SearchScreen(
 private fun WallpaperItemForSearch(wallpaper: Wallpaper, navController: NavController){
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(bottom = 8.dp)
-        .clickable { navController.navigate("${Screen.WallpaperViewScreen.route}/${wallpaper.wallpaperId}")}) {
+        .clickable { navController.navigate("${Screen.WallpaperViewScreen.route}/${wallpaper.wallpaperId}") }) {
         wallpaper.let {
             AsyncImage(model = wallpaper.imageUrl, contentDescription = null, modifier = Modifier
-                .width(100.dp)
-                .height(120.dp)
-                .padding(start = 8.dp)
+                .size(100.dp)
             )
-            Column(modifier = Modifier.padding(start = 8.dp)) {
-                wallpaper.description?.let {
-                    Text(text = it, color = Color.White, fontSize = 18.sp,modifier = Modifier.padding(bottom = 16.dp, top = 6.dp) )
-                } ?: run {
-                    Text(text = "No explanation", color = Color.White, fontSize = 14.sp,modifier = Modifier.padding(bottom = 16.dp, top = 6.dp) )
-                }
-                Text(text = wallpaper.owner?.username!!, color = Color.LightGray, fontSize = 14.sp,modifier = Modifier.padding(bottom = 16.dp))
+            Spacer(modifier = Modifier.fillMaxWidth(0.03f))
+            Column(modifier = Modifier.height(100.dp))
+            {
+                Spacer(modifier = Modifier.fillMaxHeight(0.15f))
+                Text(text = wallpaper.owner?.username!!, color = Color.LightGray, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(text = wallpaper.category, color = Color.Gray, fontSize = 14.sp )
             }
         }

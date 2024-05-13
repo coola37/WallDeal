@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,8 +81,8 @@ fun DeleteAccountDialogScreen(
             ) {
 
                 Text(
-                    text = "Are you sure you want to delete your account?",
-                    modifier = Modifier.padding(16.dp), color = Color.DarkGray, fontSize = 12.sp
+                    text = "Are you sure you want to delete your account?", modifier = Modifier.padding(16.dp),
+                    color = Color.DarkGray, fontSize = 12.sp, textAlign = TextAlign.Center
                 )
                 val textFieldColor = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,

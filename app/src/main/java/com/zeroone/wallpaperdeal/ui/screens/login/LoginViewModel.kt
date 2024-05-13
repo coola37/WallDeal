@@ -96,6 +96,7 @@ class LoginViewModel @Inject constructor(
                         }
                     }
                 }else{
+                    auth.signOut()
                     Toast.makeText(context, "Please verify your email", Toast.LENGTH_SHORT).show()
                 }
 

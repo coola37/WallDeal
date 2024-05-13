@@ -127,7 +127,7 @@ fun OtherProfileScreen(
                                 }
                                 Text(
                                     text = user.username,
-                                    fontSize = 18.sp,
+                                    fontSize = 20.sp,
                                     color = Color.LightGray,
                                     modifier = Modifier
                                         .padding(top = 8.dp)

@@ -5,14 +5,18 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,8 +42,10 @@ import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
 import com.zeroone.wallpaperdeal.ui.screens.walldeal.WallDealScreen
 import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
+import com.zeroone.wallpaperdeal.utils.NetworkConnection
 import com.zeroone.wallpaperdeal.utils.setWallpaper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -189,6 +195,21 @@ class MainActivity : ComponentActivity(), ScreenCallback {
             )
         } else {
             setWallpaper(this, bitmap)
+        }
+    }
+
+    @Composable
+    private fun NetworkCheck(){
+        val networkConnection = NetworkConnection(applicationContext)
+        LaunchedEffect(Dispatchers.IO){
+            networkConnection.observe(this@MainActivity, Observer{ isConnected->
+                if(isConnected){
+                    Log.d("Network Check", "OK")
+                }
+                else{
+
+                }
+            })
         }
     }
 }

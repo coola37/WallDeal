@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,6 +62,8 @@ import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
+import com.zeroone.wallpaperdeal.ui.theme.LikeBlue
+import com.zeroone.wallpaperdeal.ui.theme.Purple80
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperViewBackground
 import com.zeroone.wallpaperdeal.utils.downloadWallpaper
 import com.zeroone.wallpaperdeal.utils.setWallpaper
@@ -136,10 +139,9 @@ fun WallpaperViewScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-
+                        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                         Row(modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
                             .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${wallpaper.owner?.userId}") },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -159,31 +161,43 @@ fun WallpaperViewScreen(
                                 fontSize = 16.sp,
                             )
                         }
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                         AsyncImage(model = wallpaper.imageUrl, contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth(0.66f)
                                 .fillMaxSize(0.66f),
                             contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.height(48.dp))
-                        wallpaper.description?.let{
-                            Text(
-                                text = it,
-                                textAlign = TextAlign.Center,
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(top = 0.dp, bottom = 8.dp)
-                            )
+                        Spacer(modifier = Modifier.fillMaxHeight(0.075f))
+                        Row(modifier = Modifier.fillMaxHeight(0.35f).fillMaxWidth()){
+                            wallpaper.description?.let {
+                                Text(
+                                    text = it,
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 8.dp, end = 10.dp)
+                                )
+                            }
+
                         }
+                        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+                        Text(
+                            text = "#${wallpaper.category}",
+                            textAlign = TextAlign.Center,
+                            color = Purple80,
+                            fontSize = 14.sp,
+                        )
+                        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                         Text(
                             text = "${wallpaper.likeCount} users liked it",
-                            color = Color.LightGray,
+                            color = LikeBlue,
                             fontSize = 14.sp,
-                            modifier = Modifier.padding(top = 8.dp, bottom = 0.dp)
                         )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        IconButton(onClick = {expanded = true}, modifier = Modifier.size(50.dp)) {
+                        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+                        IconButton(onClick = {expanded = true}, modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .fillMaxHeight(0.75f)) {
                             if(expanded){
                                 Icon(
                                     tint = Color.Unspecified,

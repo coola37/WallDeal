@@ -6,15 +6,18 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -88,12 +91,6 @@ fun PushWallpaperScreen(
             }.addOnFailureListener {
                 Log.e("DownloadUrlError", it.toString())
             }
-            val gradientRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
-                gradientRef.downloadUrl.addOnSuccessListener {
-                    gradientUrl = it.toString()
-                }.addOnFailureListener {
-                    Log.e("DownloadUrlError", it.toString())
-                }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,12 +105,12 @@ fun PushWallpaperScreen(
                     )
                 }.addOnFailureListener {
                     Log.e("Image deleted error:", it.message.toString())
-                }}, modifier = Modifier.fillMaxWidth(0.1f)) {
+                }}, enabled = !viewModel.loadingState.value, modifier = Modifier.fillMaxWidth(0.1f)) {
                     Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
                 }
                 Spacer(modifier = Modifier.fillMaxWidth(0.75f))
                 val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
-                    gradientUrl, emptyList(), 0 )
+                    null, emptyList(), 0 )
                 TextButton(onClick = {
                     auth.uid?.let { userId ->
                         CoroutineScope(Dispatchers.Main).launch {
@@ -127,10 +124,7 @@ fun PushWallpaperScreen(
                                 Toast.makeText(context, "Wallpaper has not sent", Toast.LENGTH_SHORT).show()
                             }
                         }
-
                     }
-
-
                 }, modifier = Modifier.fillMaxWidth(1f)) {
                     if(!viewModel.loadingState.value){
                         Text(text = "Share", color = Color.LightGray, fontSize = 14.sp)
@@ -142,7 +136,6 @@ fun PushWallpaperScreen(
                     }
                 }
             }
-
             TextField(
                 value = textDexcription,
                 onValueChange = { textDexcription = it },
@@ -175,16 +168,6 @@ fun PushWallpaperScreen(
                 maxLines = 2,
 
             )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
-            ) {
-                Text(text = "The category you chose:", color = Color.LightGray, fontSize = 14.sp)
-                Text(text = categoryText, color = Color.LightGray, fontSize = 14.sp)
-            }
-
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
                 Text(
                     text = "Select a Category",
@@ -196,6 +179,7 @@ fun PushWallpaperScreen(
             fun clickItem(index: Int) {
                 categoryText = categories[index].categoryName
             }
+            var selectedCategoryIndex by remember { mutableStateOf(-1) }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(2),
@@ -205,28 +189,43 @@ fun PushWallpaperScreen(
                         items(categories.size) { index ->
                             CategoryItem(
                                 category = categories[index],
-                                onClick = { clickItem(index) }
+                                selected = index == selectedCategoryIndex,
+                                onSelectedChange = { isSelected ->
+                                    if (isSelected) {
+                                        categoryText = categories[index].categoryName
+                                        selectedCategoryIndex = index
+                                    } else {
+                                        selectedCategoryIndex = -1
+                                    }
+                                }
                             )
                         }
                     },
                     modifier = Modifier.fillMaxSize()
                 )
-
             }
-
-
         }
     }
 }
 @Composable
-fun CategoryItem(category: Category, onClick: () -> Unit) {
+fun CategoryItem(category: Category, selected: Boolean, onSelectedChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
+            .clickable {
+                onSelectedChange(!selected)
+            },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        AsyncImage(model = category.imageUrl, contentDescription = null)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .fillMaxHeight(0.8f)
+                .background(if (selected) Color.LightGray else Color.Transparent)
+        ) {
+            AsyncImage(model = category.imageUrl, contentDescription = null)
+        }
     }
 }

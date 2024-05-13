@@ -56,6 +56,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.User
 import com.zeroone.wallpaperdeal.model.UserDetail
+import com.zeroone.wallpaperdeal.ui.ButtonLoginAndRegister
 import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.LoginRegisterButtonColor
@@ -63,6 +64,7 @@ import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -157,7 +159,7 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
             registerButtonEnabled =
                 !(textPassword != textPasswordRepeat || textPassword.isEmpty() || textPasswordRepeat.isEmpty()
                         || textUsername.isEmpty() || textEmail.isEmpty())
-            Button(enabled = registerButtonEnabled,
+           /* Button(enabled = registerButtonEnabled,
                 onClick = {
                     loading = true
                     if(textUsername.length <= 3){
@@ -217,7 +219,58 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                         color = Color.White
                     )
                 }
-            }
+            }*/
+            ButtonLoginAndRegister(
+                modifier = Modifier.fillMaxWidth(0.33f),
+                onClicked = {
+                    loading = true
+                    if(textUsername.length <= 3){
+                        Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else if(textPassword.length <= 7){
+                        Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else if(!(textEmail.contains("@"))){
+                        Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
+                        loading = false
+                    }
+                    else{
+                        auth.createUserWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
+                            if(it.isSuccessful){
+                                auth.currentUser?.let {
+                                    val userDetail = UserDetail(null, emptyList(), emptyList(), emptyList())
+                                    val user = User(
+                                        userId = it.uid, textEmail,
+                                        username = textUsername,
+                                        wallDealId = "",
+                                        userDetail = userDetail,
+                                        fcmToken = ""
+                                    )
+                                    CoroutineScope(Dispatchers.Main).launch{
+                                        viewModel.saveUserToDb(user)
+                                    }
+                                    sendVerificationEmail(user = it)
+                                    //navigateHomeActivity(context)
+                                    navController.navigate(Screen.LoginScreen.route)
+                                    auth.signOut()
+                                }
+                                loading = false
+                                Log.d("UserAuth:", "succes")
+
+                            }else{
+                                loading = false
+                                Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
+                                Log.d("UserAuth:", "failure: ", it.exception)
+                            }
+                        }
+                    } },
+                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
+                enabledText = "Login information cannot be empty",
+                text = "Register",
+                loadingText = "Registering in"
+            )
 
         }
     }

@@ -45,6 +45,10 @@ import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
 import com.zeroone.wallpaperdeal.ui.theme.DeleteColor
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import com.zeroone.wallpaperdeal.utils.setWallpaper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: WallDealViewModel, userId: String) {
@@ -109,24 +113,30 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: WallDealVie
                 if (userId != request.senderUser.userId) {
                     Button(
                         colors = ButtonDefaults.buttonColors(ProfileButtonColor),
-                        onClick = { setWallpaper(context = context, bitmap = imageBitmap!!) },
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch{
+                                setWallpaper(context = context, bitmap = imageBitmap!!)
+                                delay(500)
+                                viewModel.cancelPost(userId = userId, request = request)
+                            }
+                            },
                         modifier = Modifier
                     ) {
                         Text(text = "Set as wallpaper", color = Color.LightGray, fontSize = 16.sp)
                     }
                     Spacer(modifier = Modifier.fillMaxWidth(0.15f))
-                }
-                Button(
-                    colors = ButtonDefaults.buttonColors(DeleteColor),
-                    onClick = {
-                        viewModel.cancelPost(userId = userId, request = request)
-                        Log.e("click", "true")
-                    },
-                    modifier = Modifier
-                ) {
+                    }
+                    Button(
+                        colors = ButtonDefaults.buttonColors(DeleteColor),
+                        onClick = {
+                            viewModel.cancelPost(userId = userId, request = request)
+                            Log.e("click", "true")
+                        }  ,
+                        modifier = Modifier
+                    ) {
                     Text(text = "Delete request", color = Color.LightGray, fontSize = 16.sp)
-                }
-                Spacer(modifier = Modifier.fillMaxHeight(1f))
+                    }
+                    Spacer(modifier = Modifier.fillMaxHeight(1f))
             }
         }
     }

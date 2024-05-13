@@ -46,11 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.YellowWallDeal
 
 @Composable
 fun TopAppbarText(navController: NavController, text1: String, text2: String){
@@ -233,10 +231,10 @@ fun ButtonLoginAndRegister(
         Row(
             modifier = Modifier
                 .padding(
-                    start = 12.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
+                    start = 18.dp,
+                    end = 24.dp,
+                    top = 18.dp,
+                    bottom = 18.dp
                 )
                 .animateContentSize(
                     animationSpec = tween(
@@ -248,8 +246,8 @@ fun ButtonLoginAndRegister(
             horizontalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (clicked) loadingText else text, color = Color.White)
-            if (clicked) {
+            Text(text = if (clicked && enabled) loadingText else text, color = Color.White)
+            if (clicked && enabled) {
                 Spacer(modifier = Modifier.width(16.dp))
                 CircularProgressIndicator(
                     modifier = Modifier

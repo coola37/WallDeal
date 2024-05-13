@@ -1,9 +1,12 @@
 package com.zeroone.wallpaperdeal.ui.screens.requests
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -20,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -35,6 +41,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.WallDealRequest
 import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.theme.DeleteColor
+import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
+import com.zeroone.wallpaperdeal.utils.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -61,9 +70,10 @@ fun RequestsScreen(
            IconButton(onClick = { /*TODO*/ }) {
                Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null, tint = Color.LightGray)
            }
-           Spacer(modifier = Modifier.fillMaxWidth(0.1f))
-           Text(text = "Notifications", color = Color.LightGray, fontSize = 20.sp, modifier = Modifier.padding(top = 6.dp))
+           Spacer(modifier = Modifier.fillMaxWidth(0.15f))
+           Text(text = "Notifications", color = Color.White, fontSize = 20.sp, modifier = Modifier.padding(top = 6.dp))
        }
+        Spacer(modifier = Modifier.fillMaxWidth(0.1f))
         requests?.let { requests ->
             LazyColumn(modifier = Modifier.fillMaxSize()){
                 items(requests.size){
@@ -93,28 +103,48 @@ fun RequestsScreen(
 }
 @Composable
 fun RequestItem(request: WallDealRequest, createWalldeal: () -> Unit, deleteRequest: () -> Unit ){
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.Black)) {
-        AsyncImage(model = request.senderUser.profilePhoto, contentDescription = null,
-            Modifier
-                .clip(CircleShape)
-                .fillMaxWidth(0.1f)
-                .height(40.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = request.title, color = Color.LightGray,textAlign = TextAlign.Center, modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(.8f))
-        IconButton(onClick = { createWalldeal() },modifier = Modifier.fillMaxWidth(0.4f)) {
-            Icon(painter = painterResource(id = R.drawable.walldeal_ok), contentDescription = null, tint = Color.Unspecified,
-                modifier = Modifier.fillMaxSize())
+    Column(){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+        ) {
+            Spacer(modifier = Modifier.fillMaxWidth(0.02f))
+            AsyncImage(
+                model = request.senderUser.profilePhoto, contentDescription = null,
+                Modifier
+                    .clip(CircleShape)
+                    .fillMaxWidth(0.1f)
+                    .fillMaxHeight(0.05f)
+            )
+            Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+            Text(
+                text = request.title,
+                color = Color.LightGray,
+                textAlign = TextAlign.Center,
+            )
         }
-        Spacer(modifier = Modifier.fillMaxWidth(0.2f))
-        IconButton(onClick = { deleteRequest() },modifier = Modifier.fillMaxWidth(0.8f)) {
-            Icon(painter = painterResource(id = R.drawable.cancel), contentDescription = null, tint = Color.Unspecified,
-                modifier = Modifier.fillMaxSize())
+        Spacer(modifier = Modifier.fillMaxHeight(0.25f))
+        Row(modifier = Modifier.fillMaxWidth()){
+            Spacer(modifier = Modifier.fillMaxWidth(0.30f))
+            Button(
+                colors = ButtonDefaults.buttonColors(ProfileButtonColor),
+                onClick = { createWalldeal()},
+                modifier = Modifier
+            ) {
+                Text(text = "Accept", color = Color.LightGray, fontSize = 14.sp)
+            }
+            Spacer(modifier = Modifier.fillMaxWidth(0.1f))
+            Button(
+                colors = ButtonDefaults.buttonColors(DeleteColor),
+                onClick = {deleteRequest()},
+                modifier = Modifier
+            ) {
+                Text(text = "Delete", color = Color.LightGray, fontSize = 16.sp)
+            }
+            }
         }
-    }
+
 }
 @Preview
 @Composable

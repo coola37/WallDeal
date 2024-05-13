@@ -52,25 +52,23 @@ import java.io.FileNotFoundException
 import java.util.UUID
 import kotlin.coroutines.resumeWithException
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import com.zeroone.wallpaperdeal.utils.Constant.HEIGHT_PX
+import com.zeroone.wallpaperdeal.utils.Constant.WEIGHT_PX
 
 @Composable
 fun ShareScreen(navController: NavController, storage: FirebaseStorage){
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    var blurImage by remember { mutableStateOf<Bitmap?>(null) }
     var buttonEnabled by remember { mutableStateOf<Boolean>(false) }
     var loading by remember { mutableStateOf<Boolean>(false) }
-    var wallpaperUrl by remember { mutableStateOf<String>("") }
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri -> selectedImageUri = uri
             if(selectedImageUri != null){
                 val bitmap = getBitmapFromUri(context, uri!!)
-                blurImage = createGradiant(bitmap!!)
-
                 val width = bitmap?.width
                 val height = bitmap?.height
-                if(width!! >= 1920 && height!! >= 1080){
+                if(width!! >= WEIGHT_PX && height!! >= HEIGHT_PX){
 
                     buttonEnabled = true
                     Log.d("Selected photo resolution:", "${width.toString()} x ${height.toString()}" )
@@ -80,19 +78,16 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
                     buttonEnabled = false
                     Toast.makeText(
                         context,
-                        "The selected image does not meet the minimum resolution requirement of 1080x1920 pixels.",
-                        Toast.LENGTH_SHORT
+                        "The resolution of the image you want to upload must be QHD",
+                        Toast.LENGTH_LONG
                     ).show()
                     selectedImageUri = null
                 }
-
             }else{
                 buttonEnabled = false
             }
         }
-
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -111,37 +106,22 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
             horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextButton(onClick = {navController.navigate(Screen.HomeScreen.route)}) {
+            TextButton(onClick = {navController.navigate(Screen.HomeScreen.route)}, enabled = !loading) {
                 Text(text = "Back", color = Color.White, fontSize = 20.sp)
             }
             TextButton(onClick = {
                 singlePhotoPickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
-            }) {
+            }, enabled = !loading) {
                 Text(text = "Pick Photo", color = Purple40, fontSize = 20.sp)
             }
 
             TextButton(onClick = {
                 loading = true
                 var wallpaperId = UUID.randomUUID().toString()
-
                 CoroutineScope(Dispatchers.Main).launch {
-                    uploadImageToFirebaseStorage(blurImage!!, selectedImageUri!!, storage, wallpaperId)
-
-                    val bitmapRef = storage.reference.child("wallpaperGradients/${wallpaperId}")
-                    val byteArray = bitmapToByteArray(blurImage!!)
-                    bitmapRef.putBytes(byteArray)
-                        .addOnSuccessListener {
-                            Log.e("BlurrImage", "succes")
-                            bitmapRef.downloadUrl.addOnSuccessListener { uri ->
-                                val downloadUrl = uri.toString()
-                                // Do something with the download URL if needed
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("BlurImage", e.message.toString())
-                        }
+                    uploadImageToFirebaseStorage(selectedImageUri!!, storage, wallpaperId)
                     navController.navigate("${Screen.PushWallpaperScreen.route}/${wallpaperId}")
                 }
                                  },
@@ -162,65 +142,6 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
         }
     }
 }
-
-
-fun createGradiant(bitmap: Bitmap) : Bitmap{
-    val imageBitmap = bitmap.asImageBitmap()
-
-    // Extract colors from the image using Palette API
-    val colors = extractColorsFromBitmap(imageBitmap)
-
-    // Create a gradient brush with the extracted colors
-    val argbColors = colors.map { color ->
-        android.graphics.Color.argb(
-            (color.alpha * 255).toInt(),
-            (color.red * 255).toInt(),
-            (color.green * 255).toInt(),
-            (color.blue * 255).toInt()
-        )
-    }.toIntArray()
-
-    val gradientBitmap = Bitmap.createBitmap(
-        imageBitmap.width,
-        imageBitmap.height,
-        Bitmap.Config.ARGB_8888
-    )
-    //gradientBitmap.asImageBitmap()
-    val canvas = android.graphics.Canvas(gradientBitmap)
-    canvas.drawBitmap(imageBitmap.asAndroidBitmap(), 0f, 0f, null)
-
-    canvas.drawRect(
-        0f,
-        0f,
-        gradientBitmap.width.toFloat(),
-        gradientBitmap.height.toFloat(),
-        Paint().apply {
-            shader = LinearGradient(
-                0f,
-                0f,
-                gradientBitmap.width.toFloat(),
-                gradientBitmap.height.toFloat(),
-                argbColors,
-                null,
-                Shader.TileMode.CLAMP
-            )
-        }
-    )
-    return gradientBitmap
-}
-
-fun extractColorsFromBitmap(imageBitmap: ImageBitmap): List<Color> {
-    val bitmap = imageBitmap.asAndroidBitmap()
-    val palette = Palette.from(bitmap).generate()
-    val swatches = palette.swatches
-    val colors = mutableListOf<Color>()
-
-    for (swatch in swatches) {
-        colors.add(Color(swatch.rgb))
-    }
-
-    return colors
-}
 fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     var bitmap: Bitmap? = null
     try {
@@ -231,12 +152,7 @@ fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     }
     return bitmap
 }
-fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-    val stream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    return stream.toByteArray()
-}
-private suspend fun uploadImageToFirebaseStorage(bitmap: Bitmap, uri: Uri, storageRef: FirebaseStorage, storageWallpaperId: String): String = withContext(Dispatchers.IO) {
+private suspend fun uploadImageToFirebaseStorage(uri: Uri, storageRef: FirebaseStorage, storageWallpaperId: String): String = withContext(Dispatchers.IO) {
     val imageRef = storageRef.reference.child("wallpapers/${storageWallpaperId}")
 
     return@withContext suspendCancellableCoroutine { continuation ->

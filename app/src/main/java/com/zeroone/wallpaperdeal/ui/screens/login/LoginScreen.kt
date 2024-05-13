@@ -184,10 +184,13 @@ fun LoginScreen(
                     onClicked = {
                         loading = true
                         CoroutineScope(Dispatchers.Main).launch{
-                            delay(1000)
+                            delay(500)
                             viewModel.login(
                                 textEmail = textEmail, textPassword = textPassword , context = context , loading = {loading = false}
                             )
+                            delay(500)
+                            loading = false
+                            textPassword = ""
                         } },
                     enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
                     enabledText = "Login information cannot be empty",

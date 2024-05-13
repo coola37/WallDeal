@@ -1,16 +1,20 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
+import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,13 +65,20 @@ fun SelectedCategoryScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            IconButton(onClick = { navController.navigateUp()},
+                                modifier = Modifier.fillMaxWidth(0.1f)
+                            ) {
+                                Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
+                            }
+                            Spacer(modifier = Modifier.fillMaxWidth(0.125f))
                             Image(
                                 painter = painterResource(id = R.drawable.walldeallogo),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxHeight(0.75f)
-                                    .fillMaxWidth(0.5f)
+                                    .fillMaxWidth(0.75f)
 
                             )
                         }

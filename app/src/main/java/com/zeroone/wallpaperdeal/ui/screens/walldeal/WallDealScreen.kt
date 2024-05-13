@@ -46,6 +46,8 @@ import com.zeroone.wallpaperdeal.model.WallDeal
 import com.zeroone.wallpaperdeal.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.share.getBitmapFromUri
+import com.zeroone.wallpaperdeal.utils.Constant.HEIGHT_PX
+import com.zeroone.wallpaperdeal.utils.Constant.WEIGHT_PX
 
 @Composable
 fun WallDealScreen(
@@ -69,7 +71,7 @@ fun WallDealScreen(
                 val bitmap = getBitmapFromUri(context, uri)
                 val width = bitmap?.width ?: 0
                 val height = bitmap?.height ?: 0
-                if (width >= 1920 && height >= 1080) {
+                if (width >= WEIGHT_PX && height >= HEIGHT_PX) {
                     buttonEnabled = true
                     Log.d("Selected photo resolution:", "${width} x ${height}")
                 } else {

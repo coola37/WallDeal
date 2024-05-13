@@ -2,13 +2,10 @@ package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,24 +35,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.google.firebase.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.ui.screens.share.createGradiant
-import com.zeroone.wallpaperdeal.ui.screens.share.getBitmapFromUri
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
@@ -95,10 +87,10 @@ fun EditProfileScreen(
                         .fillMaxHeight(0.04f)
                 ) {
                     IconButton(onClick = { navController.navigateUp() },
-                        modifier = Modifier.fillMaxWidth(0.1f)
+                        modifier = Modifier.fillMaxWidth(0.08f)
                     ) {
                         Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null,
-                            modifier = Modifier.fillMaxSize(), tint = Color.LightGray
+                            modifier = Modifier.fillMaxSize(0.8f), tint = Color.LightGray
                         )
                     }
                     Spacer(modifier = Modifier.fillMaxWidth(0.85f))
@@ -107,7 +99,7 @@ fun EditProfileScreen(
                         val imageRef = storage.reference.child("profilePhotos/${userId}")
                         selectedImageUri?.let{
                             imageRef.putFile(it).addOnSuccessListener {
-                                Log.e("Upload profile img for change", "succes")
+                                Log.d("Upload profile img for change", "succes")
                                 imageRef.downloadUrl.addOnSuccessListener {
                                     user.userDetail?.profilePhoto = it.toString()
                                     user.username = textUsername
@@ -118,7 +110,7 @@ fun EditProfileScreen(
                                     }
                                 }
                             }.addOnFailureListener {
-
+                                Log.e("Upload profile img for change", "fail")
                             }
                         } ?: run {
                             user.userDetail?.profilePhoto = user.userDetail?.profilePhoto
@@ -130,12 +122,12 @@ fun EditProfileScreen(
                             }
                         }
                     },
-                        modifier = Modifier.fillMaxWidth(0.75f)) {
+                        modifier = Modifier.fillMaxWidth(0.60f)) {
                         if(!loading){
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_ok),
                                 contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize(0.8f),
                                 tint = Color.LightGray
                             )
                         }else{
@@ -165,7 +157,7 @@ fun EditProfileScreen(
                 Spacer(modifier = Modifier.fillMaxHeight(0.025f))
                 TextButton(onClick = { singlePhotoPickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },){
-                    Text(text = "Change Profile Photo", color = ActiveButton)
+                    Text(text = "Change Profile Photo", color = ActiveButton, fontSize = 16.sp)
                 }
                 Spacer(modifier = Modifier.fillMaxHeight(0.025f))
                 val textFieldColor = TextFieldDefaults.colors(
@@ -178,12 +170,12 @@ fun EditProfileScreen(
                 TextField(value = textUsername, colors = textFieldColor,
                     shape = RoundedCornerShape(20.dp),
                     onValueChange ={ textUsername = it },
-                    leadingIcon = { androidx.compose.material3.Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = Color.LightGray ) },
+                    leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = Color.LightGray ) },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .padding(start = 4.dp, end = 4.dp, top = 4.dp),
                     maxLines = 1,
-                    label = { androidx.compose.material3.Text(text = "Username", color = Color.Gray, fontSize = 14.sp) },
+                    label = { Text(text = "Username", color = Color.Gray, fontSize = 14.sp) },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done

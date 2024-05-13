@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,7 +70,7 @@ fun ChangePasswordScreen(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp)
+                .height(400.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = cardColors
@@ -79,11 +81,21 @@ fun ChangePasswordScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
-                Text(
-                    text = "Change password",
-                    modifier = Modifier.padding(16.dp), color = Color.DarkGray
-                )
+                Spacer(modifier = Modifier.height(0.dp))
+                Text(text = "Change password", color = Color.DarkGray)
+                Spacer(modifier = Modifier.height(8.dp))
+                TextButton(onClick = { auth.sendPasswordResetEmail(auth.currentUser?.email.toString()).addOnCompleteListener {
+                    Toast.makeText(context, "The password reset link has been sent to your email address", Toast.LENGTH_LONG).show()
+                    onDismissRequest()
+                }.addOnFailureListener {
+                    Toast.makeText(context, "The password reset link could not be sent", Toast.LENGTH_LONG).show()
+                }
+                }) {
+                    Text(
+                        text = "Forgot password",
+                        modifier = Modifier.padding(16.dp), color = Color.Blue
+                    )
+                }
                 val textFieldColor = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
@@ -145,7 +157,7 @@ fun ChangePasswordScreen(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     TextButton(
-                        onClick = { /*onDismissRequest()*/ },
+                        onClick = { onDismissRequest() },
                         modifier = Modifier.padding(8.dp),
                     ) {
                         Text("Dismiss", color = Color.DarkGray)
