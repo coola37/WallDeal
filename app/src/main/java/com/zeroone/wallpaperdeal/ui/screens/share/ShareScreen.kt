@@ -3,9 +3,6 @@ package com.zeroone.wallpaperdeal.ui.screens.share
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.LinearGradient
-import android.graphics.Paint
-import android.graphics.Shader
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -25,19 +22,12 @@ import androidx.compose.material.TextButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.ui.screens.Screen
@@ -47,12 +37,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.util.UUID
 import kotlin.coroutines.resumeWithException
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import com.zeroone.wallpaperdeal.utils.Constant.HEIGHT_PX
+import com.zeroone.wallpaperdeal.utils.Constant.RESOLUTION_ERROR
 import com.zeroone.wallpaperdeal.utils.Constant.WEIGHT_PX
 
 @Composable
@@ -78,7 +67,7 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
                     buttonEnabled = false
                     Toast.makeText(
                         context,
-                        "The resolution of the image you want to upload must be QHD",
+                        RESOLUTION_ERROR,
                         Toast.LENGTH_LONG
                     ).show()
                     selectedImageUri = null
@@ -88,6 +77,11 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
             }
         }
     )
+    LaunchedEffect(key1 = true){
+        singlePhotoPickerLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

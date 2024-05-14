@@ -1,16 +1,18 @@
 package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.model.Wallpaper
-import com.zeroone.wallpaperdeal.repository.UserRepository
-import com.zeroone.wallpaperdeal.repository.WallDealRepository
-import com.zeroone.wallpaperdeal.repository.WallpaperRepository
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
+import com.zeroone.wallpaperdeal.data.remote.repository.WallDealRepository
+import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.IOError
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -158,15 +161,36 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun editProfile(user: User){
+    suspend fun editProfile(user: User, message: () -> Unit, navigate: () -> Unit){
+        var usernameUsage = false
         try {
-            viewModelScope.launch {
-                userRepository.editProfile(user = user)
+            var users: List<User> = userRepository.getUsers()
+            var currentUser = userRepository.getUser(user.userId)
+            users = users.filterNot { it.userId == currentUser!!.userId }
+            for(loopUser in users){
+                if(loopUser.username == user.username){
+                    usernameUsage = true
+                    break
+                }
             }
-        }catch (e: RuntimeException){
-            throw e
+        } catch (e: CancellationException) {
+            // Kullanıcı işlemi iptal etti, gerekirse burada uygun bir işlem yapılabilir
+            return
+        } catch (e: Exception) {
+            // Diğer istisnaları burada ele alabilirsiniz
+            Log.e("ProfileViewModel EditProfile Function", "An error occurred: ${e.message}")
+            return
+        }
+        if(usernameUsage){
+            message()
+            Log.e("ProfileViewModel EditProfile Function", "true")
+        }else{
+            userRepository.editProfile(user = user)
+            navigate()
+            Log.e("ProfileViewModel EditProfile Function", "false")
         }
     }
+
     fun deleteAccount(userId: String){
         try {
             viewModelScope.launch{ userRepository.deleteAccount(userId = userId) }

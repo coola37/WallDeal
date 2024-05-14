@@ -33,10 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.zeroone.wallpaperdeal.model.Report
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.model.Wallpaper
-import com.zeroone.wallpaperdeal.ui.theme.Purple80
+import com.zeroone.wallpaperdeal.data.model.Report
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.theme.PurpleGrey80
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -39,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 
@@ -47,19 +46,17 @@ import com.zeroone.wallpaperdeal.ui.screens.Screen
 fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: HomeViewModel = hiltViewModel()) {
     val scrollState = LazyStaggeredGridState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
-    var isTop10ListVisible by remember { mutableStateOf(true) }
     var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList()) }
     var requestsState by remember { mutableStateOf(false) }
     val state = viewModel.state.value
     wallpapers = state.wallpapers
     auth.uid?.let{
         LaunchedEffect(key1 = it) {
-            viewModel.getAllWallpapers(currentUserId = it)
+            viewModel.getWallpapersFromLocal()
             viewModel.checkRequestForUser(it)
         }
     }
     requestsState = viewModel.requestsState.value
-    //Log.e("Request HomeScreen Control", requestsState.toString())
 
     Scaffold(
         backgroundColor = Color.Black,
@@ -124,12 +121,6 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
                     Text(text = "Categories", color = Color.Gray, fontSize = 14.sp)
                 }
             }
-
-           /* if (isTop10ListVisible) {
-                Text(text = "Populer Collection Top 10",fontSize = 20.sp, color = Color.White, modifier = Modifier.padding(all = 8.dp))
-            }else{ Log.d("istop10listVisible", isTop10ListVisible.toString())}*/
-
-            //Top10WallpaperList(photos = null, modifier = Modifier, isVisible = isTop10ListVisible)
             if(wallpapers.isNotEmpty()){
                 WallpaperListVerticalStaggeredGrid(
                     list = wallpapers,
@@ -156,27 +147,3 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
         }
     }
 }
-
-@Composable
-fun Top10WallpaperList(photos: List<Int>, modifier: Modifier = Modifier, isVisible: Boolean = true) {
-    if (isVisible) {
-        LazyRow(modifier = modifier) {
-            /*items(photos) { photo ->
-                PhotoItem(photoRes = photo, modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .height(120.dp))
-            }*/
-        }
-    }
-}
-
-
-
-/*
-@Composable
-@Preview
-fun previewScreen(@PreviewParameter navController: NavController){
-    HomeScreen(navController)
-}
-
-*/

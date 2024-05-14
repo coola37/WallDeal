@@ -1,6 +1,6 @@
 package com.zeroone.wallpaperdeal.utils
 
-import com.zeroone.wallpaperdeal.model.Category
+import com.zeroone.wallpaperdeal.data.model.Category
 
 object ListCategory {
     val list = listOf(
@@ -93,7 +93,7 @@ object ListCategory {
             "chill",
             "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fchill.png?alt=media&token=0e940f53-fdc9-4244-9d3d-e614ad779874"),
         Category(
-            "Baby",
-            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fbaby.png?alt=media&token=3a302dfa-2e0d-4924-a97c-76efe6070084")
+            "Other",
+            "https://firebasestorage.googleapis.com/v0/b/wall-deal.appspot.com/o/categories%2Fother1.png?alt=media&token=771d5df6-f3d8-4b65-8496-b655b3bfeb3c")
     )
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -54,14 +53,13 @@ import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.Category
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.Category
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import com.zeroone.wallpaperdeal.utils.ListCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -109,8 +107,16 @@ fun PushWallpaperScreen(
                     Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
                 }
                 Spacer(modifier = Modifier.fillMaxWidth(0.75f))
-                val wallpaper = Wallpaper(wallpaperId!!, textDexcription, null, wallpaperUrl, categoryText ,
-                    null, emptyList(), 0 )
+                val wallpaper = Wallpaper(
+                    wallpaperId!!,
+                    null,
+                    emptyList(),
+                    textDexcription,
+                    wallpaperUrl,
+                    categoryText ,
+                    emptyList(),
+                    0 ,
+                )
                 TextButton(onClick = {
                     auth.uid?.let { userId ->
                         CoroutineScope(Dispatchers.Main).launch {
@@ -127,7 +133,7 @@ fun PushWallpaperScreen(
                     }
                 }, modifier = Modifier.fillMaxWidth(1f)) {
                     if(!viewModel.loadingState.value){
-                        Text(text = "Share", color = Color.LightGray, fontSize = 14.sp)
+                        Text(text = "Share", color = Color.LightGray, fontSize = 16.sp)
                     }else{
                         CircularProgressIndicator(
                             modifier = Modifier

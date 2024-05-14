@@ -6,27 +6,19 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,8 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -54,17 +44,14 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.model.UserDetail
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.model.UserDetail
 import com.zeroone.wallpaperdeal.ui.ButtonLoginAndRegister
 import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-import com.zeroone.wallpaperdeal.ui.theme.LoginRegisterButtonColor
-import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -159,67 +146,6 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
             registerButtonEnabled =
                 !(textPassword != textPasswordRepeat || textPassword.isEmpty() || textPasswordRepeat.isEmpty()
                         || textUsername.isEmpty() || textEmail.isEmpty())
-           /* Button(enabled = registerButtonEnabled,
-                onClick = {
-                    loading = true
-                    if(textUsername.length <= 3){
-                        Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
-                        loading = false
-                    }
-                    else if(textPassword.length <= 7){
-                        Toast.makeText(context,"Password must be at least 8 characters",Toast.LENGTH_SHORT).show()
-                        loading = false
-                    }
-                    else if(!(textEmail.contains("@"))){
-                        Toast.makeText(context,"Please enter a valid email address",Toast.LENGTH_SHORT).show()
-                        loading = false
-                    }
-                    else{
-                        auth.createUserWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
-                            if(it.isSuccessful){
-                                auth.currentUser?.let {
-                                    val userDetail = UserDetail(null, emptyList(), emptyList(), emptyList())
-                                    val user = User(
-                                        userId = it.uid, textEmail,
-                                        username = textUsername,
-                                        wallDealId = "",
-                                        userDetail = userDetail,
-                                        fcmToken = ""
-                                    )
-                                    CoroutineScope(Dispatchers.Main).launch{
-                                        viewModel.saveUserToDb(user)
-                                    }
-                                    sendVerificationEmail(user = it)
-                                    //navigateHomeActivity(context)
-                                    navController.navigate(Screen.LoginScreen.route)
-                                }
-                                loading = false
-                                Log.d("UserAuth:", "succes")
-
-                            }else{
-                                loading = false
-                                Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
-                                Log.d("UserAuth:", "failure: ", it.exception)
-                            }
-                        }
-                    }
-                },
-                modifier = Modifier,
-                colors = ButtonDefaults.buttonColors(LoginRegisterButtonColor)
-            ) {
-                if (loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(30.dp)
-                    )
-                }else{
-                    Text(
-                        text = "Register",
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = Color.White
-                    )
-                }
-            }*/
             ButtonLoginAndRegister(
                 modifier = Modifier.fillMaxWidth(0.33f),
                 onClicked = {
@@ -248,17 +174,18 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                                         userDetail = userDetail,
                                         fcmToken = ""
                                     )
-                                    CoroutineScope(Dispatchers.Main).launch{
-                                        viewModel.saveUserToDb(user)
+                                    try {
+                                        CoroutineScope(Dispatchers.Main).launch{
+                                            viewModel.saveUserToDb(user)
+                                        }
+                                    }finally {
+                                        auth.signOut()
+                                        sendVerificationEmail(user = it)
+                                        navController.navigate(Screen.LoginScreen.route)
+                                        loading = false
+                                        Log.d("UserAuth:", "succes")
                                     }
-                                    sendVerificationEmail(user = it)
-                                    //navigateHomeActivity(context)
-                                    navController.navigate(Screen.LoginScreen.route)
-                                    auth.signOut()
                                 }
-                                loading = false
-                                Log.d("UserAuth:", "succes")
-
                             }else{
                                 loading = false
                                 Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
@@ -266,7 +193,7 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                             }
                         }
                     } },
-                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
+                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()) && !loading,
                 enabledText = "Login information cannot be empty",
                 text = "Register",
                 loadingText = "Registering in"
@@ -275,13 +202,6 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
         }
     }
 }
-fun navigateHomeActivity(context: Context){
-    val intent = Intent(context, MainActivity::class.java)
-    intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-    context.startActivity(intent)
-    (context as Activity).finish()
-}
-
 fun sendVerificationEmail(user: FirebaseUser){
     user.sendEmailVerification().addOnCompleteListener {
         Log.d("VerifyEmail", "sent")

@@ -5,9 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zeroone.wallpaperdeal.model.WallDeal
-import com.zeroone.wallpaperdeal.model.WallDealRequest
-import com.zeroone.wallpaperdeal.repository.WallDealRepository
+import com.zeroone.wallpaperdeal.data.model.WallDeal
+import com.zeroone.wallpaperdeal.data.model.WallDealRequest
+import com.zeroone.wallpaperdeal.data.remote.repository.WallDealRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

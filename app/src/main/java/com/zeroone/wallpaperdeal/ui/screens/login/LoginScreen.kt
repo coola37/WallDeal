@@ -3,11 +3,8 @@ package com.zeroone.wallpaperdeal.ui.screens.login
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,22 +13,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Password
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,8 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -58,8 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.ButtonLoginAndRegister
@@ -67,8 +51,6 @@ import com.zeroone.wallpaperdeal.ui.GoogleButton
 import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.login.authgoogle.SignInState
-import com.zeroone.wallpaperdeal.ui.theme.LoginRegisterButtonColor
-import com.zeroone.wallpaperdeal.ui.theme.Purple40
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -185,12 +167,14 @@ fun LoginScreen(
                         loading = true
                         CoroutineScope(Dispatchers.Main).launch{
                             delay(500)
-                            viewModel.login(
-                                textEmail = textEmail, textPassword = textPassword , context = context , loading = {loading = false}
-                            )
-                            delay(500)
-                            loading = false
-                            textPassword = ""
+                            try {
+                                viewModel.login(
+                                    textEmail = textEmail, textPassword = textPassword , context = context , loading = {loading = false}
+                                )
+                            }finally {
+                                loading = false
+                                textPassword = ""
+                            }
                         } },
                     enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
                     enabledText = "Login information cannot be empty",

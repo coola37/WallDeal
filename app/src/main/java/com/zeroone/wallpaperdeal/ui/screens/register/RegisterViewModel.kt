@@ -3,8 +3,8 @@ package com.zeroone.wallpaperdeal.ui.screens.register
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.repository.UserRepository
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOError
 import javax.inject.Inject

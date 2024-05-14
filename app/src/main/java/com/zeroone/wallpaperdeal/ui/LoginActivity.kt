@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.login.LoginScreen
 import com.zeroone.wallpaperdeal.ui.screens.login.LoginViewModel
@@ -44,12 +44,15 @@ private const val RC_SIGN_IN = 123
 class LoginActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
+    @Inject
+    lateinit var userRepository: UserRepository
 
     private val googleAuthUiClient by lazy {
         GoogleAuthClient(
             context = applicationContext,
             oneTapClient = Identity.getSignInClient(applicationContext),
-            auth = auth
+            auth = auth,
+            userRepository = userRepository
         )
     }
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,6 +1,5 @@
 package com.zeroone.wallpaperdeal.ui
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -25,7 +24,6 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,14 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
-
-@Composable
-fun TopAppbarText(navController: NavController, text1: String, text2: String){
-
-}
-
 
 @Composable
 fun BottomNavigationBar(selectedItem: Int, navController: NavController?) {
@@ -95,13 +87,13 @@ data class BottomNavItem(val label: String, val icon: Int, val index: Int, val r
 @Composable
 fun WallpaperItemForVerticalStaggeredGrid(
     wallpaper: Wallpaper,
-    onClick: () -> Unit // onClick lambda parameter
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp, horizontal = 6.dp)
-            .clickable(onClick = onClick), // Add clickable modifier with onClick lambda
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(model = wallpaper.imageUrl, contentDescription = null)
@@ -246,7 +238,7 @@ fun ButtonLoginAndRegister(
             horizontalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = if (clicked && enabled) loadingText else text, color = Color.White)
+            Text(text = if (clicked && enabled) loadingText else text, color = Color.White, fontSize = 12.sp)
             if (clicked && enabled) {
                 Spacer(modifier = Modifier.width(16.dp))
                 CircularProgressIndicator(
@@ -260,10 +252,3 @@ fun ButtonLoginAndRegister(
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewButton(){
-    //ButtonLoginAndRegister()
-}
-

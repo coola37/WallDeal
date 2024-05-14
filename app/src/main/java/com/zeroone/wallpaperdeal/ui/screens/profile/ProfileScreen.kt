@@ -44,8 +44,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.WallpaperItemForVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen

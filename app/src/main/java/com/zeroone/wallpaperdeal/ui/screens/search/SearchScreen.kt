@@ -1,6 +1,5 @@
 package com.zeroone.wallpaperdeal.ui.screens.search
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,16 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
-import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
@@ -64,7 +61,7 @@ fun SearchScreen(
     var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList()) }
     var users by remember { mutableStateOf<List<User>>(emptyList()) }
     LaunchedEffect(Dispatchers.IO){
-        viewModel.fetchItems()
+        viewModel.getLocalItems()
     }
     wallpapers = viewModel.stateItems.value.wallpapers
     users = viewModel.stateItems.value.users
@@ -161,7 +158,7 @@ private fun WallpaperItemForSearch(wallpaper: Wallpaper, navController: NavContr
             Column(modifier = Modifier.height(100.dp))
             {
                 Spacer(modifier = Modifier.fillMaxHeight(0.15f))
-                Text(text = wallpaper.owner?.username!!, color = Color.LightGray, fontSize = 14.sp)
+                Text(text = wallpaper.owner!!.username, color = Color.LightGray, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = wallpaper.category, color = Color.Gray, fontSize = 14.sp )
             }

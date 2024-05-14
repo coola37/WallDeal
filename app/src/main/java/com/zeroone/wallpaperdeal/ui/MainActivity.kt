@@ -39,7 +39,7 @@ import com.zeroone.wallpaperdeal.ui.screens.requests.RequestsScreen
 import com.zeroone.wallpaperdeal.ui.screens.search.SearchScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
-import com.zeroone.wallpaperdeal.ui.screens.walldeal.WallDealScreen
+import com.zeroone.wallpaperdeal.ui.screens.couple.WallDealScreen
 import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
 import com.zeroone.wallpaperdeal.utils.NetworkConnection

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
@@ -56,9 +54,9 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.LikeRequest
-import com.zeroone.wallpaperdeal.model.Report
-import com.zeroone.wallpaperdeal.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.LikeRequest
+import com.zeroone.wallpaperdeal.data.model.Report
+import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
@@ -69,11 +67,12 @@ import com.zeroone.wallpaperdeal.utils.downloadWallpaper
 import com.zeroone.wallpaperdeal.utils.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun WallpaperViewScreen(
     navController: NavController,
@@ -169,7 +168,10 @@ fun WallpaperViewScreen(
                             contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.fillMaxHeight(0.075f))
-                        Row(modifier = Modifier.fillMaxHeight(0.35f).fillMaxWidth()){
+                        Row(modifier = Modifier
+                            .fillMaxHeight(0.35f)
+                            .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center){
                             wallpaper.description?.let {
                                 Text(
                                     text = it,
@@ -279,7 +281,6 @@ fun WallpaperViewScreen(
                                 CoroutineScope(Dispatchers.Main).launch {
                                     viewModel.addOrRemoveFavorites(wallpaperId = wallpaper.wallpaperId, userId = userId)
                                 }
-
                             }) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -294,10 +295,14 @@ fun WallpaperViewScreen(
                             if(currentUserEqualSenderUser){
                                 DropdownMenuItem(onClick = {
                                     expanded = false
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        viewModel.removeWallpaper(wallpaperId = wallpaperId)
+                                    try{
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.removeWallpaper(wallpaperId = wallpaperId)
+                                            delay(500)
+                                        }
+                                    }finally {
+                                        navController.navigate(Screen.ProfileScreen.route)
                                     }
-                                    navController.navigateUp()
                                 }) {
                                     Box(
                                         modifier = Modifier.fillMaxSize(),

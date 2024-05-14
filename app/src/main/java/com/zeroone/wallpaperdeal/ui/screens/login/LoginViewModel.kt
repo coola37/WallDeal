@@ -6,12 +6,11 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.google.android.datatransport.cct.internal.LogEvent
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
-import com.zeroone.wallpaperdeal.model.User
-import com.zeroone.wallpaperdeal.repository.UserRepository
+import com.zeroone.wallpaperdeal.data.model.User
+import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
 import com.zeroone.wallpaperdeal.ui.screens.login.authgoogle.SignInResult
 import com.zeroone.wallpaperdeal.ui.screens.login.authgoogle.SignInState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +41,8 @@ class LoginViewModel @Inject constructor(
     }
     suspend fun saveUserToDb(user: User){
         checkUser(userId = user.userId)
+        var orgUser = userRepository.getUser(userId = user.userId)
+        Log.e("saveuserDatabae-orgUser-check", orgUser.toString())
         Log.e("checkUserViemodel", checkUserState.value.toString())
         if (checkUserState.value){
            try {
@@ -59,6 +60,7 @@ class LoginViewModel @Inject constructor(
            }
         }else{
             try {
+                Log.e("saveuserDatabae-check", user.toString())
                 userRepository.saveUser(user)
                 FirebaseMessaging.getInstance().token.addOnCompleteListener{ taskToken ->
                     if(taskToken.isSuccessful){
@@ -116,6 +118,7 @@ class LoginViewModel @Inject constructor(
             CoroutineScope(Dispatchers.Main).launch{
                 val user = userRepository.getUser(userId = it.uid)
                 user?.fcmToken = newToken
+                Log.e("User-check-tokensavedb", user.toString())
                 userRepository.saveUser(user = user!!)
             }
         }

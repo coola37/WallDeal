@@ -2,6 +2,7 @@ package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,7 +48,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.User
+import com.zeroone.wallpaperdeal.data.model.User
 import com.zeroone.wallpaperdeal.ui.theme.ActiveButton
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
@@ -73,9 +74,11 @@ fun EditProfileScreen(
         LaunchedEffect(key1 = userId) {
             viewModel.fetchItems(userId = userId)
         }
-        var textUsername by remember { mutableStateOf("") }
+
         user = viewModel.stateItems.value.user
+
         user?.let { user ->
+            var textUsername by remember { mutableStateOf(user.username) }
             Column(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black),
@@ -104,9 +107,10 @@ fun EditProfileScreen(
                                     user.userDetail?.profilePhoto = it.toString()
                                     user.username = textUsername
                                     CoroutineScope(Dispatchers.Main).launch{
-                                        viewModel.editProfile(user)
+                                        viewModel.editProfile(user = user, message = {
+                                            Toast.makeText(context, "Username is used by someone else", Toast.LENGTH_LONG).show()
+                                        }, navigate = {navController.navigateUp()})
                                         loading = false
-                                        navController.navigateUp()
                                     }
                                 }
                             }.addOnFailureListener {
@@ -116,9 +120,10 @@ fun EditProfileScreen(
                             user.userDetail?.profilePhoto = user.userDetail?.profilePhoto
                             user.username = textUsername
                             CoroutineScope(Dispatchers.Main).launch{
-                                viewModel.editProfile(user)
+                                viewModel.editProfile(user = user, message = {
+                                    Toast.makeText(context, "Username is used by someone else", Toast.LENGTH_LONG).show()
+                                }, navigate = {navController.navigateUp()})
                                 loading = false
-                                navController.navigateUp()
                             }
                         }
                     },

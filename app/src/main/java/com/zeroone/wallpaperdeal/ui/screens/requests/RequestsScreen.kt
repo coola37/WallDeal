@@ -2,16 +2,13 @@ package com.zeroone.wallpaperdeal.ui.screens.requests
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
@@ -25,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,11 +35,10 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.WallDealRequest
+import com.zeroone.wallpaperdeal.data.model.WallDealRequest
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.DeleteColor
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
-import com.zeroone.wallpaperdeal.utils.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -80,20 +75,25 @@ fun RequestsScreen(
                     RequestItem(request = requests[it],
                         createWalldeal = {
                             CoroutineScope(Dispatchers.Main).launch{
-                                val request = requests[it]
-                                if(request.senderUser.wallDealId.isNullOrEmpty()){
-                                    viewModel.createWallDeal(request.possibleWallDeal)
-                                }else{
-                                    viewModel.addUserToWallDeal(userId = request.senderUser.userId,
-                                        otherUserId = request.receiverUser.userId )
-                                }
-                                delay(1500)
-                                navController.navigate(Screen.WallDealScreen.route)
+                               try {
+                                   val request = requests[it]
+                                   if(request.senderUser.wallDealId.isNullOrEmpty()){
+                                       viewModel.createWallDeal(request.possibleWallDeal)
+                                   }else{
+                                       viewModel.addUserToWallDeal(userId = request.senderUser.userId,
+                                           otherUserId = request.receiverUser.userId )
+                                   }
+                               }finally {
+                                   navController.navigate(Screen.WallDealScreen.route)
+                               }
                             }
                         },
                         deleteRequest = {
-                            viewModel.deleteWallDealRequest(requests[it].wallDealRequestId)
-                            navController.navigate(Screen.HomeScreen.route)
+                            try {
+                                viewModel.deleteWallDealRequest(requests[it].wallDealRequestId)
+                            }finally {
+                                navController.navigate(Screen.HomeScreen.route)
+                            }
                         }
                     )
                 }

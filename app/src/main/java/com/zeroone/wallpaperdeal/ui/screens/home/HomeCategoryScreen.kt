@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.model.Category
+import com.zeroone.wallpaperdeal.data.model.Category
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
