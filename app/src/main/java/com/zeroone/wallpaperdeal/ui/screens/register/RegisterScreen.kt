@@ -188,12 +188,14 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                                 }
                             }else{
                                 loading = false
+                                textPassword = ""
+                                textPasswordRepeat = ""
                                 Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
                                 Log.d("UserAuth:", "failure: ", it.exception)
                             }
                         }
                     } },
-                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()) && !loading,
+                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
                 enabledText = "Login information cannot be empty",
                 text = "Register",
                 loadingText = "Registering in"

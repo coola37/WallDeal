@@ -22,6 +22,10 @@ interface UserDao {
     suspend fun deleteUsers(users: List<User>)
 
     @Query("SELECT * FROM users")
-    suspend fun getAllUsers(): List<User> // Null olabilecek bir değer döndürmek yerine direk Wallpaper türünde bir liste döndürülmeli
+    suspend fun getAllUsers(): List<User>
+
+    @Query("SELECT * FROM users WHERE user_id = :userId")
+    suspend fun getUserByUserId(userId: String): User
+
 
 }

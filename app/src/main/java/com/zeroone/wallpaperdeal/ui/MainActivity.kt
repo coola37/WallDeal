@@ -1,6 +1,8 @@
 package com.zeroone.wallpaperdeal.ui
 
 import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -26,20 +28,20 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
-import com.zeroone.wallpaperdeal.ui.screens.profile.ProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.ScreenCallback
+import com.zeroone.wallpaperdeal.ui.screens.couple.WallDealScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.HomeScreen
 import com.zeroone.wallpaperdeal.ui.screens.home.SelectedCategoryScreen
 import com.zeroone.wallpaperdeal.ui.screens.profile.EditProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.profile.OtherProfileScreen
+import com.zeroone.wallpaperdeal.ui.screens.profile.ProfileScreen
 import com.zeroone.wallpaperdeal.ui.screens.profile.SettingsScreen
 import com.zeroone.wallpaperdeal.ui.screens.requests.RequestsScreen
 import com.zeroone.wallpaperdeal.ui.screens.search.SearchScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.PushWallpaperScreen
 import com.zeroone.wallpaperdeal.ui.screens.share.ShareScreen
-import com.zeroone.wallpaperdeal.ui.screens.couple.WallDealScreen
 import com.zeroone.wallpaperdeal.ui.screens.wallpaperview.WallpaperViewScreen
 import com.zeroone.wallpaperdeal.ui.theme.WallpaperDealTheme
 import com.zeroone.wallpaperdeal.utils.NetworkConnection
@@ -63,6 +65,21 @@ class MainActivity : ComponentActivity(), ScreenCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupAuthListener()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.areNotificationsEnabled()) {
+            val intent = Intent().apply {
+                action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                // Android 5 ve üstü için
+                putExtra("app_package", packageName)
+                putExtra("app_uid", applicationInfo.uid)
+                // Android 6 ve üstü için
+                putExtra("android.provider.extra.APP_PACKAGE", packageName)
+            }
+            startActivity(intent)
+        } else {
+            Log.e("Notification Permission", "OK")
+        }
         //auth.signOut()
         setContent {
             WallpaperDealTheme {

@@ -211,28 +211,28 @@ fun ProfileScreen(
                         IconButton(modifier = Modifier
                             .padding(start = 124.dp),
                             onClick = { selected = "favorite" }) {
-                                when(selected){
-                                    "grid" -> {
-                                        Icon(
-                                            imageVector = Icons.Default.FavoriteBorder,
-                                            contentDescription = null,
-                                            tint = Color.Gray,
-                                            modifier = Modifier
-                                                .width(60.dp)
-                                                .height(35.dp)
-                                        )
-                                    }
-                                    "favorite" -> {
-                                        Icon(
-                                            imageVector = Icons.Default.FavoriteBorder,
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier
-                                                .width(60.dp)
-                                                .height(35.dp)
-                                        )
-                                    }
+                            when(selected){
+                                "grid" -> {
+                                    Icon(
+                                        imageVector = Icons.Default.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier
+                                            .width(60.dp)
+                                            .height(35.dp)
+                                    )
                                 }
+                                "favorite" -> {
+                                    Icon(
+                                        imageVector = Icons.Default.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .width(60.dp)
+                                            .height(35.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                     when (selected) {

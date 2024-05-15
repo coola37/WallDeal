@@ -115,7 +115,8 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: CoupleOprtV
                                 }
                             }
                             },
-                        modifier = Modifier
+                        modifier = Modifier,
+                        shape = CircleShape
                     ) {
                         Text(text = "Set as wallpaper", color = Color.LightGray, fontSize = 16.sp)
                     }
@@ -129,7 +130,8 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: CoupleOprtV
                             }
                             Log.e("click", "true")
                         }  ,
-                        modifier = Modifier
+                        modifier = Modifier,
+                        shape = CircleShape
                     ) {
                     Text(text = "Delete request", color = Color.LightGray, fontSize = 16.sp)
                     }

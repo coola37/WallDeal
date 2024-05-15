@@ -239,7 +239,7 @@ fun OtherProfileScreen(
                                                                     Spacer(modifier = Modifier.fillMaxWidth(0.075f))
                                                                     Button(
                                                                         onClick = {
-                                                                            viewModel.sendWallDealRequest(
+                                                                            viewModel.sendCoupleRequest(
                                                                                 senderUserId = it.userId,
                                                                                 receiverUserId = userId
                                                                             )},

@@ -1,10 +1,8 @@
 package com.zeroone.wallpaperdeal.ui.screens.profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -71,7 +69,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-     fun sendWallDealRequest(senderUserId: String, receiverUserId: String){
+    fun sendCoupleRequest(senderUserId: String, receiverUserId: String){
         try {
             viewModelScope.launch {
                 wallDealRepository.sendWallDealRequest(senderUser = senderUserId, receiverUser = receiverUserId)
