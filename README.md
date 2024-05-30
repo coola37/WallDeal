@@ -4,6 +4,8 @@
 ## Purposes:
 <p>WallDeal is a wallpaper application. There are no fixed wallpapers prepared and stored in the application. Users share wallpapers and interact with each other. Users can send wallpaper change requests by pairing with each other if they wish.</p>
 
+## The application was developed with Kotlin language and Clean architecture was used.
+
 ## Tools And Libraries: 
 <p>Jetpack Compose</p>
 <p>ViewModel</p>
@@ -12,6 +14,10 @@
 <p>Dagger2-Hilt</p>
 <p>Kotlin Flows</p>
 <p>Room Database</p>
+<p>Shared Preferences</p>
+<p>Firebase Authentication</p>
+
+## Backend: -> `https://github.com/coola37/WallDeal-Backend`
 
 ![wallpaperrequest](https://github.com/coola37/WallDeal/assets/110453767/ee46cf99-0f45-47db-979a-ddb579dc03e0)
 ![wallpaperviewscreen](https://github.com/coola37/WallDeal/assets/110453767/34fd138c-6c49-4b84-ab06-d232ba316814)
