@@ -13,7 +13,6 @@
 <p>Kotlin Flows</p>
 <p>Room Database</p>
 
-![request](https://github.com/coola37/WallDeal/assets/110453767/61b7ecd6-dc63-4956-a37e-adb4013e58e5)
 ![wallpaperrequest](https://github.com/coola37/WallDeal/assets/110453767/ee46cf99-0f45-47db-979a-ddb579dc03e0)
 ![wallpaperviewscreen](https://github.com/coola37/WallDeal/assets/110453767/34fd138c-6c49-4b84-ab06-d232ba316814)
 ![home screen](https://github.com/coola37/WallDeal/assets/110453767/d0ed6b3f-a8f7-461f-841c-02ea53dc5f72)
