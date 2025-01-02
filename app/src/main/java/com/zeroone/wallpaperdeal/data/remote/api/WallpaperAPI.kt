@@ -12,37 +12,41 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
+import retrofit2.Response
+import retrofit2.http.*
+
 interface WallpaperAPI {
     @POST("/api/1.0/wallpapers")
-    suspend fun saveWallpaper(@Body wallpaper: Wallpaper)
-
+    suspend fun saveWallpaper(@Header("Authorization") token:String, @Body wallpaper: Wallpaper)
     @GET("/api/1.0/wallpapers")
-    suspend fun getWallpapers() : ResponseWallpaper
+    suspend fun getWallpapers(@Header("Authorization") token:String) : ResponseWallpaper
 
     @GET("/api/1.0/wallpapers/get/{wallpaperId}")
-    suspend fun getWallpaperById(@Path("wallpaperId" ) wallpaperId: String) : Wallpaper
+    suspend fun getWallpaperById(@Header("Authorization") token:String, @Path("wallpaperId" ) wallpaperId: Int) : Wallpaper
 
     @GET("/api/1.0/wallpapers/category/{categoryName}")
-    suspend fun getWallpapersByCategory(@Path("categoryName") categoryName: String) : ResponseWallpaper
+    suspend fun getWallpapersByCategory(@Header("Authorization") token:String, @Path("categoryName") categoryName: String) : ResponseWallpaper
 
     @GET("/api/1.0/wallpapers/owner/{ownerId}")
-    suspend fun getWallpapersByOwner(@Path("ownerId") ownerId: String) : ResponseWallpaper
+    suspend fun getWallpapersByOwner(@Header("Authorization") token:String, @Path("ownerId") ownerId: String) : ResponseWallpaper
 
     @PUT("/api/1.0/wallpapers/like/{wallpaperId}")
-    suspend fun likeOrDislike(@Path("wallpaperId") wallpaperId: String, @Body likeRequest: LikeRequest)
+    suspend fun likeOrDislike(@Header("Authorization") token:String, @Path("wallpaperId") wallpaperId: Int, @Body likeRequest: LikeRequest)
 
     @GET("/api/1.0/wallpapers/like/control/{wallpaperId}/{currentUserId}")
-    suspend fun checkLike(@Path("wallpaperId") wallpaperId: String, @Path("currentUserId") currentUserId: String) : Boolean
+    suspend fun checkLike(@Header("Authorization") token:String, @Path("wallpaperId") wallpaperId: Int, @Path("currentUserId") currentUserId: String) : Boolean
 
     @PUT("/api/1.0/wallpapers/favorite/{userId}/{wallpaperId}")
-    suspend fun addFavorite(@Path("userId") userId: String, @Path("wallpaperId") wallpaperId: String)
+    suspend fun addFavorite(@Header("Authorization") token:String, @Path("userId") userId: String, @Path("wallpaperId") wallpaperId: Int)
 
     @GET("/api/1.0/wallpapers/get-wallpapers-by-followed/{currentUserId}")
-    suspend fun getWallpaperByFollowed(@Path("currentUserId") currentUserId: String) : ResponseWallpaper
+    suspend fun getWallpaperByFollowed(@Header("Authorization") token:String, @Path("currentUserId") currentUserId: String) : ResponseWallpaper
 
     @DELETE("/api/1.0/wallpapers/delete/{wallpaperId}")
-    suspend fun removeWallpaper(@Path("wallpaperId") wallpaperId: String)
+    suspend fun removeWallpaper(@Header("Authorization") token:String, @Path("wallpaperId") wallpaperId: Int)
 
+    @GET("/api/1.0/wallpapers/get-favorite-wallpaper/{userId}")
+    suspend fun getFavorites(@Header("Authorization") token:String, @Path("userId") userId: String): List<Wallpaper>
     @POST("/api/1.0/reports")
-    suspend fun createWallpaperReport(@Body report: Report<Wallpaper>)
+    suspend fun createWallpaperReport(@Header("Authorization") token:String, @Body report: Report<Wallpaper>)
 }

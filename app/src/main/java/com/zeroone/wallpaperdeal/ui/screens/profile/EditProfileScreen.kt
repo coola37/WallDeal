@@ -104,7 +104,7 @@ fun EditProfileScreen(
                             imageRef.putFile(it).addOnSuccessListener {
                                 Log.d("Upload profile img for change", "succes")
                                 imageRef.downloadUrl.addOnSuccessListener {
-                                    user.userDetail?.profilePhoto = it.toString()
+                                    user.profilePhoto = it.toString()
                                     user.username = textUsername
                                     CoroutineScope(Dispatchers.Main).launch{
                                         viewModel.editProfile(user = user, message = {
@@ -117,7 +117,7 @@ fun EditProfileScreen(
                                 Log.e("Upload profile img for change", "fail")
                             }
                         } ?: run {
-                            user.userDetail?.profilePhoto = user.userDetail?.profilePhoto
+                            user.profilePhoto = user.profilePhoto
                             user.username = textUsername
                             CoroutineScope(Dispatchers.Main).launch{
                                 viewModel.editProfile(user = user, message = {
@@ -152,7 +152,7 @@ fun EditProfileScreen(
                             .clip(CircleShape)
                     )
                 } ?: run{
-                    AsyncImage(model = user.userDetail?.profilePhoto, contentDescription = null,
+                    AsyncImage(model = user.profilePhoto, contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(0.25f)
                             .fillMaxHeight(0.1f)

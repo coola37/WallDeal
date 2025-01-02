@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -62,10 +63,12 @@ class MainActivity : ComponentActivity(), ScreenCallback {
     private lateinit var authListener: FirebaseAuth.AuthStateListener
     @Inject
     lateinit var storage: FirebaseStorage
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupAuthListener()
-
+        //auth.signOut()
+        sharedPreferences = this.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (!notificationManager.areNotificationsEnabled()) {
             val intent = Intent().apply {
@@ -127,9 +130,9 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                         composable("${ Screen.WallpaperViewScreen.route }/{wallpaperId}",
                             arguments = listOf(
                                 navArgument("wallpaperId"){
-                                    type = NavType.StringType
-                                    defaultValue = ""
-                                    nullable = true
+                                    type = NavType.IntType
+                                    defaultValue = 0
+                                    nullable = false
                                 }
                             )
                         ){
@@ -177,7 +180,6 @@ class MainActivity : ComponentActivity(), ScreenCallback {
     override fun onStart() {
         super.onStart()
         auth.addAuthStateListener(authListener)
-
     }
 
     override fun onStop() {
@@ -191,7 +193,18 @@ class MainActivity : ComponentActivity(), ScreenCallback {
             authListener = object : FirebaseAuth.AuthStateListener{
                 override fun onAuthStateChanged(p0: FirebaseAuth) {
                     val user: FirebaseUser? = auth.currentUser
-                    user?.let {
+                    user?.let { user ->
+                        user.getIdToken(true)?.addOnCompleteListener { taskToken ->
+                            if (taskToken.isSuccessful) {
+                                val token = taskToken.result?.token
+                                token?.let { token ->
+                                    saveTokenToSharedPreferences(token)
+                                    Log.e("Create Firebase Token - MainAct", token)
+                                }
+                            } else {
+                                Log.e("Create Firebase Token - MainAct", "Fail")
+                            }
+                        }
                         return
                     }?: kotlin.run {
                         val intent = Intent(this@MainActivity, LoginActivity::class.java)
@@ -228,5 +241,8 @@ class MainActivity : ComponentActivity(), ScreenCallback {
                 }
             })
         }
+    }
+    private fun saveTokenToSharedPreferences(token: String) {
+        sharedPreferences.edit().putString("firebase_token", token).apply()
     }
 }

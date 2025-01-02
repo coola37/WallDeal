@@ -113,10 +113,11 @@ fun ShareScreen(navController: NavController, storage: FirebaseStorage){
 
             TextButton(onClick = {
                 loading = true
-                var wallpaperId = UUID.randomUUID().toString()
+
                 CoroutineScope(Dispatchers.Main).launch {
-                    uploadImageToFirebaseStorage(selectedImageUri!!, storage, wallpaperId)
-                    navController.navigate("${Screen.PushWallpaperScreen.route}/${wallpaperId}")
+                    val storageId = UUID.randomUUID().toString()
+                    uploadImageToFirebaseStorage(selectedImageUri!!, storage, storageId)
+                    navController.navigate("${Screen.PushWallpaperScreen.route}/$storageId")
                 }
                                  },
                 enabled = buttonEnabled) {

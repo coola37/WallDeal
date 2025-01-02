@@ -37,7 +37,8 @@ import coil.compose.AsyncImage
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.data.model.UserDTO
-import com.zeroone.wallpaperdeal.data.model.WallDeal
+import com.zeroone.wallpaperdeal.data.model.Couple
+import com.zeroone.wallpaperdeal.data.model.User
 import com.zeroone.wallpaperdeal.data.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.ui.theme.BlueTwitter
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
@@ -55,7 +56,7 @@ fun SendWallpaperRequestContent(
     storage: FirebaseStorage,
     userId: String,
     viewModel: CoupleOprtViewModel,
-    wallDealInLet: WallDeal,
+    coupleInLet: Couple,
     menuChange: () -> Unit,
     selectedImageUriChange: () -> Unit
 ) {
@@ -143,21 +144,21 @@ fun SendWallpaperRequestContent(
             IconButton(
                 onClick = {
                     isLoading = true
-                    val storageRef = storage.reference.child("wallpaper_request${wallDealInLet.groupId}/${UUID.randomUUID()}")
+                    val storageRef = storage.reference.child("wallpaper_request${coupleInLet.groupId}/${UUID.randomUUID()}")
                     val uri = selectedImageUri!!
                     storageRef.putFile(uri)
                         .addOnSuccessListener {
                             Log.e("Request image upload", "success")
                             storageRef.downloadUrl.addOnSuccessListener { uri ->
                                 imageUrl =uri.toString()
-                                var senderUser: UserDTO? = null
-                                var receiverUser: UserDTO? = null
-                                if(wallDealInLet.user1.userId.equals(userId)){
-                                    senderUser = wallDealInLet.user1
-                                    receiverUser = wallDealInLet.user2
+                                var senderUser: User? = null
+                                var receiverUser: User? = null
+                                if(coupleInLet.user1.userId.equals(userId)){
+                                    senderUser = coupleInLet.user1
+                                    receiverUser = coupleInLet.user2
                                 }else{
-                                    senderUser = wallDealInLet.user2
-                                    receiverUser = wallDealInLet.user1
+                                    senderUser = coupleInLet.user2
+                                    receiverUser = coupleInLet.user1
                                 }
                                 senderUser.let {
                                     val request = WallpaperRequest(

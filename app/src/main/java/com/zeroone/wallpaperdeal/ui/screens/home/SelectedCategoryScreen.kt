@@ -1,6 +1,6 @@
 package com.zeroone.wallpaperdeal.ui.screens.home
 
-import android.widget.Space
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

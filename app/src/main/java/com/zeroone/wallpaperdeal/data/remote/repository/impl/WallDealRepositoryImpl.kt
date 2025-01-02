@@ -1,10 +1,8 @@
 package com.zeroone.wallpaperdeal.data.remote.repository.impl
 
-import android.util.Log
 import com.zeroone.wallpaperdeal.data.remote.api.WallDealAPI
-import com.zeroone.wallpaperdeal.data.model.WallDeal
-import com.zeroone.wallpaperdeal.data.model.WallDealRequest
-import com.zeroone.wallpaperdeal.data.model.Wallpaper
+import com.zeroone.wallpaperdeal.data.model.Couple
+import com.zeroone.wallpaperdeal.data.model.CoupleRequest
 import com.zeroone.wallpaperdeal.data.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.data.remote.repository.WallDealRepository
 import javax.inject.Inject
@@ -12,118 +10,127 @@ import javax.inject.Inject
 @Suppress("UNREACHABLE_CODE")
 class WallDealRepositoryImpl @Inject constructor(private val api: WallDealAPI) :
     WallDealRepository {
-    override suspend fun sendWallDealRequest(senderUser: String, receiverUser: String) {
-        try{ api.sendWallDealRequest(senderUser = senderUser, receiverUser = receiverUser) }
+    override suspend fun sendWallDealRequest(token:String, senderUser: String, receiverUser: String) {
+        try{
+            val bearer = "Bearer $token"
+            api.sendWallDealRequest(senderUser = senderUser, receiverUser = receiverUser, token = bearer) }
         catch (ex: RuntimeException){ throw ex }
     }
 
-    override suspend fun deleteRequest(requestId: String){
+    override suspend fun deleteRequest(token:String, requestId: String){
         try {
-            api.deleteRequest(requestId = requestId)
+            val bearer = "Bearer $token"
+            api.deleteRequest(requestId = requestId, token = bearer)
         }catch (ex: RuntimeException){
             throw ex
         }
     }
 
     override suspend fun checkWallDealRequest(
+        token:String,
         currentUserId: String,
         targetUserId: String
     ): Boolean {
         try {
-            return api.checkWallDealRequest(currentUserId = currentUserId, targetUserId = targetUserId)
+            val bearer = "Bearer $token"
+            return api.checkWallDealRequest(currentUserId = currentUserId, targetUserId = targetUserId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun checkWalldeal(targetUserId: String): Boolean {
+    override suspend fun checkWalldeal(token:String, targetUserId: String): Boolean {
         try {
-            return api.checkWalldeal(targetUserId = targetUserId)
+            val bearer = "Bearer $token"
+            return api.checkWalldeal(targetUserId = targetUserId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
     override suspend fun checkWalldealForBetweenUserToUser(
+        token:String,
         currentUserId: String,
         targetUserId: String
     ): Boolean {
         try {
-            return api.checkWalldealForBetweenUserToUser(currentUserId = currentUserId, targetUserId = targetUserId)
+            val bearer = "Bearer $token"
+            return api.checkWalldealForBetweenUserToUser(currentUserId = currentUserId, targetUserId = targetUserId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun sendWallpaperRequest(currentUserId: String, request: WallpaperRequest) {
+    override suspend fun sendWallpaperRequest(token:String, currentUserId: String, request: WallpaperRequest) {
         try {
-            api.sendPost(currentUserId = currentUserId, request = request)
+            val bearer = "Bearer $token"
+            api.sendPost(currentUserId = currentUserId, request = request, token=bearer )
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun checkWallDealRequests(currentUserId: String) : Boolean{
+    override suspend fun checkWallDealRequests(token:String, currentUserId: String) : Boolean{
         try {
-            return api.checkWallDealRequests(userId = currentUserId)
+            val bearer = "Bearer $token"
+            return api.checkWallDealRequests(userId = currentUserId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun getRequestsByUserId(userId: String) : List<WallDealRequest>{
+    override suspend fun getRequestsByUserId(token:String, userId: String) : List<CoupleRequest>{
         try {
-            return api.getRequestsByUserId(userId = userId)
+            val bearer = "Bearer $token"
+            return api.getRequestsByUserId(userId = userId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun getWallDeal(userId: String): WallDeal {
+    override suspend fun getWallDeal(token:String, userId: String): Couple {
         try {
-            return api.getWallDeal(userId = userId)
+            val bearer = "Bearer $token"
+            return api.getWallDeal(userId = userId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun cancelWallpaperRequest(currentUserId: String, request: WallpaperRequest) {
+    override suspend fun cancelWallpaperRequest(token:String, currentUserId: String, request: WallpaperRequest) {
         try {
-            api.cancelPost(currentUserId = currentUserId, request = request)
+            val bearer = "Bearer $token"
+            api.cancelPost(currentUserId = currentUserId, request = request, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun createWallDeal(wallDeal: WallDeal) {
+    override suspend fun createWallDeal(token:String, couple: Couple) {
         try {
-            api.createWallDeal(wallDeal = wallDeal)
+            val bearer = "Bearer $token"
+            api.createWallDeal(couple = couple, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun cancelWallDeal(userId: String) {
+    override suspend fun cancelWallDeal(token:String, userId: String) {
+        val bearer = "Bearer $token"
         try {
-            api.cancelWallDeal(userId = userId)
+            api.cancelWallDeal(userId = userId, token = bearer)
         } catch (e: RuntimeException) {
             throw e
         }
     }
 
-    override suspend fun addUserToWallDeal(userId: String, otherUserId: String) {
-        try {
-            api.addUserToWallDeal(userId = userId, otherUserId = otherUserId)
-        }catch (e: RuntimeException){
-            throw e
-        }
-    }
-
     override suspend fun getWallpaperRequest(
+        token:String,
         requestId: String
     ): WallpaperRequest {
+        val bearer = "Bearer $token"
         try {
-            return api.getWallpaperRequest(requestId = requestId)
+            return api.getWallpaperRequest(token= bearer, requestId = requestId)
         }catch (e: RuntimeException){
             throw e
         }

@@ -81,7 +81,7 @@ fun WallpaperViewScreen(
     auth: FirebaseAuth
 ) {
     val context = LocalContext.current
-    val wallpaperId = navController.currentBackStackEntry?.arguments?.getString("wallpaperId")
+    val wallpaperId = navController.currentBackStackEntry?.arguments?.getInt("wallpaperId")
     var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     wallpaperId?.let { wallpaperId ->
@@ -90,7 +90,8 @@ fun WallpaperViewScreen(
         var userId by remember { mutableStateOf<String>("") }
         var checkFavorite by remember { mutableStateOf<Boolean>(false) }
         var openReportDialog by remember { mutableStateOf<Boolean>(false) }
-        LaunchedEffect(key1 = wallpaperId){
+        Log.e("WALPPAERID", wallpaperId.toString())
+        LaunchedEffect(Dispatchers.IO){
             viewModel.fetchWallpaper(wallpaperId = wallpaperId)
             auth.uid?.let{
                 userId = it
@@ -107,7 +108,7 @@ fun WallpaperViewScreen(
         wallpaper = viewModel.wallpaperState.value
 
         wallpaper?.let { wallpaper->
-            val currentUserEqualSenderUser = auth.uid.equals(wallpaper.owner?.userId)
+            val currentUserEqualSenderUser = auth.uid.equals(wallpaper.user?.userId)
             LaunchedEffect(key1 = wallpaper.imageUrl){
                 val request = ImageRequest.Builder(context)
                     .data(wallpaper.imageUrl)
@@ -141,12 +142,12 @@ fun WallpaperViewScreen(
                         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
                         Row(modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${wallpaper.owner?.userId}") },
+                            .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${wallpaper.user?.userId}") },
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
                             AsyncImage(
-                                model = wallpaper.owner?.profilePhoto,
+                                model = wallpaper.user?.profilePhoto,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(40.dp)
@@ -154,7 +155,7 @@ fun WallpaperViewScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = wallpaper.owner!!.username,
+                                text = wallpaper.user!!.username,
                                 style = MaterialTheme.typography.h6,
                                 color = Color.White,
                                 fontSize = 16.sp,
@@ -296,12 +297,12 @@ fun WallpaperViewScreen(
                                 DropdownMenuItem(onClick = {
                                     expanded = false
                                     try{
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            viewModel.removeWallpaper(wallpaperId = wallpaperId)
-                                            delay(500)
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            viewModel.removeWallpaper(wallpaperId = wallpaperId, navController = navController)
+                                            //navController.navigateUp()
                                         }
-                                    }finally {
-                                        navController.navigate(Screen.ProfileScreen.route)
+                                    }catch (ex:RuntimeException){
+                                        throw ex
                                     }
                                 }) {
                                     Box(

@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import com.zeroone.wallpaperdeal.data.local.MIGRATION_1_2
 import com.zeroone.wallpaperdeal.data.local.UserDao
 import com.zeroone.wallpaperdeal.data.local.UserDatabase
 import com.zeroone.wallpaperdeal.data.local.WallpaperDao
@@ -26,7 +25,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -98,7 +96,8 @@ object AppModule {
             context.applicationContext,
             WallpaperDatabase::class.java,
             "wallpaper_database"
-        ).addMigrations(MIGRATION_1_2).build()
+        )
+            .build()
     }
     @Provides
     fun provideWallpaperDao(wallpaperDatabase: WallpaperDatabase): WallpaperDao {
@@ -107,7 +106,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideUserDatabase(@ApplicationContext context: Context): UserDatabase {
-        return Room.databaseBuilder(context, UserDatabase::class.java, "user_database").build()
+        return Room.databaseBuilder(context, UserDatabase::class.java, "user_database")
+            .build()
     }
 
 

@@ -13,10 +13,18 @@ data class User(
     var email: String,
     @ColumnInfo("username")
     var username: String,
-    @ColumnInfo("walldeal_id")
-    var wallDealId: String?,
-    @ColumnInfo("user_detail")
-    var userDetail: UserDetail?,
+    @ColumnInfo("couple_id")
+    var coupleId: String?,
+    @ColumnInfo("profile_photo")
+    var profilePhoto: String?,
     @ColumnInfo("fcm_token")
-    var fcmToken: String?
+    var fcmToken: String?,
+    @ColumnInfo("favorite_wallpapers")
+    var favoriteWallpapers: Set<Int>?,
+    @ColumnInfo("added_favorites")
+    var addedFavorites: Set<Int>?,
+    @ColumnInfo("followers")
+    var followers: Set<String>?,
+    @ColumnInfo("followed")
+    var followed: Set<String>?,
 )

@@ -6,28 +6,28 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "wallpapers")
 data class Wallpaper(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "wallpaper_id")
-    val wallpaperId: String,
-
-    @ColumnInfo(name = "owner")
-    val owner: UserDTO?,
-
-    @ColumnInfo(name = "user_added_favorite")
-    val userAddedFavorite: List<String>?,
+    val wallpaperId: Int = 0,
 
     @ColumnInfo(name = "description")
     val description: String?,
 
-    @ColumnInfo(name = "image_url")
-    val imageUrl: String,
+    @ColumnInfo(name = "owner")
+    val user: User?,
 
     @ColumnInfo(name = "category")
     val category: String,
 
-    @ColumnInfo(name = "liked_users")
-    val likedUsers: List<String>?,
-
     @ColumnInfo(name = "like_count")
-    val likeCount: Int?
+    val likeCount: Int?,
+
+    @ColumnInfo(name = "image_url")
+    val imageUrl: String,
+
+    @ColumnInfo(name = "liked_users")
+    val likedUsers: Set<String>?,
+
+    @ColumnInfo(name = "user_added_favorite")
+    val userAddedFavorite: Set<String>?,
 )

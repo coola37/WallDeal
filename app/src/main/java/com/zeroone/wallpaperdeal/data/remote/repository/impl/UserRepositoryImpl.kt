@@ -4,16 +4,17 @@ import android.util.Log
 import com.zeroone.wallpaperdeal.data.model.User
 import com.zeroone.wallpaperdeal.data.remote.api.UserAPI
 import com.zeroone.wallpaperdeal.data.model.Report
-import com.zeroone.wallpaperdeal.data.model.ResponseWallpaper
 import com.zeroone.wallpaperdeal.data.model.UserDTO
 import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
+import retrofit2.http.Header
 import java.io.EOFException
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepository {
-    override suspend fun saveUser(user: User): String {
+    override suspend fun saveUser(token:String, user: User): String {
         try{
-            api.saveUser(user = user)
+            val bearer = "Bearer $token"
+            api.saveUser(user = user, token = bearer)
             return "User has been created"
         }catch (e: EOFException){
             Log.e("saveUserError:", e.message.toString())
@@ -21,45 +22,52 @@ class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepo
         }
     }
 
-    override suspend fun getUser(userId: String) : User? {
+    override suspend fun getUser(token:String, userId: String) : User? {
         try{
-            return api.getUser(userId = userId)
+            val bearer = "Bearer $token"
+            Log.e("GetUserRepository token:", bearer)
+            return api.getUser(userId = userId, token = bearer)
         }catch (e: RuntimeException) {
             Log.e("getUserError:", e.message.toString())
             throw e
         }
     }
 
-    override suspend fun getUsers(): List<User> {
+
+    override suspend fun getUsers(token:String): List<User> {
         try{
-            return api.getUsers()
+            val bearer = "Bearer $token"
+            return api.getUsers(bearer).toList()
         }catch (e: RuntimeException){
             Log.e("getUsers", e.message.toString())
             throw e
         }
     }
 
-    override suspend fun checkFavorites(userId: String, wallpaperId: String): Boolean {
+    override suspend fun checkFavorites(token:String, userId: String, wallpaperId: Int): Boolean {
         try {
-            return api.checkFavorites(userId = userId, wallpaperId = wallpaperId)
+            val bearer = "Bearer $token"
+            return api.checkFavorites(userId = userId, wallpaperId = wallpaperId, token = bearer)
         }catch (e: RuntimeException){
             Log.e("checkFavorites", e.message.toString())
             throw e
         }
     }
 
-    override suspend fun followOrUnfollow(currentUserId: String, targetUserId: String) {
+    override suspend fun followOrUnfollow(token:String, currentUserId: String, targetUserId: String) {
         try {
-            return api.followOrUnfollow(currentUserId = currentUserId, targetUserId = targetUserId)
+            val bearer = "Bearer $token"
+            return api.followOrUnfollow(currentUserId = currentUserId, targetUserId = targetUserId,token = bearer, )
         }catch (e: RuntimeException){
             Log.e("followOrUnfollow", e.message.toString())
             throw e
         }
     }
 
-    override suspend fun checkFollow(currentUserId: String, targetUserId: String): Boolean {
+    override suspend fun checkFollow(token:String, currentUserId: String, targetUserId: String): Boolean {
         try {
-            return api.checkFollow(currentUserId = currentUserId, targetUserId = targetUserId)
+            val bearer = "Bearer $token"
+            return api.checkFollow(currentUserId = currentUserId, targetUserId = targetUserId, token = bearer)
         }catch (e: RuntimeException){
             Log.e("checkFollow", e.message.toString())
             throw e
@@ -70,43 +78,51 @@ class UserRepositoryImpl @Inject constructor(private val api: UserAPI): UserRepo
         val dto = UserDTO(
             userId = user.userId,
             email = user.email,
-            profilePhoto = user.userDetail?.profilePhoto,
-            wallDealId = user.wallDealId,
+            profilePhoto = user.profilePhoto,
+            wallDealId = user.coupleId,
             username = user.username,
             fcmToken = user.fcmToken
         )
         return dto
     }
 
-    override suspend fun editProfile(user: User) {
+    override suspend fun editProfile(token:String, user: User) {
+        val bearer = "Bearer $token"
         try {
-            api.editProfile(user = user)
+            api.editProfile(user = user, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun createUserReport(report: Report<User>) {
+    override suspend fun createUserReport(token:String, report: Report<User>) {
+        val bearer = "Bearer $token"
         try {
-            api.createUserReport(report = report)
+            api.createUserReport(report = report, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun deleteAccount(userId: String) {
+    override suspend fun deleteAccount(token:String, userId: String) {
+        val bearer = "Bearer $token"
         try {
-            api.deleteAccount(userId = userId)
+            api.deleteAccount(userId = userId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
-    override suspend fun checkUser(userId: String): Boolean{
+    override suspend fun checkUser(token:String, userId: String): Boolean{
+        val bearer = "Bearer $token"
         try {
-            return api.checkUser(userId = userId)
+            return api.checkUser(userId = userId, token = bearer)
         }catch (e: RuntimeException){
             throw e
         }
+    }
+
+    override suspend fun checkUsingUsername(username: String): Boolean {
+        return api.checkUsedUsername(username = username)
     }
 }

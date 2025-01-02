@@ -38,7 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import com.zeroone.wallpaperdeal.data.model.WallDeal
+import com.zeroone.wallpaperdeal.data.model.Couple
 import com.zeroone.wallpaperdeal.data.model.WallpaperRequest
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.screens.share.getBitmapFromUri
@@ -85,9 +85,11 @@ fun WallDealScreen(
 
     LaunchedEffect(key1 = userId) {
         viewModel.getWallDeal(userId = userId)
+
     }
-    val wallDealState = viewModel.wallDealState
+    val wallDealState = viewModel.coupleState
     val wallDeal = wallDealState.value
+    Log.e("Couple Control", wallDeal.toString())
 
     Scaffold(
         bottomBar = { BottomNavigationBar(selectedItem = 3, navController = navController) },
@@ -99,7 +101,7 @@ fun WallDealScreen(
             if(!groupId.isNullOrEmpty()){
                 WallDealContent(
                     context = context,
-                    wallDealInLet = wallDealInLet,
+                    coupleInLet = wallDealInLet,
                     singlePhotoPickerLauncher = singlePhotoPickerLauncher,
                     selectedImageUri = selectedImageUri,
                     buttonEnabled = buttonEnabled,
@@ -130,7 +132,7 @@ fun WallDealScreen(
 @Composable
 fun WallDealContent(
     context: Context,
-    wallDealInLet: WallDeal,
+    coupleInLet: Couple,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     selectedImageUri: Uri?,
     buttonEnabled: Boolean,
@@ -171,7 +173,7 @@ fun WallDealContent(
             }
             TextButton(
                 onClick = {
-                    if (wallDealInLet.requestId.isNullOrEmpty()) {
+                    if (coupleInLet.requestId.isNullOrEmpty()) {
                         menu = "send"
                     } else {
                         Toast.makeText(context, "Finalize your current wallpaper request",
@@ -191,9 +193,9 @@ fun WallDealContent(
 
         when (menu) {
             "request" -> {
-                if(!wallDealInLet.requestId.isNullOrEmpty()){
-                    LaunchedEffect(key1 = wallDealInLet.requestId){
-                        viewModel.getWallpaperRequest(requestId = wallDealInLet.requestId)
+                if(!coupleInLet.requestId.isNullOrEmpty()){
+                    LaunchedEffect(key1 = coupleInLet.requestId){
+                        viewModel.getWallpaperRequest(requestId = coupleInLet.requestId)
                     }
                     request = viewModel.requestState.value
                     request?.let {
@@ -218,7 +220,7 @@ fun WallDealContent(
                         storage = storage,
                         userId = userId,
                         viewModel = viewModel,
-                        wallDealInLet = wallDealInLet,
+                        coupleInLet = coupleInLet,
                         selectedImageUriChange = { selectedImageUriChange() },
                         menuChange = { menu = "request" }
                     )

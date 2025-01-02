@@ -1,5 +1,7 @@
 package com.zeroone.wallpaperdeal.ui.screens.search
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,6 +13,7 @@ import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
 import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -25,9 +28,12 @@ class SearchViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val wallpaperRepository: WallpaperRepository,
     private val wallpaperDatabase: WallpaperDatabase,
-    private val userDatabase: UserDatabase
+    private val userDatabase: UserDatabase,
+    @ApplicationContext context: Context
 ) : ViewModel() {
 
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    private val token = sharedPreferences.getString("firebase_token", null)
     init {
         fetchItems()
     }
@@ -56,11 +62,11 @@ class SearchViewModel @Inject constructor(
 
     private fun getItems(): Flow<ItemsState> = flow {
         try {
-            val wallpapers = wallpaperRepository.getWallpapers()
-            val users = userRepository.getUsers()
-
-            emit(ItemsState(wallpapers = wallpapers.payload, users = users))
-
+            token?.let {
+                val wallpapers = wallpaperRepository.getWallpapers(token = it)
+                val users = userRepository.getUsers(token = it)
+                emit(ItemsState(wallpapers = wallpapers.payload.toList(), users = users))
+            }
         } catch (e: IOError) {
             Log.e("SearchViewModel getItems error:", e.message.toString())
         }

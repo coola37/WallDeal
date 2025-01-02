@@ -1,8 +1,5 @@
 package com.zeroone.wallpaperdeal.ui.screens.register
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -13,18 +10,24 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,32 +46,41 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.messaging
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.data.model.User
-import com.zeroone.wallpaperdeal.data.model.UserDetail
 import com.zeroone.wallpaperdeal.ui.ButtonLoginAndRegister
-import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
+import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 @Composable
 fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = hiltViewModel(), auth: FirebaseAuth){
     val context = LocalContext.current
     var registerButtonEnabled by remember { mutableStateOf<Boolean>(false)}
     var loading by remember { mutableStateOf<Boolean>(false) }
+    var usingUsername by remember { mutableStateOf<Boolean?>(null)}
+
     Scaffold(
         containerColor = Color.Black
     ) {
         Column(
-            modifier = Modifier.padding(it).fillMaxSize(),
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(id = R.drawable.walldeallogo),
-                contentDescription = null, modifier = Modifier.fillMaxWidth(0.5f).fillMaxHeight(0.1f)
+                contentDescription = null, modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight(0.1f)
             )
             val textFieldColor = TextFieldDefaults.colors(
                 focusedContainerColor = TextFieldBaseColor,
@@ -146,9 +158,19 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
             registerButtonEnabled =
                 !(textPassword != textPasswordRepeat || textPassword.isEmpty() || textPasswordRepeat.isEmpty()
                         || textUsername.isEmpty() || textEmail.isEmpty())
-            ButtonLoginAndRegister(
-                modifier = Modifier.fillMaxWidth(0.33f),
-                onClicked = {
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+            Button(
+                modifier = Modifier
+                    .fillMaxHeight(0.1f)
+                    .fillMaxWidth(0.4f),
+                colors = ButtonColors(
+                    containerColor = ProfileButtonColor,
+                    disabledContentColor = ProfileButtonColor,
+                    disabledContainerColor = ProfileButtonColor,
+                    contentColor = ProfileButtonColor
+                ),
+                enabled =  !(textPassword.isEmpty() || textEmail.isEmpty()),
+                onClick = {
                     loading = true
                     if(textUsername.length <= 3){
                         Toast.makeText(context,"Username must be at least 4 characters",Toast.LENGTH_SHORT).show()
@@ -163,44 +185,50 @@ fun RegisterScreen(navController: NavController,viewModel: RegisterViewModel = h
                         loading = false
                     }
                     else{
-                        auth.createUserWithEmailAndPassword(textEmail, textPassword).addOnCompleteListener {
-                            if(it.isSuccessful){
-                                auth.currentUser?.let {
-                                    val userDetail = UserDetail(null, emptyList(), emptyList(), emptyList())
-                                    val user = User(
-                                        userId = it.uid, textEmail,
-                                        username = textUsername,
-                                        wallDealId = "",
-                                        userDetail = userDetail,
-                                        fcmToken = ""
-                                    )
-                                    try {
-                                        CoroutineScope(Dispatchers.Main).launch{
-                                            viewModel.saveUserToDb(user)
-                                        }
-                                    }finally {
-                                        auth.signOut()
-                                        sendVerificationEmail(user = it)
-                                        navController.navigate(Screen.LoginScreen.route)
-                                        loading = false
-                                        Log.d("UserAuth:", "succes")
-                                    }
+                        CoroutineScope(Dispatchers.Main).launch {
+                            viewModel.saveUserToDb(
+                                textEmail = textEmail,
+                                textPassword = textPassword,
+                                textUsername = textUsername,
+                                context = context,
+                                signInFailureOpr = {
+                                    loading = false
+                                    textPassword = ""
+                                    textPasswordRepeat = ""
+                                },
+                                finallyOpr = {
+                                    navController.navigate(Screen.LoginScreen.route)
+                                    loading = false
+                                    Log.d("UserAuth:", "succes")
+                                },
+                                usernameUsedOpr = {
+                                    Toast.makeText(
+                                        context,
+                                        "Username already used by someone else",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    textUsername = ""
+                                    loading = false
                                 }
-                            }else{
-                                loading = false
-                                textPassword = ""
-                                textPasswordRepeat = ""
-                                Toast.makeText(context,it.exception?.message.toString(),Toast.LENGTH_SHORT).show()
-                                Log.d("UserAuth:", "failure: ", it.exception)
-                            }
+                            )
                         }
-                    } },
-                enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
-                enabledText = "Login information cannot be empty",
-                text = "Register",
-                loadingText = "Registering in"
-            )
-
+                    }
+                }) {
+                when(loading){
+                    true -> {
+                        Text(text = "Registering in", color = Color.White)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(20.dp),
+                            color = Color.White
+                        )
+                    }
+                    false -> {
+                        Text(text = "Register", color = Color.White)
+                    }
+                }
+            }
         }
     }
 }

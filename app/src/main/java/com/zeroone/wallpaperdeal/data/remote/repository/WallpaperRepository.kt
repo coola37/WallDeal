@@ -4,18 +4,19 @@ import com.zeroone.wallpaperdeal.data.model.LikeRequest
 import com.zeroone.wallpaperdeal.data.model.Report
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.data.model.ResponseWallpaper
+import retrofit2.http.Body
 
 interface WallpaperRepository {
-    suspend fun saveWallpaper(wallpaper: Wallpaper) : String
-    suspend fun getWallpapers() : ResponseWallpaper
-    suspend fun getWallpaperById(wallpaperId: String) : Wallpaper
-    suspend fun getWallpapersByCategory(categoryName: String) : ResponseWallpaper
-    suspend fun getWallpapersByOwner(ownerId: String) : ResponseWallpaper
-    suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest)
-    suspend fun addFavorite(userId: String, wallpaperId: String)
-    suspend fun checkLike(wallpaperId: String, currentUserId: String) : Boolean
-    suspend fun getWallpaperByFollowed(currentUserId: String) : ResponseWallpaper
-    suspend fun removeWallpaper(wallpaperId: String)
-    suspend fun createWallpaperReport(report: Report<Wallpaper>)
-
+    suspend fun saveWallpaper(token:String, wallpaper: Wallpaper) : String
+    suspend fun getWallpapers(token:String ) : ResponseWallpaper
+    suspend fun getWallpaperById(token:String, wallpaperId: Int) : Wallpaper
+    suspend fun getWallpapersByCategory(token:String, categoryName: String) : ResponseWallpaper
+    suspend fun getWallpapersByOwner(token:String, ownerId: String) : ResponseWallpaper
+    suspend fun likeOrDislike(token:String, wallpaperId: Int, likeRequest: LikeRequest)
+    suspend fun addFavorite(token:String, userId: String, wallpaperId: Int)
+    suspend fun checkLike(token:String, wallpaperId: Int, currentUserId: String) : Boolean
+    suspend fun getWallpaperByFollowed(token:String, currentUserId: String) : ResponseWallpaper
+    suspend fun removeWallpaper(token:String, wallpaperId: Int)
+    suspend fun createWallpaperReport(token:String, report: Report<Wallpaper>)
+    suspend fun getFavorites(token:String, userId: String): List<Wallpaper>
 }

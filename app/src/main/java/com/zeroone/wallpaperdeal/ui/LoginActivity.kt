@@ -78,8 +78,12 @@ class LoginActivity : ComponentActivity() {
                                             val signInResult = googleAuthUiClient.signInWithIntent(
                                                 intent = result.data ?: return@launch
                                             )
+                                            val idToken = signInResult.idToken
                                             Log.e("GoogleUser", googleAuthUiClient.getSignedInUser().toString())
-                                            viewModel.saveUserToDb(googleAuthUiClient.getSignedInUser()!!)
+                                            //userRepository.saveUser(googleAuthUiClient.getSignedInUser()!!)
+                                            idToken?.let {
+                                                viewModel.saveUserToDb(googleAuthUiClient.getSignedInUser()!!, idToken = it)
+                                            }
                                             delay(1000)
                                             viewModel.onSignInResult(signInResult)
                                         }

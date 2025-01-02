@@ -14,9 +14,11 @@ import kotlin.RuntimeException
 
 class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI) :
     WallpaperRepository {
-    override suspend fun saveWallpaper(wallpaper: Wallpaper): String {
+    override suspend fun saveWallpaper(token:String, wallpaper: Wallpaper): String {
         return try{
-            api.saveWallpaper(wallpaper = wallpaper)
+            val bearer = "Bearer $token"
+            api.saveWallpaper(token = bearer, wallpaper = wallpaper)
+            Log.e("saveWallapaperToken", bearer)
             "Wallpaper has been saved"
         }catch (e: EOFException){
             Log.e("SaveWallpaperError:", e.message.toString())
@@ -24,53 +26,67 @@ class WallpaperRepositoryImpl @Inject constructor(private val api: WallpaperAPI)
         }
     }
 
-    override suspend fun getWallpapers(): ResponseWallpaper {
-        try{ return api.getWallpapers()
+    override suspend fun getWallpapers(token:String): ResponseWallpaper {
+        val bearer = "Bearer $token"
+        try{ return api.getWallpapers(token = bearer)
         }catch (e: IOException){
             throw e
         }
     }
 
-    override suspend fun getWallpaperById(wallpaperId: String): Wallpaper {
-        return api.getWallpaperById(wallpaperId = wallpaperId)
+    override suspend fun getWallpaperById(token:String, wallpaperId: Int): Wallpaper {
+        val bearer = "Bearer $token"
+        return api.getWallpaperById(token = bearer,wallpaperId = wallpaperId)
     }
 
-    override suspend fun getWallpapersByCategory(categoryName: String): ResponseWallpaper {
-        return api.getWallpapersByCategory(categoryName = categoryName)
+    override suspend fun getWallpapersByCategory(token:String, categoryName: String): ResponseWallpaper {
+        val bearer = "Bearer $token"
+        return api.getWallpapersByCategory(token = bearer,categoryName = categoryName)
     }
 
-    override suspend fun getWallpapersByOwner(ownerId: String): ResponseWallpaper {
-        return api.getWallpapersByOwner(ownerId = ownerId)
+    override suspend fun getWallpapersByOwner(token:String, ownerId: String): ResponseWallpaper {
+        val bearer = "Bearer $token"
+        return api.getWallpapersByOwner(token = bearer,ownerId = ownerId)
     }
 
-    override suspend fun likeOrDislike(wallpaperId: String, likeRequest: LikeRequest) {
-        api.likeOrDislike(wallpaperId = wallpaperId, likeRequest = likeRequest)
+    override suspend fun likeOrDislike(token:String, wallpaperId: Int, likeRequest: LikeRequest) {
+        val bearer = "Bearer $token"
+        api.likeOrDislike(token = bearer,wallpaperId = wallpaperId, likeRequest = likeRequest)
     }
 
-    override suspend fun addFavorite(userId: String, wallpaperId: String) {
-        api.addFavorite(userId = userId, wallpaperId = wallpaperId)
+    override suspend fun addFavorite(token:String, userId: String, wallpaperId: Int) {
+        val bearer = "Bearer $token"
+        api.addFavorite(token = bearer,userId = userId, wallpaperId = wallpaperId)
     }
 
 
-    override suspend fun checkLike(wallpaperId: String, currentUserId: String): Boolean {
-        return api.checkLike(wallpaperId = wallpaperId, currentUserId = currentUserId)
+    override suspend fun checkLike(token:String, wallpaperId: Int, currentUserId: String): Boolean {
+        val bearer = "Bearer $token"
+        return api.checkLike(token = bearer,wallpaperId = wallpaperId, currentUserId = currentUserId)
     }
 
-    override suspend fun getWallpaperByFollowed(currentUserId: String) : ResponseWallpaper {
-        return api.getWallpaperByFollowed(currentUserId = currentUserId)
+    override suspend fun getWallpaperByFollowed(token:String, currentUserId: String) : ResponseWallpaper {
+        val bearer = "Bearer $token"
+        return api.getWallpaperByFollowed(token = bearer,currentUserId = currentUserId)
     }
 
-    override suspend fun removeWallpaper(wallpaperId: String) {
-        try{ api.removeWallpaper(wallpaperId = wallpaperId) }
+    override suspend fun removeWallpaper(token:String, wallpaperId: Int) {
+        val bearer = "Bearer $token"
+        try{ api.removeWallpaper(token = bearer,wallpaperId = wallpaperId) }
         catch (ex: RuntimeException){ throw ex}
     }
 
-    override suspend fun createWallpaperReport(report: Report<Wallpaper>) {
+    override suspend fun createWallpaperReport(token:String, report: Report<Wallpaper>) {
+        val bearer = "Bearer $token"
         try {
-            api.createWallpaperReport(report = report)
+            api.createWallpaperReport(token = bearer,report = report)
         }catch (e: RuntimeException){
             throw e
         }
     }
 
+    override suspend fun getFavorites(token:String, userId: String): List<Wallpaper> {
+        val bearer = "Bearer $token"
+        return api.getFavorites(token = bearer,userId = userId)
+    }
 }

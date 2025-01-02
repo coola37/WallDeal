@@ -6,8 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
-
-
 @Dao
 interface WallpaperDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -25,5 +23,3 @@ interface WallpaperDao {
     @Query("SELECT * FROM wallpapers")
     suspend fun getAllWallpapers(): List<Wallpaper>
 }
-
-

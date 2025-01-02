@@ -116,8 +116,8 @@ fun WallpaperListVerticalStaggeredGrid(
             content = {
                 items(list.size) { index ->
                     WallpaperItemForVerticalStaggeredGrid(
-                        wallpaper = list[index],
-                        onClick = { onItemClick(list[index]) } // Invoke onItemClick lambda
+                        wallpaper = list.toList()[index],
+                        onClick = { onItemClick(list.toList()[index]) } // Invoke onItemClick lambda
                     )
                 }
 

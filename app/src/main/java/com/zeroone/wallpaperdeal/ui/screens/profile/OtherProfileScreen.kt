@@ -82,7 +82,7 @@ fun OtherProfileScreen(
             viewModel.getCurrentUser(auth.uid!!)
         }
         checkFollow = viewModel.checkFollowState.value
-        wallpapers = viewModel.stateItems.value.wallpapers
+        wallpapers = viewModel.stateItems.value.wallpapers.toList()
         user = viewModel.stateItems.value.user
         currentUser = viewModel.currentUserState.value
         user?.let { user ->
@@ -140,7 +140,7 @@ fun OtherProfileScreen(
                             }
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 AsyncImage(
-                                    model = user.userDetail?.profilePhoto,
+                                    model = user.profilePhoto!!,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .padding(top = 16.dp, start = 16.dp)
@@ -171,7 +171,7 @@ fun OtherProfileScreen(
                                     Row {
                                         Spacer(modifier = Modifier.fillMaxWidth(0.33f))
                                         Text(
-                                            text = user.userDetail?.followers?.size.toString(),
+                                            text = user.followers?.size.toString(),
                                             fontSize = 16.sp,
                                             color = Color.LightGray,
                                             modifier = Modifier
@@ -179,7 +179,7 @@ fun OtherProfileScreen(
                                         )
                                         Spacer(modifier = Modifier.fillMaxWidth(0.4f))
                                         Text(
-                                            text = user.userDetail?.followed?.size.toString(),
+                                            text = user.followed?.size.toString(),
                                             fontSize = 16.sp,
                                             color = Color.LightGray,
                                             modifier = Modifier
@@ -233,7 +233,7 @@ fun OtherProfileScreen(
                                                 when(wallDealState){
                                                     false -> {
                                                         currentUser?.let {
-                                                            val coupleCheck = it.wallDealId.isNullOrEmpty()
+                                                            val coupleCheck = it.coupleId.isNullOrEmpty()
                                                             when(coupleCheck){
                                                                 true -> {
                                                                     Spacer(modifier = Modifier.fillMaxWidth(0.075f))
@@ -250,15 +250,34 @@ fun OtherProfileScreen(
                                                                     }
                                                                 }
                                                                 false -> {
-                                                                    Spacer(modifier = Modifier.fillMaxWidth(0.075f))
-                                                                    Button(
-                                                                        onClick = {
-                                                                            Toast.makeText(context,
-                                                                            "You already own a couple.",Toast.LENGTH_LONG).show()},
-                                                                        colors = buttonColor,
-                                                                        modifier = Modifier.padding(top = 8.dp),
-                                                                    ) {
-                                                                        Text(text = "You have a Couple", color = Color.LightGray)
+                                                                    when(wallDealForBetweenCurrentUserToTargetUserState){
+                                                                        true -> {
+                                                                            Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                            Button(
+                                                                                onClick = {cancelDialog = true},
+                                                                                colors = ButtonDefaults.buttonColors(
+                                                                                    ActiveButton), modifier = Modifier
+                                                                                    .padding(
+                                                                                        top = 8.dp,
+                                                                                    )
+
+                                                                            ) {
+                                                                                Text(text = "Break the Couple", color = Color.LightGray, fontSize = 12.sp,
+                                                                                    maxLines = 1)
+                                                                            }
+                                                                        }
+                                                                        false -> {
+                                                                            Spacer(modifier = Modifier.fillMaxWidth(0.075f))
+                                                                            Button(
+                                                                                onClick = {
+                                                                                    Toast.makeText(context,
+                                                                                        "You already own a couple.",Toast.LENGTH_LONG).show()},
+                                                                                colors = buttonColor,
+                                                                                modifier = Modifier.padding(top = 8.dp),
+                                                                            ) {
+                                                                                Text(text = "You have a Couple", color = Color.LightGray)
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                             }

@@ -4,5 +4,6 @@ import com.zeroone.wallpaperdeal.data.model.User
 
 data class SignInResult(
     val data: User?,
-    val errorMessage: String?
+    val errorMessage: String?,
+    val idToken: String?
 )

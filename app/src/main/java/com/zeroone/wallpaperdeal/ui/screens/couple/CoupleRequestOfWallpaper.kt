@@ -40,7 +40,6 @@ import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import com.zeroone.wallpaperdeal.utils.setWallpaper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,11 +47,11 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: CoupleOprtV
     var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
     LaunchedEffect(key1 = request.imageUrl){
-        val request = ImageRequest.Builder(context)
+        val imageRequest = ImageRequest.Builder(context)
             .data(request.imageUrl)
             .build()
 
-        val result = context.imageLoader.execute(request)
+        val result = context.imageLoader.execute(imageRequest)
         imageBitmap = if (result.drawable is BitmapDrawable) {
             (result.drawable as BitmapDrawable).bitmap
         } else {
@@ -62,7 +61,6 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: CoupleOprtV
     Column(
         modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         Row(modifier = Modifier.fillMaxHeight(0.1f)) {
             AsyncImage(
                 model = request.senderUser.profilePhoto,
@@ -78,7 +76,6 @@ fun WallDealRequestOfWallpaper(request: WallpaperRequest, viewModel: CoupleOprtV
                 modifier = Modifier.padding(top = 16.dp, start = 8.dp)
             )
         }
-        //Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom,
             modifier = Modifier.fillMaxHeight(1f)

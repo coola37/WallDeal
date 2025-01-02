@@ -51,6 +51,7 @@ import com.zeroone.wallpaperdeal.ui.WallpaperItemForVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import kotlinx.coroutines.Dispatchers
+import java.util.Collections
 
 
 @Composable
@@ -63,11 +64,14 @@ fun ProfileScreen(
         var selected by remember { mutableStateOf<String>("grid") }
         var wallpapers by remember { mutableStateOf<List<Wallpaper?>>(emptyList()) }
         var currentUser by remember { mutableStateOf<User?>(null) }
+        var favoriteWallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList())}
         LaunchedEffect(Dispatchers.IO){
             viewModel.fetchItems(currentUserId)
+            viewModel.getFavoriteWallpaper(currentUserId)
         }
         currentUser = viewModel.stateItems.value.user
-        Log.e("Wallpaper Control", viewModel.stateItems.value.user.toString())
+
+        favoriteWallpapers = viewModel.favoriteWallpapers.value
 
         Scaffold(
             backgroundColor= Color.Black,
@@ -103,7 +107,7 @@ fun ProfileScreen(
                     }
                     Row(modifier = Modifier.fillMaxWidth()) {
                         AsyncImage(
-                            model = currentUser.userDetail?.profilePhoto,
+                            model = currentUser?.profilePhoto,
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(top = 16.dp, start = 16.dp)
@@ -128,7 +132,7 @@ fun ProfileScreen(
                                 )
                             }
                             Row {
-                                currentUser.userDetail?.followers?.let {
+                                currentUser.followers?.let {
                                     Text(
                                         text = "${it.size}",
                                         fontSize = 24.sp,
@@ -145,7 +149,7 @@ fun ProfileScreen(
                                             .padding(top = 4.dp, start = 92.dp)
                                     )
                                 }
-                                currentUser.userDetail?.followed?.let {
+                                currentUser.followed?.let {
                                     Text(
                                         text = "${it.size}",
                                         fontSize = 24.sp,
@@ -237,12 +241,12 @@ fun ProfileScreen(
                     }
                     when (selected) {
                         "grid" -> {
-                            wallpapers = viewModel.stateItems.value.wallpapers
+                            wallpapers = viewModel.stateItems.value.wallpapers.toList()
                         }
 
                         "favorite" -> {
-                            wallpapers =
-                                viewModel.stateItems.value.user!!.userDetail!!.favoriteWallpapers
+                            wallpapers = viewModel.favoriteWallpapers.value
+                                //viewModel.stateItems.value.user!!.favoriteWallpapers
                         }
                     }
                     Column {
@@ -254,10 +258,10 @@ fun ProfileScreen(
                                 wallpapers?.let { wallpaperList ->
                                     items(wallpapers.size) {
                                         WallpaperItemForVerticalStaggeredGrid(
-                                            wallpaper = wallpaperList[it]!!,
+                                            wallpaper = wallpaperList.toList()[it]!!,
                                             onClick = {
                                                 navController
-                                                    .navigate("${Screen.WallpaperViewScreen.route}/${wallpaperList[it]?.wallpaperId}")
+                                                    .navigate("${Screen.WallpaperViewScreen.route}/${wallpaperList.toList()[it]?.wallpaperId}")
                                             }
                                         )
                                     }

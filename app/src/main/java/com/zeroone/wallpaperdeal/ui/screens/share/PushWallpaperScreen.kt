@@ -54,6 +54,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.data.model.Category
+import com.zeroone.wallpaperdeal.data.model.User
 import com.zeroone.wallpaperdeal.data.model.Wallpaper
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
@@ -61,6 +62,7 @@ import com.zeroone.wallpaperdeal.utils.ListCategory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -108,26 +110,30 @@ fun PushWallpaperScreen(
                 }
                 Spacer(modifier = Modifier.fillMaxWidth(0.75f))
                 val wallpaper = Wallpaper(
-                    wallpaperId!!,
-                    null,
-                    emptyList(),
-                    textDexcription,
-                    wallpaperUrl,
-                    categoryText ,
-                    emptyList(),
-                    0 ,
+                    wallpaperId= 0,
+                    user = null,
+                    description = textDexcription,
+                    category = categoryText,
+                    likeCount = 0,
+                    imageUrl = wallpaperUrl,
+                    likedUsers = Collections.emptySet(),
+                    userAddedFavorite = Collections.emptySet()
                 )
                 TextButton(onClick = {
                     auth.uid?.let { userId ->
                         CoroutineScope(Dispatchers.Main).launch {
                             viewModel.shareWallpaper(wallpaper, userId)
-                            if(viewModel.successState.value!!){
-                                navController.navigate(
-                                    Screen.HomeScreen.route,
-                                    navOptions { popUpTo(Screen.HomeScreen.route) { inclusive = true } }
-                                )
+                            if(categoryText != ""){
+                                if(viewModel.successState.value!!){
+                                    navController.navigate(
+                                        Screen.HomeScreen.route,
+                                        navOptions { popUpTo(Screen.HomeScreen.route) { inclusive = true } }
+                                    )
+                                }else{
+                                    Toast.makeText(context, "Wallpaper has not sent", Toast.LENGTH_SHORT).show()
+                                }
                             }else{
-                                Toast.makeText(context, "Wallpaper has not sent", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Please select category", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -172,7 +178,6 @@ fun PushWallpaperScreen(
                     imeAction = ImeAction.Done
                 ),
                 maxLines = 2,
-
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
                 Text(
@@ -182,9 +187,7 @@ fun PushWallpaperScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            fun clickItem(index: Int) {
-                categoryText = categories[index].categoryName
-            }
+
             var selectedCategoryIndex by remember { mutableStateOf(-1) }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LazyVerticalStaggeredGrid(

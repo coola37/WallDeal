@@ -1,5 +1,7 @@
 package com.zeroone.wallpaperdeal.ui.screens.profile
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +14,7 @@ import com.zeroone.wallpaperdeal.data.remote.repository.UserRepository
 import com.zeroone.wallpaperdeal.data.remote.repository.WallDealRepository
 import com.zeroone.wallpaperdeal.data.remote.repository.WallpaperRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.IOError
+import java.util.Collections
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -27,10 +31,11 @@ class ProfileViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val wallpaperRepository: WallpaperRepository,
     private val userRepository: UserRepository,
-    private val wallDealRepository: WallDealRepository
+    private val wallDealRepository: WallDealRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     data class ItemsState(
-        val wallpapers: List<Wallpaper> = emptyList(),
+        val wallpapers: Set<Wallpaper> = Collections.emptySet(),
         val user: User? = null
     )
 
@@ -42,6 +47,10 @@ class ProfileViewModel @Inject constructor(
     val wallDealForTargetUserState: MutableState<Boolean> = mutableStateOf(false)
     val wallDealForBetweenUserToUserState: MutableState<Boolean> = mutableStateOf(false)
     val currentUserState: MutableState<User?> = mutableStateOf(null)
+    val favoriteWallpapers: MutableState<List<Wallpaper>> = mutableStateOf(emptyList())
+
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    private val token = sharedPreferences.getString("firebase_token", null)
 
     fun fetchItems(userId: String) {
         job?.cancel()
@@ -53,17 +62,20 @@ class ProfileViewModel @Inject constructor(
     fun getCurrentUser(userId: String){
         try {
             viewModelScope.launch(){
-                currentUserState.value =userRepository.getUser(userId = userId) }
+                token?.let {
+                    currentUserState.value =userRepository.getUser(userId = userId, token = it) }
+                }
         }catch (e: RuntimeException){
             throw e
         }
     }
     private fun getItems(userId: String): Flow<ItemsState> = flow {
         try {
-            val wallpapers = wallpaperRepository.getWallpapersByOwner(userId)
-            val user = userRepository.getUser(userId)
-
-            emit(ItemsState(wallpapers = wallpapers.payload, user = user))
+            token?.let {
+                val wallpapers = wallpaperRepository.getWallpapersByOwner(ownerId = userId, token = it)
+                val user = userRepository.getUser(userId = userId, token = it)
+                emit(ItemsState(wallpapers = wallpapers.payload.toSet(), user = user))
+            }
         } catch (e: IOError) {
             Log.e("SearchViewModel getItems error:", e.message.toString())
         }
@@ -72,8 +84,10 @@ class ProfileViewModel @Inject constructor(
     fun sendCoupleRequest(senderUserId: String, receiverUserId: String){
         try {
             viewModelScope.launch {
-                wallDealRepository.sendWallDealRequest(senderUser = senderUserId, receiverUser = receiverUserId)
-                wallDealRequestState.value = true
+               token?.let {
+                   wallDealRepository.sendWallDealRequest(senderUser = senderUserId, receiverUser = receiverUserId, token = it)
+                   wallDealRequestState.value = true
+               }
             }
         }catch (e: RuntimeException){
             throw e
@@ -83,17 +97,31 @@ class ProfileViewModel @Inject constructor(
     fun checkWallDealRequest(currentUserId: String, targetUserId: String){
         try {
             viewModelScope.launch {
-                wallDealRequestState.value = wallDealRepository.checkWallDealRequest(currentUserId = currentUserId, targetUserId = targetUserId)
+                token?.let {
+                    wallDealRequestState.value = wallDealRepository.checkWallDealRequest(
+                        currentUserId = currentUserId,
+                        targetUserId = targetUserId,
+                        token = it
+                    )
+
+                }
             }
         }catch (e: RuntimeException){
             throw e
         }
     }
 
+    suspend fun getFavoriteWallpaper(userId: String){
+        token?.let{
+            favoriteWallpapers.value = wallpaperRepository.getFavorites(userId = userId, token = it)
+        }
+    }
+
     fun checkWallDeal(targetUserId: String){
         try {
             viewModelScope.launch {
-                wallDealForTargetUserState.value = wallDealRepository.checkWalldeal(targetUserId = targetUserId)
+                token?.let {
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -103,9 +131,11 @@ class ProfileViewModel @Inject constructor(
     fun checkWallDealForBetweenUserToUser(currentUserId: String, targetUserId: String){
         try {
             viewModelScope.launch{
-                wallDealForBetweenUserToUserState.value = wallDealRepository.checkWalldealForBetweenUserToUser(
-                    currentUserId = currentUserId, targetUserId = targetUserId
-                )
+                token?.let {
+                    wallDealForBetweenUserToUserState.value = wallDealRepository.checkWalldealForBetweenUserToUser(
+                        currentUserId = currentUserId, targetUserId = targetUserId, token = it
+                    )
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -115,8 +145,10 @@ class ProfileViewModel @Inject constructor(
     fun cancelWallDeal(userId: String){
         try {
             viewModelScope.launch{
-                wallDealRepository.cancelWallDeal(userId = userId)
-                wallDealForBetweenUserToUserState.value = false
+                token?.let {
+                    wallDealRepository.cancelWallDeal(userId = userId, token = it)
+                    wallDealForBetweenUserToUserState.value = false
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -126,8 +158,10 @@ class ProfileViewModel @Inject constructor(
     fun deleteRequest(requestId: String){
         try {
             viewModelScope.launch{
-                wallDealRepository.deleteRequest(requestId = requestId)
-                wallDealRequestState.value = false
+                token?.let {
+                    wallDealRepository.deleteRequest(requestId = requestId, token = it)
+                    wallDealRequestState.value = false
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -137,9 +171,11 @@ class ProfileViewModel @Inject constructor(
     fun followOrUnFollow(currentUserId: String, targetUserId: String){
         try {
             viewModelScope.launch {
-                userRepository.followOrUnfollow(currentUserId = currentUserId, targetUserId = targetUserId)
-                checkFollowState.value = !checkFollowState.value
-                fetchItems(userId = targetUserId)
+                token?.let {
+                    userRepository.followOrUnfollow(currentUserId = currentUserId, targetUserId = targetUserId, token = it)
+                    checkFollowState.value = !checkFollowState.value
+                    fetchItems(userId = targetUserId)
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -149,10 +185,13 @@ class ProfileViewModel @Inject constructor(
     suspend fun checkFollow(currentUserId: String, targetUserId: String){
         try {
             viewModelScope.launch(){
-                checkFollowState.value = userRepository.checkFollow(
-                    currentUserId = currentUserId,
-                    targetUserId = targetUserId
-                )
+                token?.let {
+                    checkFollowState.value = userRepository.checkFollow(
+                        currentUserId = currentUserId,
+                        targetUserId = targetUserId,
+                        token = it
+                    )
+                }
             }
         }catch (e: RuntimeException){
             throw e
@@ -161,37 +200,41 @@ class ProfileViewModel @Inject constructor(
 
     suspend fun editProfile(user: User, message: () -> Unit, navigate: () -> Unit){
         var usernameUsage = false
-        try {
-            var users: List<User> = userRepository.getUsers()
-            var currentUser = userRepository.getUser(user.userId)
-            users = users.filterNot { it.userId == currentUser!!.userId }
-            for(loopUser in users){
-                if(loopUser.username == user.username){
-                    usernameUsage = true
-                    break
+        token?.let {
+            try {
+                val token = sharedPreferences.getString("firebase_token", null)
+                Log.e("Token: ", "Bearer $token")
+                var users: List<User> = userRepository.getUsers(token= it)
+                var currentUser = userRepository.getUser(userId = user.userId, token = it)
+                users = users.filterNot { it.userId == currentUser!!.userId }
+                for(loopUser in users){
+                    if(loopUser.username == user.username){
+                        usernameUsage = true
+                        break
+                    }
                 }
+            } catch (e: CancellationException) {
+                return
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel EditProfile Function", "An error occurred: ${e.message}")
+                return
             }
-        } catch (e: CancellationException) {
-            // Kullanıcı işlemi iptal etti, gerekirse burada uygun bir işlem yapılabilir
-            return
-        } catch (e: Exception) {
-            // Diğer istisnaları burada ele alabilirsiniz
-            Log.e("ProfileViewModel EditProfile Function", "An error occurred: ${e.message}")
-            return
-        }
-        if(usernameUsage){
-            message()
-            Log.e("ProfileViewModel EditProfile Function", "true")
-        }else{
-            userRepository.editProfile(user = user)
-            navigate()
-            Log.e("ProfileViewModel EditProfile Function", "false")
+            if(usernameUsage){
+                message()
+                Log.e("ProfileViewModel EditProfile Function", "true")
+            }else{
+                userRepository.editProfile(user = user, token = it)
+                navigate()
+                Log.e("ProfileViewModel EditProfile Function", "false")
+            }
         }
     }
 
     fun deleteAccount(userId: String){
         try {
-            viewModelScope.launch{ userRepository.deleteAccount(userId = userId) }
+            token?.let {
+                viewModelScope.launch{ userRepository.deleteAccount(userId = userId, token = it) }
+            }
         }catch (e: RuntimeException){
             throw e
         }

@@ -29,6 +29,7 @@ import com.zeroone.wallpaperdeal.R
 import com.zeroone.wallpaperdeal.ui.BottomNavigationBar
 import com.zeroone.wallpaperdeal.ui.theme.TopAppBarColor
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.material.Button
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -43,17 +44,26 @@ import com.zeroone.wallpaperdeal.ui.WallpaperListVerticalStaggeredGrid
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 
 @Composable
-fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(navController: NavController, auth: FirebaseAuth,
+               viewModel: HomeViewModel = hiltViewModel()
+) {
     val scrollState = LazyStaggeredGridState()
     var isTopAppBarVisible by remember { mutableStateOf(true) }
     var wallpapers by remember { mutableStateOf<List<Wallpaper>>(emptyList()) }
     var requestsState by remember { mutableStateOf(false) }
     val state = viewModel.state.value
     wallpapers = state.wallpapers
-    auth.uid?.let{
-        LaunchedEffect(key1 = it) {
+    auth.currentUser?.let{ currentUser ->
+        LaunchedEffect(key1 = currentUser.uid) {
             viewModel.getWallpapersFromLocal()
-            viewModel.checkRequestForUser(it)
+            currentUser.getIdToken(true).addOnCompleteListener { taskToken ->
+                if (taskToken.isSuccessful){
+                    val idToken = taskToken.result.token
+                    idToken?.let {
+                        viewModel.checkRequestForUser(userId = currentUser.uid, token = it)
+                    }
+                }
+            }
         }
     }
     requestsState = viewModel.requestsState.value
@@ -123,7 +133,7 @@ fun HomeScreen(navController: NavController, auth: FirebaseAuth, viewModel: Home
             }
             if(wallpapers.isNotEmpty()){
                 WallpaperListVerticalStaggeredGrid(
-                    list = wallpapers,
+                    list = wallpapers.toList(),
                     scrollState = scrollState,
                     onItemClick = {
                         navController.navigate("${Screen.WallpaperViewScreen.route}/${it.wallpaperId}")

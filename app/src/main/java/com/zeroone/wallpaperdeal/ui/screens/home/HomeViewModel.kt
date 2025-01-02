@@ -36,8 +36,15 @@ class HomeViewModel @Inject constructor(
     private var job: Job? = null
 
     init{
-        auth.uid?.let {
-            getAllWallpapers(currentUserId = it)
+        auth.currentUser?.let { currentUser ->
+            currentUser.getIdToken(true).addOnCompleteListener { taskToken ->
+                if(taskToken.isSuccessful){
+                    val idToken = taskToken.result?.token
+                    idToken?.let { idToken ->
+                        getAllWallpapers(currentUserId = currentUser.uid, token = idToken )
+                    }
+                }
+            }
         }
     }
     fun getWallpapersFromLocal(){
@@ -45,9 +52,9 @@ class HomeViewModel @Inject constructor(
             wallpaperStateFromLocal.value = wallpaperDatabase.wallpaperDao().getAllWallpapers()
         }
     }
-    fun getAllWallpapers(currentUserId: String) {
+    fun getAllWallpapers(currentUserId: String, token: String) {
         job?.cancel()
-        job = getWallpaper(currentUserId = currentUserId).onEach {
+        job = getWallpaper(currentUserId = currentUserId, token = token).onEach {
             when (it) {
                 is Resource.Success -> {
                     state.value = WallpapersState(wallpapers = it.data ?: emptyList())
@@ -65,10 +72,10 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun getWallpaper(currentUserId: String): Flow<Resource<List<Wallpaper>>> = flow {
+    private fun getWallpaper(currentUserId: String, token: String): Flow<Resource<List<Wallpaper>>> = flow {
         try {
             emit(Resource.Loading())
-            val wallpaperList = wallpaperRepository.getWallpaperByFollowed(currentUserId = currentUserId)
+            val wallpaperList = wallpaperRepository.getWallpaperByFollowed(currentUserId = currentUserId, token = token)
             if (wallpaperList.response == "Succes") {
                 emit(Resource.Success(wallpaperList.payload))
             } else {
@@ -104,12 +111,12 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun checkRequestForUser(userId: String) {
+    fun checkRequestForUser(userId: String, token: String) {
         try {
             viewModelScope.launch {
-                requestsState.value = wallDealRepository.checkWallDealRequests(currentUserId = userId)
-                val request = wallDealRepository.checkWallDealRequests(currentUserId = userId)
-                //Log.e("Request viewmodel Control", request.toString())
+                requestsState.value = wallDealRepository.checkWallDealRequests(currentUserId = userId, token = token)
+                val request = wallDealRepository.checkWallDealRequests(currentUserId = userId, token = token)
+                Log.e("Request viewmodel Control", request.toString())
             }
         } catch (e: RuntimeException) {
             throw e

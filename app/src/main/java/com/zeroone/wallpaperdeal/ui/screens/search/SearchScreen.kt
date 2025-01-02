@@ -152,18 +152,20 @@ private fun WallpaperItemForSearch(wallpaper: Wallpaper, navController: NavContr
         .clickable { navController.navigate("${Screen.WallpaperViewScreen.route}/${wallpaper.wallpaperId}") }) {
         wallpaper.let {
             AsyncImage(model = wallpaper.imageUrl, contentDescription = null, modifier = Modifier
-                .size(100.dp)
+                .width(70.dp)
+                .height(100.dp)
             )
             Spacer(modifier = Modifier.fillMaxWidth(0.03f))
             Column(modifier = Modifier.height(100.dp))
             {
                 Spacer(modifier = Modifier.fillMaxHeight(0.15f))
-                Text(text = wallpaper.owner!!.username, color = Color.LightGray, fontSize = 14.sp)
+                Text(text = wallpaper.user!!.username, color = Color.LightGray, fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = wallpaper.category, color = Color.Gray, fontSize = 14.sp )
             }
         }
     }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable
@@ -172,7 +174,7 @@ private fun UserItemForSearch(user: User, navController: NavController){
         .fillMaxWidth()
         .padding(bottom = 8.dp, top = 8.dp)
         .clickable { navController.navigate("${Screen.OtherProfileScreen.route}/${user.userId}") }){
-         AsyncImage(model = user.userDetail?.profilePhoto, contentDescription = null, modifier = Modifier
+         AsyncImage(model = user.profilePhoto, contentDescription = null, modifier = Modifier
              .width(80.dp)
              .height(60.dp)
              .padding(start = 8.dp)

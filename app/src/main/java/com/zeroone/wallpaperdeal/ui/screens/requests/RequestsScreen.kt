@@ -1,6 +1,7 @@
 package com.zeroone.wallpaperdeal.ui.screens.requests
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,13 +37,13 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.data.model.WallDealRequest
+import com.zeroone.wallpaperdeal.data.model.Couple
+import com.zeroone.wallpaperdeal.data.model.CoupleRequest
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.theme.DeleteColor
 import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,7 +52,8 @@ fun RequestsScreen(
     navController: NavController,
     viewModel: RequestsViewModel = hiltViewModel()
 ){
-    var requests by remember { mutableStateOf<List<WallDealRequest>?>(null) }
+    var requests by remember { mutableStateOf<List<CoupleRequest>?>(null) }
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = auth.uid){
         viewModel.fetchRequest(userId = auth.uid!!)
@@ -62,7 +65,7 @@ fun RequestsScreen(
        Row(modifier = Modifier
            .fillMaxWidth()
            .fillMaxSize(0.05f)) {
-           IconButton(onClick = { /*TODO*/ }) {
+           IconButton(onClick = { navController.navigateUp() }) {
                Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null, tint = Color.LightGray)
            }
            Spacer(modifier = Modifier.fillMaxWidth(0.15f))
@@ -77,11 +80,24 @@ fun RequestsScreen(
                             CoroutineScope(Dispatchers.Main).launch{
                                try {
                                    val request = requests[it]
-                                   if(request.senderUser.wallDealId.isNullOrEmpty()){
-                                       viewModel.createWallDeal(request.possibleWallDeal)
+                                   if(request.senderUser.coupleId.isNullOrEmpty()){
+                                       Log.e("Request Screen Request Control", request.toString())
+                                       request?.let {
+                                           val couple = Couple(
+                                               groupId = request.coupleRequestId,
+                                               user1 = request.senderUser,
+                                               user2 = request.receiverUser,
+                                               requestId = ""
+                                           )
+                                           viewModel.createWallDeal(couple = couple)
+                                       }
+
                                    }else{
-                                       viewModel.addUserToWallDeal(userId = request.senderUser.userId,
-                                           otherUserId = request.receiverUser.userId )
+                                       Toast.makeText(
+                                           context,
+                                           "The request was deleted because the user already had a couple.",Toast.LENGTH_LONG)
+                                           .show()
+                                       viewModel.deleteWallDealRequest(requestId = request.coupleRequestId)
                                    }
                                }finally {
                                    navController.navigate(Screen.WallDealScreen.route)
@@ -90,7 +106,7 @@ fun RequestsScreen(
                         },
                         deleteRequest = {
                             try {
-                                viewModel.deleteWallDealRequest(requests[it].wallDealRequestId)
+                                viewModel.deleteWallDealRequest(requests[it].coupleRequestId)
                             }finally {
                                 navController.navigate(Screen.HomeScreen.route)
                             }
@@ -102,7 +118,7 @@ fun RequestsScreen(
     }
 }
 @Composable
-fun RequestItem(request: WallDealRequest, createWalldeal: () -> Unit, deleteRequest: () -> Unit ){
+fun RequestItem(request: CoupleRequest, createWalldeal: () -> Unit, deleteRequest: () -> Unit ){
     Column(){
         Row(
             modifier = Modifier

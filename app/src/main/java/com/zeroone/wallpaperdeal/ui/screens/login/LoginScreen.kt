@@ -14,11 +14,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,11 +51,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.zeroone.wallpaperdeal.R
-import com.zeroone.wallpaperdeal.ui.ButtonLoginAndRegister
 import com.zeroone.wallpaperdeal.ui.GoogleButton
 import com.zeroone.wallpaperdeal.ui.MainActivity
 import com.zeroone.wallpaperdeal.ui.screens.Screen
 import com.zeroone.wallpaperdeal.ui.screens.login.authgoogle.SignInState
+import com.zeroone.wallpaperdeal.ui.theme.ProfileButtonColor
 import com.zeroone.wallpaperdeal.ui.theme.TextFieldBaseColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -161,26 +166,46 @@ fun LoginScreen(
                     }
                 }
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
-                ButtonLoginAndRegister(
-                    modifier = Modifier.fillMaxWidth(0.33f),
-                    onClicked = {
-                        loading = true
-                        CoroutineScope(Dispatchers.Main).launch{
-                            delay(500)
-                            try {
-                                viewModel.login(
-                                    textEmail = textEmail, textPassword = textPassword , context = context , loading = {loading = false}
-                                )
-                            }finally {
+                Button(
+                    modifier = Modifier.fillMaxHeight(0.1f).fillMaxWidth(0.4f),
+                    colors = ButtonColors(
+                        containerColor = ProfileButtonColor,
+                        disabledContentColor = ProfileButtonColor,
+                        disabledContainerColor = ProfileButtonColor,
+                        contentColor = ProfileButtonColor
+                    ),
+                    enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
+                    onClick = {
+                    loading = true
+                    CoroutineScope(Dispatchers.Main).launch{
+                        delay(500)
+                        try {
+                            viewModel.login(
+                                textEmail = textEmail, textPassword = textPassword , context = context , loading = {loading = false}
+                            )
+                        }catch (e: RuntimeException) {
+                            loading = false
+                        }finally {
                                 loading = false
                                 textPassword = ""
                             }
-                        } },
-                    enabled = !(textPassword.isEmpty() || textEmail.isEmpty()),
-                    enabledText = "Login information cannot be empty",
-                    text = "Login",
-                    loadingText = "Logging in..."
-                )
+                        }
+                    }) {
+                    when(loading){
+                        true -> {
+                            Text(text = "Logging in", color = Color.White)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(20.dp),
+                                color = Color.White
+                            )
+                        }
+                        false -> {
+                            Text(text = "Login", color = Color.White)
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.fillMaxHeight(0.1f))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
